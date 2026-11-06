@@ -2,7 +2,7 @@
 
 **Sistema:** Instituto Códice - Sistema de Asistencia y Notas (aplicación de escritorio)
 **Marco de referencia:** Ley N° 21.719, que regula la protección y el tratamiento de los datos personales (modifica la Ley N° 19.628)
-**Versión del documento:** 1.1 - noviembre de 2026
+**Versión del documento:** 1.2 - noviembre de 2026
 **Estado:** borrador técnico para revisión de la institución
 
 > Este documento es parte de un proyecto académico y de portafolio. Describe cómo el sistema trata los datos personales para facilitar el cumplimiento de la ley, pero **no constituye asesoría legal**. Las decisiones marcadas como *"a definir por la institución"* corresponden al responsable de los datos y deben validarse con asesoría jurídica.
@@ -40,7 +40,7 @@
 | :--- | :--- |
 | **Finalidad** | Registrar a los estudiantes, inscribirlos en asignaturas, controlar asistencia, registrar calificaciones y emitir informes de rendimiento |
 | **Base de licitud** | Ejecución de la relación educacional entre el estudiante y la institución, y cumplimiento de las obligaciones legales de la institución sobre registros académicos *(a validar por la institución)* |
-| **Datos tratados** | RUT, nombres, apellidos, correo (opcional), curso, estado activo/inactivo, inscripciones, asistencia por fecha y calificaciones |
+| **Datos tratados** | RUT, nombres, apellidos, correo (opcional), curso, estado activo/inactivo, marca de tratamiento bloqueado, inscripciones, asistencia por fecha y calificaciones |
 | **Uso del correo** | Comunicaciones académicas de la institución (avisos, citaciones y resultados), que se realizan fuera del sistema. La aplicación no envía correos |
 | **Datos sensibles** | No se tratan datos sensibles (salud, origen étnico, creencias, etc.). Las notas y la asistencia son datos personales, pero no sensibles |
 | **Tablas** | `Estudiante`, `Inscripcion`, `Asistencia`, `Calificacion` |
@@ -105,26 +105,26 @@ La ley reconoce a los titulares, entre otros, los derechos de **acceso, rectific
 
 | Derecho | Cómo lo resuelve hoy el sistema | Estado |
 | :--- | :--- | :--- |
-| Acceso | El administrador puede consultar los datos del estudiante, pero no hay una forma de entregarle **todos** sus datos en un solo documento | ⚠️ Brecha B2 |
+| Acceso | El administrador exporta **todos** los datos del estudiante en un archivo JSON; la exportación queda en la bitácora | ✅ v1.9 |
 | Rectificación | El administrador corrige los datos personales; los cambios de notas quedan en la bitácora con su valor anterior y nuevo | ✅ |
 | Supresión | El historial académico se conserva por obligación legal *(a validar)*; el estudiante se puede desactivar | ⚠️ Requiere criterio de la institución |
 | Oposición | No hay tratamientos con fines distintos a la gestión académica (sin marketing ni perfilamiento) | ✅ No aplica |
-| Portabilidad | Igual que el acceso: falta una exportación completa en un formato estructurado | ⚠️ Brecha B2 |
-| Bloqueo | No existe una marca para suspender temporalmente el tratamiento de un estudiante | ⚠️ Brecha B3 |
+| Portabilidad | La exportación usa JSON, un formato estructurado y de uso común que otro sistema puede leer | ✅ v1.9 |
+| Bloqueo | El administrador marca "Tratamiento bloqueado": el estudiante deja de aparecer en la gestión académica, su historial se conserva y sigue disponible la exportación de sus datos | ✅ v1.9 |
 
 ---
 
 ## 6. Brechas detectadas y plan de acción
 
-| Id | Brecha | Acción propuesta | Paso del proyecto |
-| :--- | :--- | :--- | :--- |
-| B1 | Los titulares no reciben información sobre el tratamiento de sus datos | Agregar un **aviso de privacidad** accesible desde la aplicación | 9.2 |
-| B2 | No hay forma de entregar al titular todos sus datos (acceso y portabilidad) | Botón **"Exportar datos del estudiante"** con registro en la bitácora | 9.3 |
-| B3 | No se puede bloquear el tratamiento de un estudiante | Marca de **tratamiento bloqueado**, que lo excluye de las operaciones sin borrar su historial | 9.4 |
-| B4 | El correo del estudiante se usa para comunicaciones académicas de la institución fuera del sistema, pero esa finalidad no está informada al titular | Declarar esta finalidad en el aviso de privacidad. Si en el futuro se agrega un portal para estudiantes, actualizar este registro con las nuevas finalidades (inicio de sesión, recuperación de contraseña y notificaciones) | 9.2 |
-| B5 | El certificado del servidor SQL no se verifica | Instalar un certificado de confianza en el servidor y desactivar `TrustServerCertificate` en producción | 9.5 |
-| B6 | No existe un procedimiento ante filtraciones de datos | Redactar un **plan de respuesta ante incidentes** | 9.6 |
-| B7 | Los plazos de conservación no están definidos | Definir los plazos con la institución y documentarlos en este registro | Institución |
+| Id | Brecha | Acción propuesta | Paso del proyecto | Estado |
+| :--- | :--- | :--- | :--- | :--- |
+| B1 | Los titulares no reciben información sobre el tratamiento de sus datos | Agregar un **aviso de privacidad** accesible desde la aplicación | 9.2 | ✅ Resuelta (v1.9) |
+| B2 | No hay forma de entregar al titular todos sus datos (acceso y portabilidad) | Botón **"Exportar datos del estudiante"** con registro en la bitácora | 9.3 | ✅ Resuelta (v1.9) |
+| B3 | No se puede bloquear el tratamiento de un estudiante | Marca de **tratamiento bloqueado**, que lo excluye de las operaciones sin borrar su historial | 9.4 | ✅ Resuelta (v1.9) |
+| B4 | El correo del estudiante se usa para comunicaciones académicas de la institución fuera del sistema, pero esa finalidad no está informada al titular | Declarar esta finalidad en el aviso de privacidad. Si en el futuro se agrega un portal para estudiantes, actualizar este registro con las nuevas finalidades (inicio de sesión, recuperación de contraseña y notificaciones) | 9.2 | ✅ Resuelta (v1.9) |
+| B5 | El certificado del servidor SQL no se verifica | Instalar un certificado de confianza en el servidor y desactivar `TrustServerCertificate` en producción | 9.5 | ⏳ Pendiente |
+| B6 | No existe un procedimiento ante filtraciones de datos | Redactar un **plan de respuesta ante incidentes** | 9.6 | ⏳ Pendiente |
+| B7 | Los plazos de conservación no están definidos | Definir los plazos con la institución y documentarlos en este registro | Institución | ⏳ Pendiente |
 
 ---
 
@@ -144,3 +144,4 @@ Si se incorpora un **portal web para estudiantes** (registro, consulta de notas 
 | :--- | :--- | :--- |
 | 1.0 | Noviembre de 2026 | Versión inicial, elaborada a partir de la estructura de la base de datos (v1.8 del sistema) |
 | 1.1 | Noviembre de 2026 | Se declara la finalidad del correo del estudiante (B4) y se agrega la evolución prevista hacia un portal web |
+| 1.2 | Noviembre de 2026 | Se resuelven B1 (aviso de privacidad), B2 (acceso y portabilidad), B3 (bloqueo) y B4 (finalidad del correo) |
