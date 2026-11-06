@@ -1,0 +1,108 @@
+# Instituto Códice - Sistema de Asistencia y Notas
+
+Aplicación de escritorio para gestión académica: estudiantes, asignaturas, inscripciones, asistencia, calificaciones e informes, con control de acceso por rol.
+Tarea 3 - PRO205 Taller de Programación.
+
+**Stack:** C# / .NET 8 / Windows Forms / SQL Server / MSTest
+
+---
+
+### Requisitos
+
+- Visual Studio 2022 (v17.8+)
+- Workload: Desarrollo de escritorio de .NET
+- SQL Server Express + SSMS
+
+### Instalación
+
+**1. Base de datos**
+Abrir SSMS y ejecutar en orden (F5):
+
+- `BaseDatos/01_InstitutoCodiceDB.sql` -> Crea la BD y las 9 tablas.
+- `BaseDatos/02_DatosEjemplo.sql` -> Carga datos de prueba.
+
+> Solo se ejecutan una vez, en una instalación nueva.
+
+**Actualización (solo instalaciones anteriores a la v1.1)**
+
+- `BaseDatos/03_ActualizarHashesPBKDF2.sql` -> Migra las contraseñas de las cuentas demo de SHA-256 a PBKDF2 y agrega la restricción de formato del hash.
+
+> No es necesario en una instalación nueva: los scripts 01 y 02 ya incluyen PBKDF2.
+
+**2. Conexión**
+- Abrir `InstitutoCodice.Datos/Conexion.cs`
+- Cambiar el `Server=` por el nombre de tu instancia de SQL Server.
+- Por defecto: `localhost\SQLEXPRESS`
+
+**3. Ejecutar**
+- Abrir `InstitutoCodice.sln`
+- Clic derecho en `InstitutoCodice.App` -> Establecer como proyecto de inicio
+- F5 para correr
+
+**4. Pruebas**
+- Menú **Prueba -> Ejecutar todas las pruebas** (15 pruebas unitarias, no requieren base de datos).
+
+### Cuentas de prueba
+
+> Credenciales ficticias de demostración, solo para entorno local.
+
+| Usuario | Contraseña | Rol | Asignaturas |
+| :--- | :--- | :--- | :--- |
+| **admin** | Admin123 | Administrador | Todas |
+| **pmunoz** | Docente123 | Docente | POO101, TPR205 |
+| **cvaldes** | Docente123 | Docente | BDD201 |
+
+La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
+
+### Seguridad
+
+| Control | Implementación |
+| :--- | :--- |
+| Hash de contraseñas | PBKDF2-SHA256, 600.000 iteraciones, sal aleatoria de 16 bytes (recomendación OWASP) |
+| Formato versionado | `PBKDF2$iteraciones$sal$hash`: permite subir iteraciones o cambiar de algoritmo sin invalidar hashes |
+| Comparación segura | `CryptographicOperations.FixedTimeEquals` (tiempo constante, evita ataques de temporización) |
+| Defensa en la BD | Restricción `CK_Usuario_HashFormato`: la base rechaza contraseñas en texto plano |
+| Límite de intentos | Al 3er intento fallido la aplicación se cierra; mensaje genérico "usuario o contraseña incorrectos" |
+| Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad) |
+| Inyección SQL | Todas las consultas son parametrizadas |
+| Integridad de datos | Reglas de negocio validadas en el código y en la BD (CHECK, UNIQUE, FOREIGN KEY) |
+
+### Arquitectura (3 capas)
+
+- **Negocio** (`InstitutoCodice.Negocio`): Modelos UML, lógica de informes, seguridad y validación de RUT.
+- **Datos** (`InstitutoCodice.Datos`): Conexión a SQL y repositorios.
+- **Presentación** (`InstitutoCodice.App`): Formularios Windows Forms.
+- **Pruebas** (`InstitutoCodice.Pruebas`): Pruebas unitarias MSTest con patrón AAA y fuente de datos falsa.
+- **BaseDatos**: Scripts SQL de instalación y actualización.
+
+### Trazabilidad
+
+| Requerimiento | Código |
+| :--- | :--- |
+| RF-01, RF-02 (Estudiantes) | `FormEstudiantes`, `ValidarRut()`, `Desactivar()` |
+| RF-03 (Asignaturas) | `FormAsignaturas` |
+| RF-04 (Inscripciones) | `FormInscripciones`, `EsDuplicada()` |
+| RF-05, RF-06 (Asistencia) | `FormAsistencia`, `ValidarFecha()` |
+| RF-07, RF-08 (Notas) | `FormCalificaciones`, `ValidarNota()` |
+| RF-09, RF-10, RF-11 (Informes) | `FormInformes`, `ServicioInformes`, `EsDefinitivo()` |
+| RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos |
+| RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
+| RNF-07 (Errores) | `Conexion.Probar()` y handler global en `Program.cs` |
+
+### Reglas del negocio
+
+- RUT validado con módulo 11.
+- Notas entre 1.0 y 7.0.
+- Ponderaciones por asignatura no superan 100%.
+- No se permite asistencia en fecha futura.
+- No se elimina historial: usuarios se desactivan.
+- Aprobación: Promedio >= 4.0 y Asistencia >= 75%.
+- Resultado **Parcial**: si las evaluaciones con nota no suman el 100% de la ponderación, el estado no es definitivo y no se informa como aprobado ni reprobado.
+- Un docente solo accede a la información de sus propias asignaturas; el administrador accede a todo.
+
+### Historial de versiones
+
+| Versión | Cambios |
+| :--- | :--- |
+| v1.0 | Versión entregada en la evaluación. |
+| v1.1 | Scripts de instalación incluidos en el proyecto; límite de 3 intentos en login; control de acceso en informes individuales; estado Parcial; migración a PBKDF2; 5 pruebas nuevas (autenticación y resultado parcial). |

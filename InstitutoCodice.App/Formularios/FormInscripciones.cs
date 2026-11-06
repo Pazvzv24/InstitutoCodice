@@ -1,0 +1,145 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+using InstitutoCodice.Datos.Repositorios;
+using InstitutoCodice.Negocio.Modelos;
+
+namespace InstitutoCodice.App.Formularios
+{
+    /// <summary>
+    /// Inscripción de estudiantes en asignaturas (RF-04).
+    /// </summary>
+    public partial class FormInscripciones : Form
+    {
+        private readonly InscripcionRepositorio repositorio = new InscripcionRepositorio();
+        private readonly AsignaturaRepositorio asignaturaRepositorio = new AsignaturaRepositorio();
+        private readonly EstudianteRepositorio estudianteRepositorio = new EstudianteRepositorio();
+        private List<Inscripcion> inscripciones = new List<Inscripcion>();
+        private bool cargando;
+
+        public FormInscripciones()
+        {
+            InitializeComponent();
+        }
+
+        private void FormInscripciones_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                cargando = true;
+                cmbAsignatura.DataSource = asignaturaRepositorio.Listar();
+                cmbEstudiante.DataSource = estudianteRepositorio.Listar().Where(x => x.Activo).ToList();
+            }
+            catch (Exception ex)
+            {
+                Mensajes.Error(ex);
+            }
+            finally
+            {
+                cargando = false;
+            }
+
+            CargarInscritos();
+        }
+
+        private void cmbAsignatura_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!cargando)
+                CargarInscritos();
+        }
+
+        private void CargarInscritos()
+        {
+            dgvInscritos.Rows.Clear();
+            var asignatura = cmbAsignatura.SelectedItem as Asignatura;
+            if (asignatura == null)
+            {
+                lblTotal.Text = "Total inscritos: 0";
+                return;
+            }
+
+            try
+            {
+                inscripciones = repositorio.ListarPorAsignatura(asignatura.Id);
+                foreach (var inscripcion in inscripciones)
+                {
+                    var estudiante = inscripcion.Estudiante;
+                    dgvInscritos.Rows.Add(inscripcion.Id, estudiante.Rut,
+                        estudiante.NombreCompleto() + (estudiante.Activo ? "" : " (inactivo)"),
+                        estudiante.Curso, inscripcion.FechaInscripcion.ToString("dd-MM-yyyy"));
+                }
+
+                lblTotal.Text = "Total inscritos: " + inscripciones.Count;
+                dgvInscritos.ClearSelection();
+            }
+            catch (Exception ex)
+            {
+                Mensajes.Error(ex);
+            }
+        }
+
+        private void btnInscribir_Click(object sender, EventArgs e)
+        {
+            var asignatura = cmbAsignatura.SelectedItem as Asignatura;
+            var estudiante = cmbEstudiante.SelectedItem as Estudiante;
+            if (asignatura == null || estudiante == null)
+            {
+                Mensajes.Advertencia("Seleccione una asignatura y un estudiante.");
+                return;
+            }
+
+            var nueva = new Inscripcion
+            {
+                Estudiante = estudiante,
+                Asignatura = asignatura,
+                FechaInscripcion = DateTime.Today
+            };
+
+            if (nueva.EsDuplicada(inscripciones))
+            {
+                Mensajes.Advertencia(estudiante.NombreCompleto() + " ya está inscrito(a) en " + asignatura.Nombre + ".");
+                return;
+            }
+
+            try
+            {
+                repositorio.Agregar(nueva);
+                CargarInscritos();
+            }
+            catch (Exception ex)
+            {
+                Mensajes.Error(ex);
+            }
+        }
+
+        private void btnQuitar_Click(object sender, EventArgs e)
+        {
+            if (dgvInscritos.CurrentRow == null || dgvInscritos.SelectedRows.Count == 0)
+            {
+                Mensajes.Advertencia("Seleccione una inscripción de la lista.");
+                return;
+            }
+
+            int id = Convert.ToInt32(dgvInscritos.CurrentRow.Cells[colId.Index].Value);
+            string nombre = Convert.ToString(dgvInscritos.CurrentRow.Cells[colEstudiante.Index].Value);
+            if (!Mensajes.Confirmar("¿Quitar la inscripción de " + nombre + "?\nSus notas y asistencia registradas se conservan."))
+                return;
+
+            try
+            {
+                repositorio.Eliminar(id);
+                CargarInscritos();
+            }
+            catch (Exception ex)
+            {
+                Mensajes.Error(ex);
+            }
+        }
+
+        private void btnCerrar_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+    }
+}
