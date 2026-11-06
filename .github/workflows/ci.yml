@@ -1,0 +1,60 @@
+# Integración continua: en cada push o pull request a master (y cada lunes),
+# GitHub compila la solución, ejecuta las pruebas y revisa
+# si algún paquete NuGet tiene vulnerabilidades conocidas.
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:   # permite ejecutarlo a mano desde la pestaña Actions
+  schedule:
+    - cron: '0 12 * * 1'   # todos los lunes a las 09:00 de Chile (12:00 UTC): detecta vulnerabilidades nuevas
+
+# Mínimo privilegio: el workflow solo puede leer el repositorio
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    name: Compilar, probar y revisar dependencias
+    runs-on: windows-latest   # Windows Forms (net8.0-windows) requiere Windows
+    timeout-minutes: 15
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false   # no deja la credencial de GitHub guardada en el equipo
+
+      - name: Instalar .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar paquetes
+        run: dotnet restore InstitutoCodice.sln
+
+      - name: Compilar
+        run: dotnet build InstitutoCodice.sln --configuration Release --no-restore
+
+      - name: Ejecutar pruebas
+        run: dotnet test InstitutoCodice.sln --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=resultados.trx"
+
+      - name: Revisar paquetes vulnerables
+        shell: pwsh
+        run: |
+          $salida = dotnet list InstitutoCodice.sln package --vulnerable --include-transitive 2>&1 | Out-String
+          Write-Output $salida
+          if ($salida -match "has the following vulnerable packages") {
+            Write-Error "Se encontraron paquetes con vulnerabilidades conocidas. Actualícelos con 'dotnet add package'."
+            exit 1
+          }
+
+      - name: Guardar resultados de las pruebas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-pruebas
+          path: '**/TestResults/*.trx'

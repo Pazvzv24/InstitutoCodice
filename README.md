@@ -1,5 +1,7 @@
 # Instituto Códice - Sistema de Asistencia y Notas
 
+[![CI](https://github.com/Pazvzv24/InstitutoCodice/actions/workflows/ci.yml/badge.svg)](https://github.com/Pazvzv24/InstitutoCodice/actions/workflows/ci.yml)
+
 Aplicación de escritorio para gestión académica: estudiantes, asignaturas, inscripciones, asistencia, calificaciones e informes, con control de acceso por rol.
 Tarea 3 - PRO205 Taller de Programación.
 
@@ -87,6 +89,13 @@ También se puede crear la base desde SSMS ejecutando en orden:
 
 **Pruebas**
 - Menú **Prueba -> Ejecutar todas las pruebas** (38 pruebas unitarias, no requieren base de datos).
+- Desde la consola: `dotnet test InstitutoCodice.sln`
+
+**Integración continua**
+
+En cada push, [GitHub Actions](.github/workflows/ci.yml) compila la solución en Windows, ejecuta las pruebas y revisa si algún paquete NuGet tiene vulnerabilidades conocidas (incluidas las dependencias transitivas). También se ejecuta cada lunes, para detectar vulnerabilidades descubiertas después del último cambio. El workflow tiene solo permisos de lectura y no usa secretos.
+
+[Dependabot](.github/dependabot.yml) propone automáticamente las actualizaciones de seguridad de los paquetes NuGet como pull requests, que pasan por las mismas pruebas antes de aceptarse.
 
 ### Cuentas de prueba
 
@@ -201,6 +210,7 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 | v1.7 | Exportación de informes a Excel (ClosedXML) y PDF (QuestPDF) con registro en la bitácora; 1 prueba nueva. |
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 | v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
+| v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; badge en el README. |
 
 ### Licencias de terceros
 
