@@ -13,7 +13,8 @@ namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Gestión de estudiantes (RF-01, RF-02). Las desactivaciones quedan en la bitácora.
-    /// Ley 21.719: exporta todos los datos de un titular (derechos de acceso y portabilidad).
+    /// Ley 21.719: exporta todos los datos de un titular (derechos de acceso y portabilidad)
+    /// y permite bloquear el tratamiento de sus datos sin borrar su historial.
     /// </summary>
     public partial class FormEstudiantes : Form
     {
@@ -86,7 +87,9 @@ namespace InstitutoCodice.App.Formularios
             txtCorreo.Text = estudiante.Correo;
             txtCurso.Text = estudiante.Curso;
             chkActivo.Checked = estudiante.Activo;
-            lblModo.Text = "Editando: " + estudiante.NombreCompleto();
+            chkBloqueado.Checked = estudiante.TratamientoBloqueado;
+            lblModo.Text = "Editando: " + estudiante.NombreCompleto()
+                         + (estudiante.TratamientoBloqueado ? " (tratamiento bloqueado)" : "");
         }
 
         private void LimpiarFormulario()
@@ -98,6 +101,7 @@ namespace InstitutoCodice.App.Formularios
             txtCorreo.Clear();
             txtCurso.Clear();
             chkActivo.Checked = true;
+            chkBloqueado.Checked = false;
             lblModo.Text = "Modo: nuevo estudiante";
             dgvEstudiantes.ClearSelection();
             txtRut.Focus();
@@ -118,7 +122,8 @@ namespace InstitutoCodice.App.Formularios
                 Apellidos = txtApellidos.Text.Trim(),
                 Correo = txtCorreo.Text.Trim(),
                 Curso = txtCurso.Text.Trim(),
-                Activo = chkActivo.Checked
+                Activo = chkActivo.Checked,
+                TratamientoBloqueado = chkBloqueado.Checked
             };
 
             string errores = Validar(estudiante);
@@ -127,6 +132,13 @@ namespace InstitutoCodice.App.Formularios
                 Mensajes.Advertencia("Revise los datos:\n" + errores);
                 return;
             }
+
+            // Ley 21.719: se pide confirmación antes de bloquear el tratamiento
+            bool bloqueaAhora = estudiante.TratamientoBloqueado && (seleccionado == null || !seleccionado.TratamientoBloqueado);
+            if (bloqueaAhora && !Mensajes.Confirmar("¿Bloquear el tratamiento de los datos de " + estudiante.NombreCompleto() + "?\n\n"
+                    + "No aparecerá en inscripciones, asistencia, calificaciones ni informes hasta que se desbloquee.\n"
+                    + "Su historial se conserva y sus datos se pueden seguir exportando."))
+                return;
 
             try
             {
@@ -141,6 +153,14 @@ namespace InstitutoCodice.App.Formularios
                     if (seleccionado != null && seleccionado.Activo && !estudiante.Activo)
                         Bitacora.Registrar(AccionAuditoria.EstudianteDesactivado, "Estudiante " + estudiante.Rut + " desactivado.",
                             entidad: "Estudiante", entidadId: estudiante.Id, valorAnterior: "Activo", valorNuevo: "Inactivo");
+                    if (seleccionado != null && seleccionado.TratamientoBloqueado != estudiante.TratamientoBloqueado)
+                        Bitacora.Registrar(
+                            estudiante.TratamientoBloqueado ? AccionAuditoria.TratamientoBloqueado : AccionAuditoria.TratamientoDesbloqueado,
+                            "Tratamiento de datos del estudiante RUT " + estudiante.Rut
+                            + (estudiante.TratamientoBloqueado ? " bloqueado" : " desbloqueado") + " a solicitud del titular (Ley 21.719).",
+                            entidad: "Estudiante", entidadId: estudiante.Id,
+                            valorAnterior: seleccionado.TratamientoBloqueado ? "Bloqueado" : "Habilitado",
+                            valorNuevo: estudiante.TratamientoBloqueado ? "Bloqueado" : "Habilitado");
                     Mensajes.Info("Datos del estudiante actualizados.");
                 }
 

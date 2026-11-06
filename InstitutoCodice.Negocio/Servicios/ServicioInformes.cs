@@ -94,6 +94,9 @@ namespace InstitutoCodice.Negocio.Servicios
         public List<LineaInforme> InformePorEstudiante(Estudiante estudiante)
         {
             List<LineaInforme> lineas = new List<LineaInforme>();
+            if (!estudiante.PuedeTratarse())
+                return lineas; // Ley 21.719: tratamiento bloqueado
+
             foreach (Asignatura asignatura in fuente.ObtenerAsignaturasDeEstudiante(estudiante.Id))
                 lineas.Add(CrearLinea(estudiante, asignatura));
 
@@ -110,6 +113,9 @@ namespace InstitutoCodice.Negocio.Servicios
                 (asignaturasPermitidas ?? Enumerable.Empty<Asignatura>()).Select(a => a.Id));
 
             List<LineaInforme> lineas = new List<LineaInforme>();
+            if (!estudiante.PuedeTratarse())
+                return lineas; // Ley 21.719: tratamiento bloqueado
+
             foreach (Asignatura asignatura in fuente.ObtenerAsignaturasDeEstudiante(estudiante.Id))
             {
                 if (idsPermitidos.Contains(asignatura.Id))
@@ -121,7 +127,7 @@ namespace InstitutoCodice.Negocio.Servicios
 
         /// <summary>
         /// Devuelve los estudiantes inscritos en al menos una de las asignaturas indicadas,
-        /// sin repetidos y ordenados por nombre.
+        /// sin repetidos y ordenados por nombre. Excluye a los que tienen el tratamiento bloqueado.
         /// </summary>
         public List<Estudiante> ObtenerEstudiantesDe(IEnumerable<Asignatura> asignaturas)
         {
@@ -130,7 +136,7 @@ namespace InstitutoCodice.Negocio.Servicios
             {
                 foreach (Estudiante estudiante in fuente.ObtenerInscritos(asignatura.Id))
                 {
-                    if (!estudiantes.ContainsKey(estudiante.Id))
+                    if (estudiante.PuedeTratarse() && !estudiantes.ContainsKey(estudiante.Id))
                         estudiantes.Add(estudiante.Id, estudiante);
                 }
             }
@@ -142,7 +148,10 @@ namespace InstitutoCodice.Negocio.Servicios
         {
             List<LineaInforme> lineas = new List<LineaInforme>();
             foreach (Estudiante estudiante in fuente.ObtenerInscritos(asignatura.Id))
-                lineas.Add(CrearLinea(estudiante, asignatura));
+            {
+                if (estudiante.PuedeTratarse()) // Ley 21.719: se omiten los bloqueados
+                    lineas.Add(CrearLinea(estudiante, asignatura));
+            }
 
             return lineas;
         }

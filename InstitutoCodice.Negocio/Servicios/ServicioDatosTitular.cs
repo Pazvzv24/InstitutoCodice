@@ -17,6 +17,7 @@ namespace InstitutoCodice.Negocio.Servicios
     ///
     /// Solo incluye datos del titular: no incluye datos de otros estudiantes ni
     /// el nombre de los docentes (son datos personales de terceros).
+    /// Funciona aunque el tratamiento esté bloqueado: el derecho de acceso sigue vigente.
     /// </summary>
     public class ServicioDatosTitular
     {
@@ -48,7 +49,8 @@ namespace InstitutoCodice.Negocio.Servicios
                     Apellidos = estudiante.Apellidos ?? "",
                     Correo = estudiante.Correo ?? "",
                     Curso = estudiante.Curso ?? "",
-                    Activo = estudiante.Activo
+                    Activo = estudiante.Activo,
+                    TratamientoBloqueado = estudiante.TratamientoBloqueado
                 }
             };
 
@@ -136,6 +138,7 @@ namespace InstitutoCodice.Negocio.Servicios
         public string Correo { get; set; } = "";
         public string Curso { get; set; } = "";
         public bool Activo { get; set; }
+        public bool TratamientoBloqueado { get; set; }
     }
 
     public class AsignaturaExportada

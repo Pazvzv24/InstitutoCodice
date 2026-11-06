@@ -17,7 +17,8 @@ namespace InstitutoCodice.App.Formularios
         private readonly AsistenciaRepositorio asistenciaRepositorio;
         private readonly InformeRepositorio informeRepositorio;
 
-        private Asignatura asignaturaCargada;
+        // Lista cargada en pantalla: es null hasta que se presiona "Cargar"
+        private Asignatura? asignaturaCargada;
         private DateTime fechaCargada;
 
         public FormAsistencia(AsignaturaRepositorio asignaturaRepositorio,
@@ -62,7 +63,7 @@ namespace InstitutoCodice.App.Formularios
             var fecha = dtpFecha.Value.Date;
             try
             {
-                var inscritos = informeRepositorio.ObtenerInscritos(asignatura.Id).Where(x => x.Activo).ToList();
+                var inscritos = informeRepositorio.ObtenerInscritos(asignatura.Id).Where(x => x.Activo && x.PuedeTratarse()).ToList(); // Ley 21.719: sin bloqueados
                 var registradas = asistenciaRepositorio.ListarPorAsignaturaYFecha(asignatura.Id, fecha);
 
                 dgvAsistencia.Rows.Clear();
@@ -115,8 +116,13 @@ namespace InstitutoCodice.App.Formularios
                     Fecha = fechaCargada
                 };
 
-                string estadoTexto = Convert.ToString(fila.Cells[colEstado.Index].Value);
-                asistencia.CambiarEstado((EstadoAsistencia)Enum.Parse(typeof(EstadoAsistencia), estadoTexto));
+                string estadoTexto = Convert.ToString(fila.Cells[colEstado.Index].Value) ?? "";
+                if (!Enum.TryParse(estadoTexto, out EstadoAsistencia estado))
+                {
+                    Mensajes.Advertencia("Hay un estado de asistencia no válido (\"" + estadoTexto + "\"). Revise la lista.");
+                    return;
+                }
+                asistencia.CambiarEstado(estado);
 
                 if (!asistencia.ValidarFecha())
                 {

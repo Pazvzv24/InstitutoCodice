@@ -514,6 +514,62 @@ namespace InstitutoCodice.Pruebas
             StringAssert.Contains(json, "21.719", "Debe citar la ley.");
         }
 
+        // Ley 21.719: bloqueo del tratamiento
+        [TestMethod]
+        public void InformePorCurso_OmiteEstudiantesConTratamientoBloqueado()
+        {
+            // Arrange: Ana y Bruno en POO; Bruno pidió bloquear el tratamiento
+            var poo = new Asignatura { Id = 1, Codigo = "POO101", Nombre = "POO" };
+            var ana = new Estudiante { Id = 10, Rut = "11111111-1", Nombres = "Ana", Apellidos = "Pérez" };
+            var bruno = new Estudiante { Id = 20, Rut = "22222222-2", Nombres = "Bruno", Apellidos = "Soto", TratamientoBloqueado = true };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(ana, poo);
+            fuente.Inscribir(bruno, poo);
+            var servicio = new ServicioInformes(fuente);
+
+            // Act
+            var lineas = servicio.InformePorCurso(poo);
+
+            // Assert
+            Assert.AreEqual(1, lineas.Count, "El estudiante bloqueado no debe aparecer en el informe del curso.");
+            Assert.AreEqual("11111111-1", lineas[0].Rut);
+        }
+
+        [TestMethod]
+        public void EstudianteBloqueado_NoApareceEnListasNiInformesIndividuales()
+        {
+            var poo = new Asignatura { Id = 1, Codigo = "POO101", Nombre = "POO" };
+            var bruno = new Estudiante { Id = 20, Rut = "22222222-2", Nombres = "Bruno", Apellidos = "Soto", TratamientoBloqueado = true };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(bruno, poo);
+            var servicio = new ServicioInformes(fuente);
+
+            Assert.IsFalse(bruno.PuedeTratarse());
+            Assert.AreEqual(0, servicio.ObtenerEstudiantesDe(new List<Asignatura> { poo }).Count, "No debe aparecer en la lista del docente.");
+            Assert.AreEqual(0, servicio.InformePorEstudiante(bruno).Count, "Sin informe individual (vista del administrador).");
+            Assert.AreEqual(0, servicio.InformePorEstudiante(bruno, new List<Asignatura> { poo }).Count, "Sin informe individual (vista del docente).");
+        }
+
+        [TestMethod]
+        public void DatosTitular_DeEstudianteBloqueado_SigueDisponible()
+        {
+            // El bloqueo no suspende el derecho de acceso: sus datos se pueden exportar completos
+            var poo = new Asignatura { Id = 1, Codigo = "POO101", Nombre = "POO" };
+            var bruno = new Estudiante { Id = 20, Rut = "22222222-2", Nombres = "Bruno", Apellidos = "Soto", TratamientoBloqueado = true };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(bruno, poo);
+            fuente.AgregarNota(bruno, poo, new Calificacion { Nota = 5.0m, Evaluacion = new Evaluacion { Nombre = "Prueba 1", Ponderacion = 40m } });
+
+            var datos = new ServicioDatosTitular(fuente).Generar(bruno, DateTime.UtcNow);
+
+            Assert.IsTrue(datos.Titular.TratamientoBloqueado, "La exportación debe informar que el tratamiento está bloqueado.");
+            Assert.AreEqual(1, datos.Asignaturas.Count, "Su historial se conserva.");
+            Assert.AreEqual(5.0m, datos.Asignaturas[0].Notas[0].Nota);
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {

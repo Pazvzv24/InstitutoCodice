@@ -36,7 +36,7 @@ namespace InstitutoCodice.App.Formularios
             {
                 cargando = true;
                 cmbAsignatura.DataSource = asignaturaRepositorio.Listar();
-                cmbEstudiante.DataSource = estudianteRepositorio.Listar().Where(x => x.Activo).ToList();
+                cmbEstudiante.DataSource = estudianteRepositorio.Listar().Where(x => x.Activo && x.PuedeTratarse()).ToList(); // Ley 21.719: sin bloqueados
             }
             catch (Exception ex)
             {
@@ -129,7 +129,7 @@ namespace InstitutoCodice.App.Formularios
             }
 
             int id = Convert.ToInt32(dgvInscritos.CurrentRow.Cells[colId.Index].Value);
-            string nombre = Convert.ToString(dgvInscritos.CurrentRow.Cells[colEstudiante.Index].Value);
+            string nombre = Convert.ToString(dgvInscritos.CurrentRow.Cells[colEstudiante.Index].Value) ?? "";
             if (!Mensajes.Confirmar("¿Quitar la inscripción de " + nombre + "?\nSus notas y asistencia registradas se conservan."))
                 return;
 

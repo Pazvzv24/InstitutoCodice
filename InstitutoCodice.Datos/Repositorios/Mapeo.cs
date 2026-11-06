@@ -19,7 +19,24 @@ namespace InstitutoCodice.Datos.Repositorios
             estudiante.Correo = lector.IsDBNull(iCorreo) ? "" : lector.GetString(iCorreo);
             estudiante.Curso = lector.GetString(lector.GetOrdinal("Curso"));
             estudiante.Activo = lector.GetBoolean(lector.GetOrdinal("Activo"));
+
+            // Columna opcional: si la consulta no la trae, se asume no bloqueado
+            int iBloqueado = BuscarColumna(lector, "TratamientoBloqueado");
+            estudiante.TratamientoBloqueado = iBloqueado >= 0 && lector.GetBoolean(iBloqueado);
             return estudiante;
+        }
+
+        /// <summary>
+        /// Devuelve la posición de una columna en el resultado, o -1 si la consulta no la incluye.
+        /// </summary>
+        private static int BuscarColumna(SqlDataReader lector, string nombre)
+        {
+            for (int i = 0; i < lector.FieldCount; i++)
+            {
+                if (string.Equals(lector.GetName(i), nombre, System.StringComparison.OrdinalIgnoreCase))
+                    return i;
+            }
+            return -1;
         }
 
         public static Asignatura LeerAsignatura(SqlDataReader lector)

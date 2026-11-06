@@ -38,6 +38,7 @@
             this.lblCurso = new System.Windows.Forms.Label();
             this.txtCurso = new System.Windows.Forms.TextBox();
             this.chkActivo = new System.Windows.Forms.CheckBox();
+            this.chkBloqueado = new System.Windows.Forms.CheckBox();
             this.btnNuevo = new System.Windows.Forms.Button();
             this.btnGuardar = new System.Windows.Forms.Button();
             this.btnDesactivar = new System.Windows.Forms.Button();
@@ -54,6 +55,7 @@
             this.colCorreo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCurso = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colActivo = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.colBloqueado = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.btnCerrar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvEstudiantes)).BeginInit();
             this.grpDatos.SuspendLayout();
@@ -72,6 +74,7 @@
             this.grpDatos.Controls.Add(this.lblCurso);
             this.grpDatos.Controls.Add(this.txtCurso);
             this.grpDatos.Controls.Add(this.chkActivo);
+            this.grpDatos.Controls.Add(this.chkBloqueado);
             this.grpDatos.Controls.Add(this.btnNuevo);
             this.grpDatos.Controls.Add(this.btnGuardar);
             this.grpDatos.Controls.Add(this.btnDesactivar);
@@ -80,7 +83,7 @@
             this.grpDatos.Controls.Add(this.lblAyudaRut);
             this.grpDatos.Location = new System.Drawing.Point(15, 15);
             this.grpDatos.Name = "grpDatos";
-            this.grpDatos.Size = new System.Drawing.Size(300, 465);
+            this.grpDatos.Size = new System.Drawing.Size(300, 490);
             this.grpDatos.TabIndex = 0;
             this.grpDatos.Text = "Datos del estudiante";
             // 
@@ -169,42 +172,50 @@
             this.chkActivo.TabIndex = 11;
             this.chkActivo.Text = "Activo";
             // 
+            // chkBloqueado
+            // 
+            this.chkBloqueado.AutoSize = true;
+            this.chkBloqueado.Location = new System.Drawing.Point(110, 232);
+            this.chkBloqueado.Name = "chkBloqueado";
+            this.chkBloqueado.TabIndex = 12;
+            this.chkBloqueado.Text = "Tratamiento bloqueado";
+            // 
             // btnNuevo
             // 
-            this.btnNuevo.Location = new System.Drawing.Point(15, 250);
+            this.btnNuevo.Location = new System.Drawing.Point(15, 275);
             this.btnNuevo.Name = "btnNuevo";
             this.btnNuevo.Size = new System.Drawing.Size(125, 32);
-            this.btnNuevo.TabIndex = 12;
+            this.btnNuevo.TabIndex = 13;
             this.btnNuevo.Text = "Nuevo";
             this.btnNuevo.UseVisualStyleBackColor = true;
             this.btnNuevo.Click += new System.EventHandler(this.btnNuevo_Click);
             // 
             // btnGuardar
             // 
-            this.btnGuardar.Location = new System.Drawing.Point(155, 250);
+            this.btnGuardar.Location = new System.Drawing.Point(155, 275);
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(125, 32);
-            this.btnGuardar.TabIndex = 13;
+            this.btnGuardar.TabIndex = 14;
             this.btnGuardar.Text = "Guardar";
             this.btnGuardar.UseVisualStyleBackColor = true;
             this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
             // 
             // btnDesactivar
             // 
-            this.btnDesactivar.Location = new System.Drawing.Point(15, 292);
+            this.btnDesactivar.Location = new System.Drawing.Point(15, 317);
             this.btnDesactivar.Name = "btnDesactivar";
             this.btnDesactivar.Size = new System.Drawing.Size(265, 32);
-            this.btnDesactivar.TabIndex = 14;
+            this.btnDesactivar.TabIndex = 15;
             this.btnDesactivar.Text = "Desactivar estudiante";
             this.btnDesactivar.UseVisualStyleBackColor = true;
             this.btnDesactivar.Click += new System.EventHandler(this.btnDesactivar_Click);
             // 
             // btnExportarDatos
             // 
-            this.btnExportarDatos.Location = new System.Drawing.Point(15, 334);
+            this.btnExportarDatos.Location = new System.Drawing.Point(15, 359);
             this.btnExportarDatos.Name = "btnExportarDatos";
             this.btnExportarDatos.Size = new System.Drawing.Size(265, 32);
-            this.btnExportarDatos.TabIndex = 15;
+            this.btnExportarDatos.TabIndex = 16;
             this.btnExportarDatos.Text = "Exportar datos del titular (JSON)";
             this.btnExportarDatos.UseVisualStyleBackColor = true;
             this.btnExportarDatos.Click += new System.EventHandler(this.btnExportarDatos_Click);
@@ -212,19 +223,19 @@
             // lblModo
             // 
             this.lblModo.ForeColor = System.Drawing.Color.DimGray;
-            this.lblModo.Location = new System.Drawing.Point(15, 378);
+            this.lblModo.Location = new System.Drawing.Point(15, 403);
             this.lblModo.Name = "lblModo";
             this.lblModo.Size = new System.Drawing.Size(265, 35);
-            this.lblModo.TabIndex = 16;
+            this.lblModo.TabIndex = 17;
             this.lblModo.Text = "Modo: nuevo estudiante";
             // 
             // lblAyudaRut
             // 
             this.lblAyudaRut.ForeColor = System.Drawing.Color.DimGray;
-            this.lblAyudaRut.Location = new System.Drawing.Point(15, 418);
+            this.lblAyudaRut.Location = new System.Drawing.Point(15, 443);
             this.lblAyudaRut.Name = "lblAyudaRut";
             this.lblAyudaRut.Size = new System.Drawing.Size(265, 35);
-            this.lblAyudaRut.TabIndex = 17;
+            this.lblAyudaRut.TabIndex = 18;
             this.lblAyudaRut.Text = "RUT sin puntos y con guion, por ejemplo 12345678-5.";
             // 
             // lblBuscar
@@ -232,7 +243,7 @@
             this.lblBuscar.AutoSize = true;
             this.lblBuscar.Location = new System.Drawing.Point(330, 20);
             this.lblBuscar.Name = "lblBuscar";
-            this.lblBuscar.TabIndex = 18;
+            this.lblBuscar.TabIndex = 19;
             this.lblBuscar.Text = "Buscar:";
             // 
             // txtBuscar
@@ -240,7 +251,7 @@
             this.txtBuscar.Location = new System.Drawing.Point(390, 17);
             this.txtBuscar.Name = "txtBuscar";
             this.txtBuscar.Size = new System.Drawing.Size(300, 23);
-            this.txtBuscar.TabIndex = 19;
+            this.txtBuscar.TabIndex = 20;
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
             // 
             // dgvEstudiantes
@@ -262,11 +273,12 @@
                         this.colApellidos,
                         this.colCorreo,
                         this.colCurso,
-                        this.colActivo});
+                        this.colActivo,
+                        this.colBloqueado});
             this.dgvEstudiantes.Location = new System.Drawing.Point(330, 50);
             this.dgvEstudiantes.Name = "dgvEstudiantes";
             this.dgvEstudiantes.Size = new System.Drawing.Size(555, 395);
-            this.dgvEstudiantes.TabIndex = 20;
+            this.dgvEstudiantes.TabIndex = 21;
             this.dgvEstudiantes.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvEstudiantes_CellClick);
             // 
             // colId
@@ -326,12 +338,20 @@
             this.colActivo.Name = "colActivo";
             this.colActivo.ReadOnly = true;
             // 
+            // colBloqueado
+            // 
+            this.colBloqueado.DataPropertyName = "TratamientoBloqueado";
+            this.colBloqueado.FillWeight = 60F;
+            this.colBloqueado.HeaderText = "Bloqueado";
+            this.colBloqueado.Name = "colBloqueado";
+            this.colBloqueado.ReadOnly = true;
+            // 
             // btnCerrar
             // 
-            this.btnCerrar.Location = new System.Drawing.Point(785, 462);
+            this.btnCerrar.Location = new System.Drawing.Point(785, 490);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
-            this.btnCerrar.TabIndex = 21;
+            this.btnCerrar.TabIndex = 22;
             this.btnCerrar.Text = "Cerrar";
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
@@ -340,7 +360,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 510);
+            this.ClientSize = new System.Drawing.Size(900, 535);
             this.Controls.Add(this.btnCerrar);
             this.Controls.Add(this.dgvEstudiantes);
             this.Controls.Add(this.txtBuscar);
@@ -371,6 +391,7 @@
         private System.Windows.Forms.Label lblCurso;
         private System.Windows.Forms.TextBox txtCurso;
         private System.Windows.Forms.CheckBox chkActivo;
+        private System.Windows.Forms.CheckBox chkBloqueado;
         private System.Windows.Forms.Button btnNuevo;
         private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Button btnDesactivar;
@@ -387,6 +408,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colCorreo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCurso;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colActivo;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn colBloqueado;
         private System.Windows.Forms.Button btnCerrar;
     }
 }

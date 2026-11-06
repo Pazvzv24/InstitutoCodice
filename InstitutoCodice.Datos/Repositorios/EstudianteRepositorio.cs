@@ -12,7 +12,7 @@ namespace InstitutoCodice.Datos.Repositorios
         public List<Estudiante> Listar()
         {
             const string sql = @"
-                SELECT Id, Rut, Nombres, Apellidos, Correo, Curso, Activo
+                SELECT Id, Rut, Nombres, Apellidos, Correo, Curso, Activo, TratamientoBloqueado
                 FROM Estudiante
                 ORDER BY Apellidos, Nombres";
 
@@ -32,8 +32,8 @@ namespace InstitutoCodice.Datos.Repositorios
         public void Agregar(Estudiante estudiante)
         {
             const string sql = @"
-                INSERT INTO Estudiante (Rut, Nombres, Apellidos, Correo, Curso, Activo)
-                VALUES (@Rut, @Nombres, @Apellidos, @Correo, @Curso, @Activo);
+                INSERT INTO Estudiante (Rut, Nombres, Apellidos, Correo, Curso, Activo, TratamientoBloqueado)
+                VALUES (@Rut, @Nombres, @Apellidos, @Correo, @Curso, @Activo, @TratamientoBloqueado);
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             Ejecutar(conexion =>
@@ -51,7 +51,8 @@ namespace InstitutoCodice.Datos.Repositorios
             const string sql = @"
                 UPDATE Estudiante
                 SET Rut = @Rut, Nombres = @Nombres, Apellidos = @Apellidos,
-                    Correo = @Correo, Curso = @Curso, Activo = @Activo
+                    Correo = @Correo, Curso = @Curso, Activo = @Activo,
+                    TratamientoBloqueado = @TratamientoBloqueado
                 WHERE Id = @Id";
 
             Ejecutar(conexion =>
@@ -73,6 +74,7 @@ namespace InstitutoCodice.Datos.Repositorios
             comando.Parameters.AddWithValue("@Correo", ValorONulo(estudiante.Correo));
             comando.Parameters.AddWithValue("@Curso", estudiante.Curso);
             comando.Parameters.AddWithValue("@Activo", estudiante.Activo);
+            comando.Parameters.AddWithValue("@TratamientoBloqueado", estudiante.TratamientoBloqueado);
         }
     }
 }

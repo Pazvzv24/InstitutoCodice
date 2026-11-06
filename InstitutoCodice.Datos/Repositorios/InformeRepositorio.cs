@@ -102,7 +102,7 @@ namespace InstitutoCodice.Datos.Repositorios
         public List<Estudiante> ObtenerInscritos(int asignaturaId)
         {
             const string sql = @"
-                SELECT e.Id, e.Rut, e.Nombres, e.Apellidos, e.Correo, e.Curso, e.Activo
+                SELECT e.Id, e.Rut, e.Nombres, e.Apellidos, e.Correo, e.Curso, e.Activo, e.TratamientoBloqueado
                 FROM Inscripcion i
                 INNER JOIN Estudiante e ON e.Id = i.EstudianteId
                 WHERE i.AsignaturaId = @AsignaturaId

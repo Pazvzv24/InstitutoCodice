@@ -155,7 +155,7 @@ namespace InstitutoCodice.App.Formularios
                                   + " % - " + evaluacionActual.Fecha.ToString("dd-MM-yyyy");
             try
             {
-                var inscritos = informeRepositorio.ObtenerInscritos(asignaturaActual.Id);
+                var inscritos = informeRepositorio.ObtenerInscritos(asignaturaActual.Id).Where(x => x.PuedeTratarse()); // Ley 21.719: sin bloqueados
                 var notas = calificacionRepositorio.ListarPorEvaluacion(evaluacionActual.Id);
 
                 foreach (var estudiante in inscritos)

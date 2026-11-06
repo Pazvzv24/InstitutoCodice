@@ -33,8 +33,8 @@ namespace InstitutoCodice.App.Formularios
         private string referenciaActual = string.Empty;  // RUT o código de asignatura
 
         public FormInformes(EstudianteRepositorio estudianteRepositorio,
-                     AsignaturaRepositorio asignaturaRepositorio,
-                     ServicioInformes servicio)
+                            AsignaturaRepositorio asignaturaRepositorio,
+                            ServicioInformes servicio)
         {
             InitializeComponent();
 
@@ -54,7 +54,7 @@ namespace InstitutoCodice.App.Formularios
 
                 // Un docente solo ve a los estudiantes inscritos en sus asignaturas
                 if (Sesion.EsAdministrador)
-                    cmbEstudiante.DataSource = estudianteRepositorio.Listar();
+                    cmbEstudiante.DataSource = estudianteRepositorio.Listar().Where(x => x.PuedeTratarse()).ToList(); // Ley 21.719: sin bloqueados
                 else
                     cmbEstudiante.DataSource = servicio.ObtenerEstudiantesDe(asignaturasPermitidas);
             }
