@@ -19,9 +19,10 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormInformes : Form
     {
-        private readonly EstudianteRepositorio estudianteRepositorio = new EstudianteRepositorio();
-        private readonly AsignaturaRepositorio asignaturaRepositorio = new AsignaturaRepositorio();
-        private readonly ServicioInformes servicio = new ServicioInformes(new InformeRepositorio());
+        // Dependencias: llegan por el constructor (las entrega el Contenedor)
+        private readonly EstudianteRepositorio estudianteRepositorio;
+        private readonly AsignaturaRepositorio asignaturaRepositorio;
+        private readonly ServicioInformes servicio;
 
         // Asignaturas que el usuario conectado tiene permitido ver
         private List<Asignatura> asignaturasPermitidas = new List<Asignatura>();
@@ -31,9 +32,16 @@ namespace InstitutoCodice.App.Formularios
         private string tipoActual = string.Empty;        // "Estudiante" o "Curso"
         private string referenciaActual = string.Empty;  // RUT o código de asignatura
 
-        public FormInformes()
+        public FormInformes(EstudianteRepositorio estudianteRepositorio,
+                     AsignaturaRepositorio asignaturaRepositorio,
+                     ServicioInformes servicio)
         {
             InitializeComponent();
+
+            this.estudianteRepositorio = estudianteRepositorio;
+            this.asignaturaRepositorio = asignaturaRepositorio;
+            this.servicio = servicio;
+
             HabilitarExportacion(false);
         }
 

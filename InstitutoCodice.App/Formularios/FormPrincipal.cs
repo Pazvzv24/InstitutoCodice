@@ -6,6 +6,7 @@ namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Menú principal. Gestión solo para administrador.
+    /// Cada pantalla se crea con el Contenedor, que le entrega sus repositorios.
     /// </summary>
     public partial class FormPrincipal : Form
     {
@@ -29,17 +30,17 @@ namespace InstitutoCodice.App.Formularios
             }
         }
 
-        private void btnEstudiantes_Click(object sender, EventArgs e) => Abrir(new FormEstudiantes());
-        private void btnDocentes_Click(object sender, EventArgs e) => Abrir(new FormDocentes());
-        private void btnAsignaturas_Click(object sender, EventArgs e) => Abrir(new FormAsignaturas());
-        private void btnInscripciones_Click(object sender, EventArgs e) => Abrir(new FormInscripciones());
-        private void btnAsistencia_Click(object sender, EventArgs e) => Abrir(new FormAsistencia());
-        private void btnCalificaciones_Click(object sender, EventArgs e) => Abrir(new FormCalificaciones());
-        private void btnInformes_Click(object sender, EventArgs e) => Abrir(new FormInformes());
+        private void btnEstudiantes_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormEstudiantes>());
+        private void btnDocentes_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormDocentes>());
+        private void btnAsignaturas_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormAsignaturas>());
+        private void btnInscripciones_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormInscripciones>());
+        private void btnAsistencia_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormAsistencia>());
+        private void btnCalificaciones_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormCalificaciones>());
+        private void btnInformes_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormInformes>());
 
-        private void btnAuditoria_Click(object sender, EventArgs e) => Abrir(new FormAuditoria());
+        private void btnAuditoria_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormAuditoria>());
 
-        private void btnCambiarContrasena_Click(object sender, EventArgs e) => Abrir(new FormCambiarContrasena(obligatorio: false));
+        private void btnCambiarContrasena_Click(object sender, EventArgs e) => Abrir(Contenedor.Crear<FormCambiarContrasena>(false)); // false = cambio voluntario
 
         private void btnCerrarSesion_Click(object sender, EventArgs e)
         {

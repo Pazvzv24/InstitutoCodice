@@ -12,16 +12,22 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormAsistencia : Form
     {
-        private readonly AsignaturaRepositorio asignaturaRepositorio = new AsignaturaRepositorio();
-        private readonly AsistenciaRepositorio asistenciaRepositorio = new AsistenciaRepositorio();
-        private readonly InformeRepositorio informeRepositorio = new InformeRepositorio();
+        // Dependencias: llegan por el constructor (las entrega el Contenedor)
+        private readonly AsignaturaRepositorio asignaturaRepositorio;
+        private readonly AsistenciaRepositorio asistenciaRepositorio;
+        private readonly InformeRepositorio informeRepositorio;
 
         private Asignatura asignaturaCargada;
         private DateTime fechaCargada;
 
-        public FormAsistencia()
+        public FormAsistencia(AsignaturaRepositorio asignaturaRepositorio,
+                              AsistenciaRepositorio asistenciaRepositorio,
+                              InformeRepositorio informeRepositorio)
         {
             InitializeComponent();
+            this.asignaturaRepositorio = asignaturaRepositorio;
+            this.asistenciaRepositorio = asistenciaRepositorio;
+            this.informeRepositorio = informeRepositorio;
         }
 
         private void FormAsistencia_Load(object sender, EventArgs e)

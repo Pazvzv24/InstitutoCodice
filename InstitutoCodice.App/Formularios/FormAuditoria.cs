@@ -13,11 +13,12 @@ namespace InstitutoCodice.App.Formularios
     public partial class FormAuditoria : Form
     {
         private const string TodasLasAcciones = "(Todas)";
-        private readonly AuditoriaRepositorio repositorio = new AuditoriaRepositorio();
+        private readonly AuditoriaRepositorio repositorio; // llega por el constructor
 
-        public FormAuditoria()
+        public FormAuditoria(AuditoriaRepositorio repositorio)
         {
             InitializeComponent();
+            this.repositorio = repositorio;
         }
 
         private void FormAuditoria_Load(object sender, EventArgs e)

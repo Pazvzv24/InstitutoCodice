@@ -15,18 +15,27 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormCalificaciones : Form
     {
-        private readonly AsignaturaRepositorio asignaturaRepositorio = new AsignaturaRepositorio();
-        private readonly EvaluacionRepositorio evaluacionRepositorio = new EvaluacionRepositorio();
-        private readonly CalificacionRepositorio calificacionRepositorio = new CalificacionRepositorio();
-        private readonly InformeRepositorio informeRepositorio = new InformeRepositorio();
+        // Dependencias: llegan por el constructor (las entrega el Contenedor)
+        private readonly AsignaturaRepositorio asignaturaRepositorio;
+        private readonly EvaluacionRepositorio evaluacionRepositorio;
+        private readonly CalificacionRepositorio calificacionRepositorio;
+        private readonly InformeRepositorio informeRepositorio;
 
-        private Asignatura asignaturaActual;
-        private Evaluacion evaluacionActual;
+        // Selección actual en pantalla: es null hasta que el usuario elige algo
+        private Asignatura? asignaturaActual;
+        private Evaluacion? evaluacionActual;
         private bool cargando;
 
-        public FormCalificaciones()
+        public FormCalificaciones(AsignaturaRepositorio asignaturaRepositorio,
+                                  EvaluacionRepositorio evaluacionRepositorio,
+                                  CalificacionRepositorio calificacionRepositorio,
+                                  InformeRepositorio informeRepositorio)
         {
             InitializeComponent();
+            this.asignaturaRepositorio = asignaturaRepositorio;
+            this.evaluacionRepositorio = evaluacionRepositorio;
+            this.calificacionRepositorio = calificacionRepositorio;
+            this.informeRepositorio = informeRepositorio;
         }
 
         private void FormCalificaciones_Load(object sender, EventArgs e)
@@ -140,7 +149,7 @@ namespace InstitutoCodice.App.Formularios
         private void CargarNotas()
         {
             dgvNotas.Rows.Clear();
-            if (evaluacionActual == null) return;
+            if (evaluacionActual == null || asignaturaActual == null) return;
 
             lblEvaluacionSel.Text = evaluacionActual.Nombre + " - " + evaluacionActual.Ponderacion.ToString("0.##")
                                   + " % - " + evaluacionActual.Fecha.ToString("dd-MM-yyyy");
@@ -175,10 +184,10 @@ namespace InstitutoCodice.App.Formularios
 
             foreach (DataGridViewRow fila in dgvNotas.Rows)
             {
-                string texto = Convert.ToString(fila.Cells[colNota.Index].Value).Trim();
+                string texto = (Convert.ToString(fila.Cells[colNota.Index].Value) ?? "").Trim();
                 if (texto.Length == 0) continue;
 
-                string nombre = Convert.ToString(fila.Cells[colNotaNombre.Index].Value);
+                string nombre = Convert.ToString(fila.Cells[colNotaNombre.Index].Value) ?? "";
                 if (!IntentarLeerNota(texto, out decimal valor))
                 {
                     Mensajes.Advertencia("La nota de " + nombre + " (\"" + texto + "\") no es un número válido.");

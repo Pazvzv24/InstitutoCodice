@@ -17,15 +17,16 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormLogin : Form
     {
-        private readonly UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
+        private readonly UsuarioRepositorio usuarioRepositorio; // llega por el constructor
 
         // Control de intentos fallidos en esta sesión de la aplicación
         private const int MaxIntentos = 3;
         private int intentosFallidos = 0;
 
-        public FormLogin()
+        public FormLogin(UsuarioRepositorio usuarioRepositorio)
         {
             InitializeComponent();
+            this.usuarioRepositorio = usuarioRepositorio;
         }
 
         private void btnIngresar_Click(object sender, EventArgs e)
@@ -136,7 +137,7 @@ namespace InstitutoCodice.App.Formularios
             if (usuario.DebeCambiarContrasena)
             {
                 Mensajes.Info("Por seguridad, debe cambiar su contraseña antes de continuar.");
-                using (var cambio = new FormCambiarContrasena(obligatorio: true))
+                using (var cambio = Contenedor.Crear<FormCambiarContrasena>(true)) // true = cambio obligatorio
                 {
                     if (cambio.ShowDialog(this) != DialogResult.OK)
                     {
@@ -149,7 +150,7 @@ namespace InstitutoCodice.App.Formularios
             }
 
             Hide();
-            using (var principal = new FormPrincipal())
+            using (var principal = Contenedor.Crear<FormPrincipal>())
             {
                 principal.ShowDialog();
             }

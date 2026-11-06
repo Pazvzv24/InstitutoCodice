@@ -25,7 +25,10 @@ namespace InstitutoCodice.App
             if (!PrepararBaseDatos())
                 return;
 
-            Application.Run(new FormLogin());
+            // Registra las dependencias (repositorios y servicios) una sola vez
+            Contenedor.Configurar();
+
+            Application.Run(Contenedor.Crear<FormLogin>());
         }
 
         /// <summary>

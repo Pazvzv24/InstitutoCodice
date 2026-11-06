@@ -14,12 +14,15 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormCambiarContrasena : Form
     {
-        private readonly UsuarioRepositorio repositorio = new UsuarioRepositorio();
+        private readonly UsuarioRepositorio repositorio; // llega por el constructor
         private readonly bool obligatorio;
 
-        public FormCambiarContrasena(bool obligatorio)
+        /// <param name="repositorio">Lo entrega el Contenedor.</param>
+        /// <param name="obligatorio">true = cambio exigido al ingresar; false = cambio voluntario.</param>
+        public FormCambiarContrasena(UsuarioRepositorio repositorio, bool obligatorio)
         {
             InitializeComponent();
+            this.repositorio = repositorio;
             this.obligatorio = obligatorio;
         }
 

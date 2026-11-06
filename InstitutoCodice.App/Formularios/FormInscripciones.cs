@@ -12,15 +12,22 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormInscripciones : Form
     {
-        private readonly InscripcionRepositorio repositorio = new InscripcionRepositorio();
-        private readonly AsignaturaRepositorio asignaturaRepositorio = new AsignaturaRepositorio();
-        private readonly EstudianteRepositorio estudianteRepositorio = new EstudianteRepositorio();
+        // Dependencias: llegan por el constructor (las entrega el Contenedor)
+        private readonly InscripcionRepositorio repositorio;
+        private readonly AsignaturaRepositorio asignaturaRepositorio;
+        private readonly EstudianteRepositorio estudianteRepositorio;
+
         private List<Inscripcion> inscripciones = new List<Inscripcion>();
         private bool cargando;
 
-        public FormInscripciones()
+        public FormInscripciones(InscripcionRepositorio repositorio,
+                                 AsignaturaRepositorio asignaturaRepositorio,
+                                 EstudianteRepositorio estudianteRepositorio)
         {
             InitializeComponent();
+            this.repositorio = repositorio;
+            this.asignaturaRepositorio = asignaturaRepositorio;
+            this.estudianteRepositorio = estudianteRepositorio;
         }
 
         private void FormInscripciones_Load(object sender, EventArgs e)

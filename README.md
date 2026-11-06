@@ -3,7 +3,7 @@
 Aplicación de escritorio para gestión académica: estudiantes, asignaturas, inscripciones, asistencia, calificaciones e informes, con control de acceso por rol.
 Tarea 3 - PRO205 Taller de Programación.
 
-**Stack:** C# / .NET 8 / Windows Forms / SQL Server / MSTest / ClosedXML / QuestPDF
+**Stack:** C# / .NET 8 / Windows Forms / SQL Server / MSTest / Microsoft.Extensions.DependencyInjection / ClosedXML / QuestPDF
 
 ---
 
@@ -79,7 +79,7 @@ También se puede crear la base desde SSMS ejecutando en orden:
 - `BaseDatos/06_Auditoria.sql` -> Crea la bitácora de auditoría.
 
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (26 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (31 pruebas unitarias, no requieren base de datos).
 
 ### Cuentas de prueba
 
@@ -103,10 +103,10 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | Defensa en la BD | Restricción `CK_Usuario_HashFormato`: la base rechaza contraseñas en texto plano |
 | Límite de intentos | Al 3er intento fallido la aplicación se cierra; mensaje genérico "usuario o contraseña incorrectos" |
 | Bloqueo de cuenta | 3 intentos fallidos bloquean la cuenta 15 minutos, guardado en la BD (persiste al reiniciar la app); durante el bloqueo no se verifica la contraseña |
-| Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad) |
+| Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad); si no hay permisos definidos, no muestra nada (falla cerrada); cubierto por pruebas automáticas |
 | Política de contraseñas | Mínimo 8 caracteres con mayúscula, minúscula y número; no puede contener el usuario ni repetir la actual |
 | Cambio obligatorio | Una contraseña asignada o restablecida por el administrador debe cambiarse en el siguiente ingreso |
-| Bitácora de auditoría | Registra ingresos, fallos, bloqueos, cambios de contraseña, desactivaciones y cada nota con su valor anterior y nuevo |
+| Bitácora de auditoría | Registra ingresos, fallos, bloqueos, cambios de contraseña, desactivaciones y cada nota con su valor anterior y nuevo, identificando al estudiante por RUT (minimización de datos: sin nombres) |
 | Mínimo privilegio | La app se conecta con `app_codice` (rol `rol_app_codice`): solo lee, inserta y actualiza; borra solo inscripciones; no puede modificar la bitácora, crear tablas ni desactivar triggers |
 | Secretos fuera del código | La contraseña de la cuenta de la app se lee desde una variable de entorno; la configuración local está en `.gitignore` |
 | Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; las notas se auditan en la misma transacción |
@@ -121,7 +121,9 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 - **Negocio** (`InstitutoCodice.Negocio`): Modelos UML, lógica de informes, seguridad y validación de RUT.
 - **Datos** (`InstitutoCodice.Datos`): Conexión a SQL y repositorios.
 - **Presentación** (`InstitutoCodice.App`): Formularios Windows Forms.
-- **Pruebas** (`InstitutoCodice.Pruebas`): Pruebas unitarias MSTest con patrón AAA y fuente de datos falsa.
+- **Pruebas** (`InstitutoCodice.Pruebas`): Pruebas unitarias MSTest con patrón AAA y fuentes de datos falsas (sin base de datos).
+
+**Inyección de dependencias:** los formularios no crean sus repositorios; los reciben por el constructor. `Contenedor.cs` (con `Microsoft.Extensions.DependencyInjection`) es la raíz de composición: el único lugar donde se decide qué implementación se usa. `ServicioInformes` depende de la interfaz `IFuenteDatosInformes`, lo que permite probarlo con datos falsos. El contenedor valida todos los registros al iniciar (`ValidateOnBuild`).
 - **BaseDatos**: Scripts SQL de instalación y actualización.
 
 ### Trazabilidad
@@ -130,14 +132,14 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | :--- | :--- |
 | RF-01, RF-02 (Estudiantes) | `FormEstudiantes`, `ValidarRut()`, `Desactivar()` |
 | RF-03 (Asignaturas) | `FormAsignaturas` |
-| RF-04 (Inscripciones) | `FormInscripciones`, `EsDuplicada()` |
+| RF-04 (Inscripciones) | `FormInscripciones`, `EsDuplicada()` (con prueba automática) |
 | RF-05, RF-06 (Asistencia) | `FormAsistencia`, `ValidarFecha()` |
 | RF-07, RF-08 (Notas) | `FormCalificaciones`, `ValidarNota()` |
 | RF-09, RF-10, RF-11 (Informes) | `FormInformes`, `ServicioInformes`, `EsDefinitivo()`, `ExportadorInformes` (Excel/PDF) |
 | RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos, `PoliticaBloqueo` |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-03 (Contraseñas) | `PoliticaContrasena`, `FormCambiarContrasena` |
-| Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, tabla `Auditoria` |
+| Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, `AccionAuditoria.DetalleNota()`, tabla `Auditoria` |
 | RNF-07 (Errores) | `Conexion.Probar()` y handler global en `Program.cs` |
 | Instalación | `InstaladorBaseDatos`, `appsettings.json` |
 
@@ -164,8 +166,10 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | v1.5 | Bitácora de auditoría inmutable con pantalla de consulta para el administrador; 2 pruebas nuevas. |
 | v1.6 | Mínimo privilegio: cuenta de la aplicación con rol limitado; contraseña desde variable de entorno; configuración local fuera del repositorio. |
 | v1.7 | Exportación de informes a Excel (ClosedXML) y PDF (QuestPDF) con registro en la bitácora; 1 prueba nueva. |
+| v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 
 ### Licencias de terceros
 
 - [ClosedXML](https://github.com/ClosedXML/ClosedXML): MIT.
+- [Microsoft.Extensions.DependencyInjection](https://github.com/dotnet/runtime): MIT.
 - [QuestPDF](https://www.questpdf.com/license/): licencia Community (gratuita para personas y organizaciones con ingresos anuales menores a 1 millón USD).

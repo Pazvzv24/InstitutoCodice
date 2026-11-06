@@ -14,12 +14,13 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormDocentes : Form
     {
-        private readonly DocenteRepositorio repositorio = new DocenteRepositorio();
+        private readonly DocenteRepositorio repositorio; // llega por el constructor
         private Docente seleccionado;
 
-        public FormDocentes()
+        public FormDocentes(DocenteRepositorio repositorio)
         {
             InitializeComponent();
+            this.repositorio = repositorio;
             dgvDocentes.AutoGenerateColumns = false;
         }
 

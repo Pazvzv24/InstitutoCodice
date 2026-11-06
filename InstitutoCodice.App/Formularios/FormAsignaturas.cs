@@ -11,13 +11,17 @@ namespace InstitutoCodice.App.Formularios
     /// </summary>
     public partial class FormAsignaturas : Form
     {
-        private readonly AsignaturaRepositorio repositorio = new AsignaturaRepositorio();
-        private readonly DocenteRepositorio docenteRepositorio = new DocenteRepositorio();
+        // Dependencias: llegan por el constructor (las entrega el Contenedor)
+        private readonly AsignaturaRepositorio repositorio;
+        private readonly DocenteRepositorio docenteRepositorio;
+
         private Asignatura seleccionada;
 
-        public FormAsignaturas()
+        public FormAsignaturas(AsignaturaRepositorio repositorio, DocenteRepositorio docenteRepositorio)
         {
             InitializeComponent();
+            this.repositorio = repositorio;
+            this.docenteRepositorio = docenteRepositorio;
             dgvAsignaturas.AutoGenerateColumns = false;
         }
 
