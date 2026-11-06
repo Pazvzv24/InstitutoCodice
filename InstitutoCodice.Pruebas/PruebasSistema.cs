@@ -315,6 +315,19 @@ namespace InstitutoCodice.Pruebas
             Assert.IsNull(AccionAuditoria.Truncar(null, 3));
         }
 
+        // Exportación: nombres de archivo seguros
+        [TestMethod]
+        public void NombreArchivo_ConCaracteresNoPermitidos_LosReemplaza()
+        {
+            var fecha = new DateTime(2026, 11, 6, 14, 30, 0);
+
+            string nombre = FormatoInforme.NombreArchivo("Curso", "POO101: Programación / 2026?", fecha, "pdf");
+
+            Assert.AreEqual("Informe_Curso_POO101_Programación_2026_20261106_1430.pdf", nombre);
+            foreach (char c in new[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|', ' ' })
+                Assert.IsFalse(nombre.Contains(c), "No debe contener '" + c + "'.");
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {

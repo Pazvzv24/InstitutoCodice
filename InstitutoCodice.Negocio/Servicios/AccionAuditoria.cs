@@ -30,6 +30,9 @@ namespace InstitutoCodice.Negocio.Servicios
         public const string NotaRegistrada = "NotaRegistrada";
         public const string NotaModificada = "NotaModificada";
 
+        // Datos personales que salen del sistema
+        public const string InformeExportado = "InformeExportado";
+
         /// <summary>
         /// Todas las acciones, para el filtro de la pantalla de consulta.
         /// </summary>
@@ -38,7 +41,8 @@ namespace InstitutoCodice.Negocio.Servicios
             LoginExitoso, LoginFallido, LoginBloqueado, CuentaBloqueada, CierreSesion,
             CambioContrasena, ContrasenaAsignada,
             UsuarioCreado, UsuarioDesactivado, UsuarioReactivado, EstudianteDesactivado,
-            EvaluacionCreada, NotaRegistrada, NotaModificada
+            EvaluacionCreada, NotaRegistrada, NotaModificada,
+            InformeExportado
         };
 
         /// <summary>

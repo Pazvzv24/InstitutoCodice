@@ -43,6 +43,8 @@
             this.colEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblResumen = new System.Windows.Forms.Label();
             this.lblCriterio = new System.Windows.Forms.Label();
+            this.btnExportarExcel = new System.Windows.Forms.Button();
+            this.btnExportarPdf = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInforme)).BeginInit();
             this.grpEstudiante.SuspendLayout();
@@ -201,16 +203,36 @@
             this.lblCriterio.ForeColor = System.Drawing.Color.DimGray;
             this.lblCriterio.Location = new System.Drawing.Point(15, 495);
             this.lblCriterio.Name = "lblCriterio";
-            this.lblCriterio.Size = new System.Drawing.Size(600, 20);
+            this.lblCriterio.Size = new System.Drawing.Size(420, 20);
             this.lblCriterio.TabIndex = 9;
             this.lblCriterio.Text = "Aprobado: promedio ≥ 4,0 y asistencia ≥ 75 %.";
+            // 
+            // btnExportarExcel
+            // 
+            this.btnExportarExcel.Location = new System.Drawing.Point(455, 512);
+            this.btnExportarExcel.Name = "btnExportarExcel";
+            this.btnExportarExcel.Size = new System.Drawing.Size(155, 32);
+            this.btnExportarExcel.TabIndex = 10;
+            this.btnExportarExcel.Text = "Exportar a Excel";
+            this.btnExportarExcel.UseVisualStyleBackColor = true;
+            this.btnExportarExcel.Click += new System.EventHandler(this.btnExportarExcel_Click);
+            // 
+            // btnExportarPdf
+            // 
+            this.btnExportarPdf.Location = new System.Drawing.Point(620, 512);
+            this.btnExportarPdf.Name = "btnExportarPdf";
+            this.btnExportarPdf.Size = new System.Drawing.Size(155, 32);
+            this.btnExportarPdf.TabIndex = 11;
+            this.btnExportarPdf.Text = "Exportar a PDF";
+            this.btnExportarPdf.UseVisualStyleBackColor = true;
+            this.btnExportarPdf.Click += new System.EventHandler(this.btnExportarPdf_Click);
             // 
             // btnCerrar
             // 
             this.btnCerrar.Location = new System.Drawing.Point(785, 512);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
-            this.btnCerrar.TabIndex = 10;
+            this.btnCerrar.TabIndex = 12;
             this.btnCerrar.Text = "Cerrar";
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
@@ -221,6 +243,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 560);
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnExportarPdf);
+            this.Controls.Add(this.btnExportarExcel);
             this.Controls.Add(this.lblCriterio);
             this.Controls.Add(this.lblResumen);
             this.Controls.Add(this.dgvInforme);
@@ -259,6 +283,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colEstado;
         private System.Windows.Forms.Label lblResumen;
         private System.Windows.Forms.Label lblCriterio;
+        private System.Windows.Forms.Button btnExportarExcel;
+        private System.Windows.Forms.Button btnExportarPdf;
         private System.Windows.Forms.Button btnCerrar;
     }
 }

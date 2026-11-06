@@ -3,7 +3,7 @@
 Aplicación de escritorio para gestión académica: estudiantes, asignaturas, inscripciones, asistencia, calificaciones e informes, con control de acceso por rol.
 Tarea 3 - PRO205 Taller de Programación.
 
-**Stack:** C# / .NET 8 / Windows Forms / SQL Server / MSTest
+**Stack:** C# / .NET 8 / Windows Forms / SQL Server / MSTest / ClosedXML / QuestPDF
 
 ---
 
@@ -79,7 +79,7 @@ También se puede crear la base desde SSMS ejecutando en orden:
 - `BaseDatos/06_Auditoria.sql` -> Crea la bitácora de auditoría.
 
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (25 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (26 pruebas unitarias, no requieren base de datos).
 
 ### Cuentas de prueba
 
@@ -110,6 +110,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | Mínimo privilegio | La app se conecta con `app_codice` (rol `rol_app_codice`): solo lee, inserta y actualiza; borra solo inscripciones; no puede modificar la bitácora, crear tablas ni desactivar triggers |
 | Secretos fuera del código | La contraseña de la cuenta de la app se lee desde una variable de entorno; la configuración local está en `.gitignore` |
 | Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; las notas se auditan en la misma transacción |
+| Exportación controlada | Los informes se exportan a Excel o PDF solo con los datos que el usuario ya puede ver; cada exportación queda en la bitácora; las celdas de Excel se escriben como texto (evita la inyección de fórmulas) |
 | Inyección SQL | Todas las consultas son parametrizadas |
 | Configuración | Conexión en `appsettings.json` con autenticación de Windows, sin credenciales en el código |
 | Instalación segura | La creación automática solo actúa si la base no existe y solo ejecuta los scripts incluidos con la app |
@@ -132,7 +133,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | RF-04 (Inscripciones) | `FormInscripciones`, `EsDuplicada()` |
 | RF-05, RF-06 (Asistencia) | `FormAsistencia`, `ValidarFecha()` |
 | RF-07, RF-08 (Notas) | `FormCalificaciones`, `ValidarNota()` |
-| RF-09, RF-10, RF-11 (Informes) | `FormInformes`, `ServicioInformes`, `EsDefinitivo()` |
+| RF-09, RF-10, RF-11 (Informes) | `FormInformes`, `ServicioInformes`, `EsDefinitivo()`, `ExportadorInformes` (Excel/PDF) |
 | RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos, `PoliticaBloqueo` |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-03 (Contraseñas) | `PoliticaContrasena`, `FormCambiarContrasena` |
@@ -162,3 +163,9 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | v1.4 | Política de contraseñas; formulario para cambiar la contraseña; cambio obligatorio tras asignación del administrador; 4 pruebas nuevas. |
 | v1.5 | Bitácora de auditoría inmutable con pantalla de consulta para el administrador; 2 pruebas nuevas. |
 | v1.6 | Mínimo privilegio: cuenta de la aplicación con rol limitado; contraseña desde variable de entorno; configuración local fuera del repositorio. |
+| v1.7 | Exportación de informes a Excel (ClosedXML) y PDF (QuestPDF) con registro en la bitácora; 1 prueba nueva. |
+
+### Licencias de terceros
+
+- [ClosedXML](https://github.com/ClosedXML/ClosedXML): MIT.
+- [QuestPDF](https://www.questpdf.com/license/): licencia Community (gratuita para personas y organizaciones con ingresos anuales menores a 1 millón USD).
