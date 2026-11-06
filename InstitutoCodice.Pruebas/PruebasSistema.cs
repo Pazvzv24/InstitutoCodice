@@ -328,6 +328,99 @@ namespace InstitutoCodice.Pruebas
                 Assert.IsFalse(nombre.Contains(c), "No debe contener '" + c + "'.");
         }
 
+        [TestMethod]
+        public void DetalleNota_MuestraRutYUsaIdSiNoHayRut()
+        {
+            string conRut = AccionAuditoria.DetalleNota("Prueba 1", 3, "20456789-1", 7);
+            string sinRut = AccionAuditoria.DetalleNota("Prueba 1", 3, null, 7);
+
+            Assert.AreEqual("Evaluación \"Prueba 1\" (Id 3), estudiante RUT 20456789-1", conRut);
+            Assert.AreEqual("Evaluación \"Prueba 1\" (Id 3), estudiante Id 7", sinRut, "Sin RUT usa el Id como respaldo.");
+        }
+
+        // Control de acceso: un docente solo ve lo de sus asignaturas
+        [TestMethod]
+        public void InformePorEstudiante_Docente_SoloVeLasAsignaturasQueDicta()
+        {
+            // Arrange: el estudiante está en POO101 y BDD201; el docente solo dicta BDD201
+            var poo = new Asignatura { Id = 1, Nombre = "Programación Orientada a Objetos" };
+            var bdd = new Asignatura { Id = 2, Nombre = "Bases de Datos" };
+            var estudiante = new Estudiante { Id = 10, Rut = "11111111-1", Nombres = "Ana", Apellidos = "Pérez" };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(estudiante, poo, bdd);
+            var servicio = new ServicioInformes(fuente);
+
+            // Act
+            var lineas = servicio.InformePorEstudiante(estudiante, new List<Asignatura> { bdd });
+
+            // Assert
+            Assert.AreEqual(1, lineas.Count, "El docente solo debe ver 1 de las 2 asignaturas.");
+            Assert.AreEqual("Bases de Datos", lineas[0].Asignatura, "La asignatura visible debe ser la que dicta.");
+        }
+
+        [TestMethod]
+        public void InformePorEstudiante_SinAsignaturasPermitidas_NoDevuelveNada()
+        {
+            var poo = new Asignatura { Id = 1, Nombre = "Programación Orientada a Objetos" };
+            var estudiante = new Estudiante { Id = 10, Rut = "11111111-1", Nombres = "Ana", Apellidos = "Pérez" };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(estudiante, poo);
+            var servicio = new ServicioInformes(fuente);
+
+            // Un docente que no dicta ningún curso del estudiante (lista vacía o null) no ve nada
+            Assert.AreEqual(0, servicio.InformePorEstudiante(estudiante, new List<Asignatura>()).Count, "Lista vacía: nada visible.");
+            Assert.AreEqual(0, servicio.InformePorEstudiante(estudiante, null).Count, "Null: falla cerrado, nada visible.");
+        }
+
+        [TestMethod]
+        public void ObtenerEstudiantesDe_SoloDevuelveInscritosEnSusCursos_SinRepetir()
+        {
+            // Arrange: Ana está en POO y BDD, Bruno solo en POO, Carla solo en TPR (curso ajeno)
+            var poo = new Asignatura { Id = 1, Nombre = "POO" };
+            var bdd = new Asignatura { Id = 2, Nombre = "BDD" };
+            var tpr = new Asignatura { Id = 3, Nombre = "TPR" };
+            var ana = new Estudiante { Id = 10, Rut = "11111111-1", Nombres = "Ana", Apellidos = "Pérez" };
+            var bruno = new Estudiante { Id = 20, Rut = "22222222-2", Nombres = "Bruno", Apellidos = "Soto" };
+            var carla = new Estudiante { Id = 30, Rut = "15555555-6", Nombres = "Carla", Apellidos = "Rojas" };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(ana, poo, bdd);
+            fuente.Inscribir(bruno, poo);
+            fuente.Inscribir(carla, tpr);
+            var servicio = new ServicioInformes(fuente);
+
+            // Act: docente que dicta POO y BDD
+            var visibles = servicio.ObtenerEstudiantesDe(new List<Asignatura> { poo, bdd });
+
+            // Assert
+            Assert.AreEqual(2, visibles.Count, "Ana aparece una sola vez aunque esté en 2 cursos; Carla no aparece.");
+            Assert.AreEqual("11111111-1", visibles[0].Rut, "Ordenado por nombre: primero Ana.");
+            Assert.AreEqual("22222222-2", visibles[1].Rut, "Luego Bruno.");
+        }
+
+        // RF-04: Inscripción duplicada
+        [TestMethod]
+        public void EsDuplicada_MismoEstudianteYAsignatura_EsDetectada()
+        {
+            var estudiante = new Estudiante { Id = 10 };
+            var poo = new Asignatura { Id = 1 };
+            var bdd = new Asignatura { Id = 2 };
+            var existentes = new List<Inscripcion>
+            {
+                new Inscripcion { Id = 100, Estudiante = estudiante, Asignatura = poo }
+            };
+
+            var repetida = new Inscripcion { Id = 0, Estudiante = estudiante, Asignatura = poo };
+            var otraAsignatura = new Inscripcion { Id = 0, Estudiante = estudiante, Asignatura = bdd };
+            var laMisma = new Inscripcion { Id = 100, Estudiante = estudiante, Asignatura = poo };
+
+            Assert.IsTrue(repetida.EsDuplicada(existentes), "Mismo estudiante y asignatura = duplicada.");
+            Assert.IsFalse(otraAsignatura.EsDuplicada(existentes), "Otra asignatura no es duplicada.");
+            Assert.IsFalse(laMisma.EsDuplicada(existentes), "Una inscripción no se compara consigo misma (al editar).");
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {
@@ -356,5 +449,42 @@ namespace InstitutoCodice.Pruebas
         public List<Asistencia> ObtenerAsistencias(int estudianteId, int asignaturaId) => new List<Asistencia>();
         public List<Asignatura> ObtenerAsignaturasDeEstudiante(int estudianteId) => new List<Asignatura>();
         public List<Estudiante> ObtenerInscritos(int asignaturaId) => new List<Estudiante>();
+    }
+
+    // Fake con inscripciones configurables, para probar el control de acceso sin BD
+    public class FuenteDatosConInscripciones : IFuenteDatosInformes
+    {
+        private readonly Dictionary<int, List<Asignatura>> asignaturasPorEstudiante = new Dictionary<int, List<Asignatura>>();
+        private readonly Dictionary<int, Estudiante> estudiantes = new Dictionary<int, Estudiante>();
+
+        public void Inscribir(Estudiante estudiante, params Asignatura[] asignaturas)
+        {
+            estudiantes[estudiante.Id] = estudiante;
+            if (!asignaturasPorEstudiante.ContainsKey(estudiante.Id))
+                asignaturasPorEstudiante[estudiante.Id] = new List<Asignatura>();
+
+            asignaturasPorEstudiante[estudiante.Id].AddRange(asignaturas);
+        }
+
+        public List<Asignatura> ObtenerAsignaturasDeEstudiante(int estudianteId)
+        {
+            return asignaturasPorEstudiante.ContainsKey(estudianteId)
+                ? new List<Asignatura>(asignaturasPorEstudiante[estudianteId])
+                : new List<Asignatura>();
+        }
+
+        public List<Estudiante> ObtenerInscritos(int asignaturaId)
+        {
+            List<Estudiante> inscritos = new List<Estudiante>();
+            foreach (KeyValuePair<int, List<Asignatura>> par in asignaturasPorEstudiante)
+            {
+                if (par.Value.Exists(a => a.Id == asignaturaId))
+                    inscritos.Add(estudiantes[par.Key]);
+            }
+            return inscritos;
+        }
+
+        public List<Calificacion> ObtenerCalificaciones(int estudianteId, int asignaturaId) => new List<Calificacion>();
+        public List<Asistencia> ObtenerAsistencias(int estudianteId, int asignaturaId) => new List<Asistencia>();
     }
 }

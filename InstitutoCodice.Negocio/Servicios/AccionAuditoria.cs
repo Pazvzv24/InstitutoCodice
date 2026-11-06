@@ -58,6 +58,20 @@ namespace InstitutoCodice.Negocio.Servicios
         }
 
         /// <summary>
+        /// Arma el detalle legible de un cambio de nota para la bitácora.
+        /// Usa el RUT del estudiante; si no se encontró, deja el Id como respaldo.
+        /// Ejemplo: Evaluación "Prueba 1" (Id 3), estudiante RUT 20456789-1
+        /// </summary>
+        public static string DetalleNota(string? nombreEvaluacion, int evaluacionId, string? rutEstudiante, int estudianteId)
+        {
+            string estudiante = string.IsNullOrWhiteSpace(rutEstudiante)
+                ? "estudiante Id " + estudianteId
+                : "estudiante RUT " + rutEstudiante.Trim();
+
+            return "Evaluación \"" + nombreEvaluacion + "\" (Id " + evaluacionId + "), " + estudiante;
+        }
+
+        /// <summary>
         /// Recorta un texto al largo máximo de su columna en la base de datos.
         /// </summary>
         public static string? Truncar(string? texto, int largoMaximo)

@@ -46,9 +46,13 @@ namespace InstitutoCodice.Datos.Repositorios
         /// </summary>
         public void GuardarLista(List<Calificacion> calificaciones, Usuario autor)
         {
+            // Trae el RUT del estudiante y, si ya existe, su nota en esta evaluación
             const string sqlBuscar = @"
-                SELECT Id, Nota FROM Calificacion
-                WHERE EstudianteId = @EstudianteId AND EvaluacionId = @EvaluacionId";
+                SELECT e.Rut, c.Id, c.Nota
+                FROM Estudiante e
+                LEFT JOIN Calificacion c
+                       ON c.EstudianteId = e.Id AND c.EvaluacionId = @EvaluacionId
+                WHERE e.Id = @EstudianteId";
             const string sqlActualizar = "UPDATE Calificacion SET Nota = @Nota WHERE Id = @Id";
             const string sqlInsertar = @"
                 INSERT INTO Calificacion (EstudianteId, EvaluacionId, Nota)
@@ -59,6 +63,7 @@ namespace InstitutoCodice.Datos.Repositorios
             {
                 foreach (Calificacion calificacion in calificaciones)
                 {
+                    string? rut = null;
                     int? idExistente = null;
                     decimal? notaAnterior = null;
 
@@ -70,8 +75,12 @@ namespace InstitutoCodice.Datos.Repositorios
                         {
                             if (lector.Read())
                             {
-                                idExistente = lector.GetInt32(0);
-                                notaAnterior = lector.GetDecimal(1);
+                                rut = lector.GetString(0);
+                                if (!lector.IsDBNull(1))
+                                {
+                                    idExistente = lector.GetInt32(1);
+                                    notaAnterior = lector.GetDecimal(2);
+                                }
                             }
                         }
                     }
@@ -107,8 +116,8 @@ namespace InstitutoCodice.Datos.Repositorios
                         UsuarioId = autor.Id,
                         NombreUsuario = autor.NombreUsuario,
                         Accion = accion,
-                        Detalle = "Evaluación \"" + calificacion.Evaluacion.Nombre + "\" (Id " + calificacion.Evaluacion.Id
-                                + "), estudiante Id " + calificacion.Estudiante.Id,
+                        Detalle = AccionAuditoria.DetalleNota(calificacion.Evaluacion.Nombre, calificacion.Evaluacion.Id,
+                                                              rut, calificacion.Estudiante.Id),
                         Entidad = "Calificacion",
                         EntidadId = idCalificacion,
                         ValorAnterior = notaAnterior?.ToString("0.0", CultureInfo.InvariantCulture),
