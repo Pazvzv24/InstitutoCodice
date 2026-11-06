@@ -268,6 +268,36 @@ namespace InstitutoCodice.Pruebas
             Assert.IsFalse(PoliticaBloqueo.EstaBloqueado(usuario, Ahora));
         }
 
+        // RNF-03: Política de contraseñas
+        [TestMethod]
+        public void PoliticaContrasena_ConClaveQueCumpleTodo_EsValida()
+        {
+            Assert.IsTrue(PoliticaContrasena.EsValida("Segura2026", "pperez"));
+        }
+
+        [TestMethod]
+        public void PoliticaContrasena_ConClaveDebil_DevuelveCadaReglaIncumplida()
+        {
+            Assert.IsFalse(PoliticaContrasena.EsValida("Ab1", "pperez"), "Muy corta.");
+            Assert.IsFalse(PoliticaContrasena.EsValida("segura2026", "pperez"), "Sin mayúscula.");
+            Assert.IsFalse(PoliticaContrasena.EsValida("SEGURA2026", "pperez"), "Sin minúscula.");
+            Assert.IsFalse(PoliticaContrasena.EsValida("SeguraSegura", "pperez"), "Sin número.");
+            Assert.AreEqual(4, PoliticaContrasena.Validar("", "pperez").Count, "Vacía incumple largo, mayúscula, minúscula y número.");
+        }
+
+        [TestMethod]
+        public void PoliticaContrasena_QueContieneElUsuario_EsRechazada()
+        {
+            Assert.IsFalse(PoliticaContrasena.EsValida("Pperez2026", "pperez"), "No distingue mayúsculas al comparar el usuario.");
+        }
+
+        [TestMethod]
+        public void PoliticaContrasena_IgualALaActual_EsRechazada()
+        {
+            Assert.IsFalse(PoliticaContrasena.EsValida("Docente123", "pperez", "Docente123"));
+            Assert.IsTrue(PoliticaContrasena.EsValida("Docente456", "pperez", "Docente123"));
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {

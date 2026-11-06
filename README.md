@@ -53,12 +53,16 @@ También se puede crear la base desde SSMS ejecutando en orden:
 
 - `BaseDatos/04_BloqueoDeCuenta.sql` -> Agrega las columnas de bloqueo de cuenta. Incluye el comando para desbloquear una cuenta manualmente.
 
+**Actualización (solo instalaciones anteriores a la v1.4)**
+
+- `BaseDatos/05_CambioDeContrasena.sql` -> Agrega el cambio de contraseña obligatorio.
+
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (19 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (23 pruebas unitarias, no requieren base de datos).
 
 ### Cuentas de prueba
 
-> Credenciales ficticias de demostración, solo para entorno local.
+> Credenciales ficticias de demostración, solo para entorno local. Las cuentas demo no exigen cambio de contraseña al ingresar.
 
 | Usuario | Contraseña | Rol | Asignaturas |
 | :--- | :--- | :--- | :--- |
@@ -79,6 +83,8 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | Límite de intentos | Al 3er intento fallido la aplicación se cierra; mensaje genérico "usuario o contraseña incorrectos" |
 | Bloqueo de cuenta | 3 intentos fallidos bloquean la cuenta 15 minutos, guardado en la BD (persiste al reiniciar la app); durante el bloqueo no se verifica la contraseña |
 | Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad) |
+| Política de contraseñas | Mínimo 8 caracteres con mayúscula, minúscula y número; no puede contener el usuario ni repetir la actual |
+| Cambio obligatorio | Una contraseña asignada o restablecida por el administrador debe cambiarse en el siguiente ingreso |
 | Inyección SQL | Todas las consultas son parametrizadas |
 | Configuración | Conexión en `appsettings.json` con autenticación de Windows, sin credenciales en el código |
 | Instalación segura | La creación automática solo actúa si la base no existe y solo ejecuta los scripts incluidos con la app |
@@ -104,6 +110,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | RF-09, RF-10, RF-11 (Informes) | `FormInformes`, `ServicioInformes`, `EsDefinitivo()` |
 | RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos, `PoliticaBloqueo` |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
+| RNF-03 (Contraseñas) | `PoliticaContrasena`, `FormCambiarContrasena` |
 | RNF-07 (Errores) | `Conexion.Probar()` y handler global en `Program.cs` |
 | Instalación | `InstaladorBaseDatos`, `appsettings.json` |
 
@@ -126,3 +133,4 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | v1.1 | Scripts de instalación incluidos en el proyecto; límite de 3 intentos en login; control de acceso en informes individuales; estado Parcial; migración a PBKDF2; 5 pruebas nuevas (autenticación y resultado parcial). |
 | v1.2 | Configuración en `appsettings.json`; soporte para LocalDB; creación automática de la base en la primera ejecución. |
 | v1.3 | Bloqueo de cuenta persistente (3 intentos = 15 minutos); 4 pruebas nuevas del bloqueo. |
+| v1.4 | Política de contraseñas; formuDlario para cambiar la contraseña; cambio obligatorio tras asignación del administrador; 4 pruebas nuevas. |

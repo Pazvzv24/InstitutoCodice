@@ -24,6 +24,12 @@ namespace InstitutoCodice.Negocio.Modelos
         /// </summary>
         public DateTime? BloqueadoHasta { get; set; }
 
+        /// <summary>
+        /// Indica si el usuario debe cambiar su contraseña al ingresar
+        /// (por ejemplo, cuando el administrador se la asignó o la restableció).
+        /// </summary>
+        public bool DebeCambiarContrasena { get; set; }
+
         protected Usuario()
         {
             Activo = true;

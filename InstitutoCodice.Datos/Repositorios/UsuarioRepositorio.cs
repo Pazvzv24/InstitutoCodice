@@ -4,7 +4,7 @@ using InstitutoCodice.Negocio.Modelos;
 namespace InstitutoCodice.Datos.Repositorios
 {
     /// <summary>
-    /// Acceso a usuarios para login (RF-12) y control de bloqueo de cuenta.
+    /// Acceso a usuarios para login (RF-12), bloqueo de cuenta y cambio de contraseña.
     /// </summary>
     public class UsuarioRepositorio : RepositorioBase
     {
@@ -12,7 +12,7 @@ namespace InstitutoCodice.Datos.Repositorios
         {
             const string sql = @"
                 SELECT u.Id, u.NombreUsuario, u.ContrasenaHash, u.Nombre, u.Rol, u.Activo,
-                       u.IntentosFallidos, u.BloqueadoHasta, d.Rut, d.Correo
+                       u.IntentosFallidos, u.BloqueadoHasta, u.DebeCambiarContrasena, d.Rut, d.Correo
                 FROM Usuario u
                 LEFT JOIN Docente d ON d.Id = u.Id
                 WHERE u.NombreUsuario = @NombreUsuario";
@@ -48,6 +48,7 @@ namespace InstitutoCodice.Datos.Repositorios
                         usuario.Nombre = lector.GetString(lector.GetOrdinal("Nombre"));
                         usuario.Activo = lector.GetBoolean(lector.GetOrdinal("Activo"));
                         usuario.IntentosFallidos = lector.GetInt32(lector.GetOrdinal("IntentosFallidos"));
+                        usuario.DebeCambiarContrasena = lector.GetBoolean(lector.GetOrdinal("DebeCambiarContrasena"));
 
                         int ordinalBloqueo = lector.GetOrdinal("BloqueadoHasta");
                         usuario.BloqueadoHasta = lector.IsDBNull(ordinalBloqueo)
@@ -79,6 +80,28 @@ namespace InstitutoCodice.Datos.Repositorios
                     comando.Parameters.Add("@BloqueadoHasta", System.Data.SqlDbType.DateTime2).Value =
                         usuario.BloqueadoHasta.HasValue ? (object)usuario.BloqueadoHasta.Value : DBNull.Value;
                     comando.Parameters.AddWithValue("@Id", usuario.Id);
+                    return comando.ExecuteNonQuery();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Guarda la nueva contraseña (ya convertida en hash) y quita la obligación de cambiarla.
+        /// </summary>
+        public void CambiarContrasena(int usuarioId, string nuevoHash)
+        {
+            const string sql = @"
+                UPDATE Usuario
+                SET ContrasenaHash = @ContrasenaHash,
+                    DebeCambiarContrasena = 0
+                WHERE Id = @Id";
+
+            Ejecutar(conexion =>
+            {
+                using (var comando = new SqlCommand(sql, conexion))
+                {
+                    comando.Parameters.AddWithValue("@ContrasenaHash", nuevoHash);
+                    comando.Parameters.AddWithValue("@Id", usuarioId);
                     return comando.ExecuteNonQuery();
                 }
             });

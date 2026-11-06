@@ -10,11 +10,10 @@ namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Gestión de docentes (solo administrador).
+    /// Las contraseñas asignadas deben cumplir la PoliticaContrasena.
     /// </summary>
     public partial class FormDocentes : Form
     {
-        private const int LargoMinimoClave = 6;
-
         private readonly DocenteRepositorio repositorio = new DocenteRepositorio();
         private Docente seleccionado;
 
@@ -107,8 +106,11 @@ namespace InstitutoCodice.App.Formularios
                 errores.AppendLine("- El usuario es obligatorio.");
             if (esNuevo && clave.Length == 0)
                 errores.AppendLine("- La contraseña es obligatoria para un docente nuevo.");
-            if (clave.Length > 0 && clave.Length < LargoMinimoClave)
-                errores.AppendLine("- La contraseña debe tener al menos " + LargoMinimoClave + " caracteres.");
+            if (clave.Length > 0)
+            {
+                foreach (string error in PoliticaContrasena.Validar(clave, docente.NombreUsuario))
+                    errores.AppendLine("- Contraseña: " + error);
+            }
 
             if (errores.Length > 0)
             {
@@ -124,12 +126,14 @@ namespace InstitutoCodice.App.Formularios
                 if (esNuevo)
                 {
                     repositorio.Agregar(docente);
-                    Mensajes.Info("Docente registrado. Ya puede iniciar sesión con su usuario.");
+                    Mensajes.Info("Docente registrado. Deberá cambiar su contraseña en el primer ingreso.");
                 }
                 else
                 {
                     repositorio.Actualizar(docente, clave.Length > 0);
-                    Mensajes.Info("Datos del docente actualizados.");
+                    Mensajes.Info(clave.Length > 0
+                        ? "Datos actualizados. El docente deberá cambiar su contraseña en el próximo ingreso."
+                        : "Datos del docente actualizados.");
                 }
 
                 CargarDocentes();

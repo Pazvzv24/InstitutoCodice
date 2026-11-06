@@ -6,6 +6,7 @@ namespace InstitutoCodice.Datos.Repositorios
 {
     /// <summary>
     /// Acceso a datos de docentes, persistidos en las tablas Usuario y Docente.
+    /// Un docente creado por el administrador queda obligado a cambiar su contraseña al primer ingreso.
     /// </summary>
     public class DocenteRepositorio : RepositorioBase
     {
@@ -43,8 +44,8 @@ namespace InstitutoCodice.Datos.Repositorios
         public void Agregar(Docente docente)
         {
             const string sqlUsuario = @"
-                INSERT INTO Usuario (NombreUsuario, ContrasenaHash, Nombre, Rol, Activo)
-                VALUES (@NombreUsuario, @ContrasenaHash, @Nombre, @Rol, @Activo);
+                INSERT INTO Usuario (NombreUsuario, ContrasenaHash, Nombre, Rol, Activo, DebeCambiarContrasena)
+                VALUES (@NombreUsuario, @ContrasenaHash, @Nombre, @Rol, @Activo, 1);
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";
             const string sqlDocente = "INSERT INTO Docente (Id, Rut, Correo) VALUES (@Id, @Rut, @Correo)";
 
@@ -72,11 +73,12 @@ namespace InstitutoCodice.Datos.Repositorios
 
         /// <summary>
         /// Actualiza los datos del docente y opcionalmente su contraseña.
+        /// Si el administrador asigna una contraseña nueva, el docente deberá cambiarla al ingresar.
         /// </summary>
         public void Actualizar(Docente docente, bool cambiarContrasena)
         {
             string sqlUsuario = "UPDATE Usuario SET NombreUsuario = @NombreUsuario, Nombre = @Nombre, Activo = @Activo"
-                              + (cambiarContrasena ? ", ContrasenaHash = @ContrasenaHash" : "")
+                              + (cambiarContrasena ? ", ContrasenaHash = @ContrasenaHash, DebeCambiarContrasena = 1" : "")
                               + " WHERE Id = @Id";
             const string sqlDocente = "UPDATE Docente SET Rut = @Rut, Correo = @Correo WHERE Id = @Id";
 

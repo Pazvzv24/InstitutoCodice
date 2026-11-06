@@ -37,6 +37,7 @@
             this.btnAsistencia = new System.Windows.Forms.Button();
             this.btnCalificaciones = new System.Windows.Forms.Button();
             this.btnInformes = new System.Windows.Forms.Button();
+            this.btnCambiarContrasena = new System.Windows.Forms.Button(); // NUEVO
             this.btnCerrarSesion = new System.Windows.Forms.Button();
             this.grpGestion.SuspendLayout();
             this.grpDocencia.SuspendLayout();
@@ -153,12 +154,22 @@
             this.btnInformes.UseVisualStyleBackColor = true;
             this.btnInformes.Click += new System.EventHandler(this.btnInformes_Click);
             // 
+            // btnCambiarContrasena (NUEVO: fuera de los grupos, visible para todos los roles)
+            // 
+            this.btnCambiarContrasena.Location = new System.Drawing.Point(20, 338);
+            this.btnCambiarContrasena.Name = "btnCambiarContrasena";
+            this.btnCambiarContrasena.Size = new System.Drawing.Size(150, 34);
+            this.btnCambiarContrasena.TabIndex = 11;
+            this.btnCambiarContrasena.Text = "Cambiar contraseña";
+            this.btnCambiarContrasena.UseVisualStyleBackColor = true;
+            this.btnCambiarContrasena.Click += new System.EventHandler(this.btnCambiarContrasena_Click);
+            // 
             // btnCerrarSesion
             // 
             this.btnCerrarSesion.Location = new System.Drawing.Point(380, 338);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Size = new System.Drawing.Size(120, 34);
-            this.btnCerrarSesion.TabIndex = 11;
+            this.btnCerrarSesion.TabIndex = 12;
             this.btnCerrarSesion.Text = "Cerrar sesión";
             this.btnCerrarSesion.UseVisualStyleBackColor = true;
             this.btnCerrarSesion.Click += new System.EventHandler(this.btnCerrarSesion_Click);
@@ -169,6 +180,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(520, 390);
             this.Controls.Add(this.btnCerrarSesion);
+            this.Controls.Add(this.btnCambiarContrasena); // NUEVO
             this.Controls.Add(this.grpDocencia);
             this.Controls.Add(this.grpGestion);
             this.Controls.Add(this.lblRol);
@@ -199,6 +211,7 @@
         private System.Windows.Forms.Button btnAsistencia;
         private System.Windows.Forms.Button btnCalificaciones;
         private System.Windows.Forms.Button btnInformes;
+        private System.Windows.Forms.Button btnCambiarContrasena; // NUEVO
         private System.Windows.Forms.Button btnCerrarSesion;
     }
 }

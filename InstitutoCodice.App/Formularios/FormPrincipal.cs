@@ -36,6 +36,8 @@ namespace InstitutoCodice.App.Formularios
         private void btnCalificaciones_Click(object sender, EventArgs e) => Abrir(new FormCalificaciones());
         private void btnInformes_Click(object sender, EventArgs e) => Abrir(new FormInformes());
 
+        private void btnCambiarContrasena_Click(object sender, EventArgs e) => Abrir(new FormCambiarContrasena(obligatorio: false));
+
         private void btnCerrarSesion_Click(object sender, EventArgs e)
         {
             Sesion.CerroSesion = true;

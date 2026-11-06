@@ -12,6 +12,7 @@ namespace InstitutoCodice.App.Formularios
     /// - Al 3er intento fallido en la sesión, la aplicación se cierra.
     /// - Al 3er intento fallido de una cuenta, esta se bloquea 15 minutos en la base de datos
     ///   (el bloqueo se mantiene aunque se reinicie la aplicación).
+    /// - Si la cuenta tiene una contraseña asignada por el administrador, se exige cambiarla.
     /// </summary>
     public partial class FormLogin : Form
     {
@@ -119,6 +120,23 @@ namespace InstitutoCodice.App.Formularios
             }
 
             Sesion.Iniciar(usuario);
+
+            // Cambio de contraseña obligatorio (por ejemplo, contraseña asignada por el administrador)
+            if (usuario.DebeCambiarContrasena)
+            {
+                Mensajes.Info("Por seguridad, debe cambiar su contraseña antes de continuar.");
+                using (var cambio = new FormCambiarContrasena(obligatorio: true))
+                {
+                    if (cambio.ShowDialog(this) != DialogResult.OK)
+                    {
+                        Sesion.Cerrar();
+                        txtContrasena.Clear();
+                        txtUsuario.Focus();
+                        return;
+                    }
+                }
+            }
+
             Hide();
             using (var principal = new FormPrincipal())
             {
