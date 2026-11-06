@@ -133,13 +133,15 @@ El sistema se diseñó considerando la Ley N° 21.719 de protección de datos pe
 
 - [Registro de actividades de tratamiento](docs/RegistroTratamiento.md): qué datos se tratan, para qué, quién accede, cuánto tiempo se conservan, medidas de seguridad y brechas detectadas con su plan de acción.
 - [Verificación del certificado de SQL Server](docs/CertificadoSQL.md): cómo configurar la conexión para que solo acepte el servidor verdadero.
+- [Plan de respuesta ante incidentes](docs/PlanRespuestaIncidentes.md): cómo detectar, contener, evaluar, notificar y registrar una vulneración de seguridad, con consultas de apoyo sobre la bitácora.
 - **Deber de información:** aviso de privacidad en la pantalla de inicio de sesión.
 - **Derechos de acceso y portabilidad:** exportación de los datos del titular en JSON, un formato estructurado que otro sistema puede leer.
 - **Derecho de bloqueo:** el administrador puede bloquear temporalmente el tratamiento de los datos de un estudiante sin borrar su historial. Bloquear y desbloquear quedan en la bitácora.
 - **Minimización:** la bitácora identifica a los estudiantes solo por RUT y las exportaciones no incluyen datos de terceros.
 - **Responsabilidad proactiva:** cada acceso, cambio de nota y exportación de datos personales queda en una bitácora inmutable.
+- **Respuesta ante incidentes:** plan documentado con roles, fases, criterios de notificación y registro de incidentes.
 
-En desarrollo: plan de respuesta ante incidentes.
+Pendiente de la institución: definir los plazos de conservación e instalar el certificado del servidor en producción.
 
 > Proyecto académico y de portafolio: la documentación describe cómo el sistema facilita el cumplimiento, pero no constituye asesoría legal.
 
@@ -198,7 +200,7 @@ En desarrollo: plan de respuesta ante incidentes.
 | v1.6 | Mínimo privilegio: cuenta de la aplicación con rol limitado; contraseña desde variable de entorno; configuración local fuera del repositorio. |
 | v1.7 | Exportación de informes a Excel (ClosedXML) y PDF (QuestPDF) con registro en la bitácora; 1 prueba nueva. |
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
-| v1.9 *(en desarrollo)* | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; corrección de advertencias de nulos; 7 pruebas nuevas. |
+| v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
 
 ### Licencias de terceros
 

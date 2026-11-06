@@ -31,6 +31,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{8CCA8B9F-4472-4B89-9314-E1E7E47F6C83}"
 	ProjectSection(SolutionItems) = preProject
 		docs\CertificadoSQL.md = docs\CertificadoSQL.md
+		docs\PlanRespuestaIncidentes.md = docs\PlanRespuestaIncidentes.md
 		docs\RegistroTratamiento.md = docs\RegistroTratamiento.md
 	EndProjectSection
 EndProject
