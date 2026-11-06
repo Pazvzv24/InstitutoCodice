@@ -1,10 +1,9 @@
-using InstitutoCodice.App.Formularios;
-using InstitutoCodice.Datos;
-using Microsoft.Extensions.Configuration;
 using System;
-using System.Configuration;
 using System.IO;
 using System.Windows.Forms;
+using Microsoft.Extensions.Configuration;
+using InstitutoCodice.App.Formularios;
+using InstitutoCodice.Datos;
 
 namespace InstitutoCodice.App
 {
@@ -30,8 +29,13 @@ namespace InstitutoCodice.App
         }
 
         /// <summary>
-        /// Lee appsettings.json, configura la conexión y crea la base de demostración
+        /// Lee la configuración, configura la conexión y crea la base de demostración
         /// si no existe. Devuelve false si la app no puede continuar.
+        ///
+        /// Configuración:
+        /// - appsettings.json: valores por defecto (van al repositorio).
+        /// - appsettings.local.json: opcional, sobrescribe lo anterior en este equipo
+        ///   (está en .gitignore y nunca se sube).
         /// </summary>
         private static bool PrepararBaseDatos()
         {
@@ -41,22 +45,51 @@ namespace InstitutoCodice.App
                 config = new ConfigurationBuilder()
                     .SetBasePath(AppContext.BaseDirectory)
                     .AddJsonFile("appsettings.json", optional: true)
+                    .AddJsonFile("appsettings.local.json", optional: true)
                     .Build();
             }
             catch (Exception ex)
             {
-                Mensajes.Advertencia("El archivo appsettings.json tiene un formato inválido.\n\nDetalle: " + ex.Message);
+                Mensajes.Advertencia("El archivo de configuración tiene un formato inválido.\n\nDetalle: " + ex.Message);
                 return false;
             }
 
-            Conexion.Configurar(config["BaseDatos:Servidor"], config["BaseDatos:Nombre"]);
+            try
+            {
+                Conexion.Configurar(
+                    config["BaseDatos:Servidor"],
+                    config["BaseDatos:Nombre"],
+                    config["BaseDatos:Autenticacion"],
+                    config["BaseDatos:Usuario"],
+                    config["BaseDatos:VariableContrasena"]);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Mensajes.Advertencia(ex.Message);
+                return false;
+            }
 
             bool crearSiNoExiste = !bool.TryParse(config["BaseDatos:CrearSiNoExiste"], out bool valor) || valor;
 
             try
             {
-                if (crearSiNoExiste && !InstaladorBaseDatos.ExisteBaseDatos())
+                if (!InstaladorBaseDatos.ExisteBaseDatos())
                 {
+                    // Separación de funciones: la cuenta de la app (mínimo privilegio) no puede crear bases.
+                    if (!Conexion.UsaAutenticacionWindows)
+                    {
+                        Mensajes.Advertencia("La base de datos \"" + Conexion.NombreBaseDatos + "\" no existe.\n\n"
+                            + "Debe instalarla un administrador con \"Autenticacion\": \"Windows\" "
+                            + "antes de usar la cuenta de la aplicación (" + Conexion.UsuarioSql + ").");
+                        return false;
+                    }
+
+                    if (!crearSiNoExiste)
+                    {
+                        Mensajes.Advertencia("La base de datos \"" + Conexion.NombreBaseDatos + "\" no existe en " + Conexion.Servidor + ".");
+                        return false;
+                    }
+
                     DialogResult respuesta = MessageBox.Show(
                         "No se encontró la base de datos \"" + Conexion.NombreBaseDatos + "\" en el servidor "
                         + Conexion.Servidor + ".\n\n¿Desea crearla con los datos de demostración?",
@@ -84,7 +117,7 @@ namespace InstitutoCodice.App
 
             if (!Conexion.Probar(out string error))
             {
-                Mensajes.Advertencia(error + "\n\nRevise el valor \"Servidor\" en appsettings.json.");
+                Mensajes.Advertencia(error + "\n\nRevise la configuración de la base de datos en appsettings.json.");
                 return false;
             }
 

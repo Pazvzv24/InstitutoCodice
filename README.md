@@ -38,6 +38,23 @@ El servidor se configura en `InstitutoCodice.App/appsettings.json` (en la versi�
 
 La conexión usa autenticación de Windows: no se guardan usuarios ni contraseñas de SQL.
 
+**Cuenta de la aplicación con mínimo privilegio (opcional, recomendado)**
+
+Por defecto la app usa autenticación de Windows, necesaria para instalar la base. Para el uso diario puede conectarse con una cuenta limitada:
+
+1. Activar en SQL Server el modo de autenticación "Windows y SQL Server" y reiniciar el servicio.
+2. Como administrador, crear el login (la contraseña nunca se guarda en el repositorio):
+   ```sql
+   CREATE LOGIN app_codice WITH PASSWORD = N'...', DEFAULT_DATABASE = InstitutoCodiceDB, CHECK_POLICY = ON;
+   ```
+3. Ejecutar `BaseDatos/07_Rol_App_Codice.sql` (crea el rol `rol_app_codice` y asigna el usuario).
+4. Crear en Windows la variable de entorno de usuario `INSTITUTOCODICE_DB_CLAVE` con la contraseña.
+5. Crear `InstitutoCodice.App/appsettings.local.json` (está en `.gitignore`):
+   ```json
+   { "BaseDatos": { "Autenticacion": "Sql" } }
+   ```
+6. Opcional: ejecutar `BaseDatos/08_PruebaPermisos.sql` para comprobar los bloqueos.
+
 **Instalación manual (opcional)**
 
 También se puede crear la base desde SSMS ejecutando en orden:
@@ -90,6 +107,8 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | Política de contraseñas | Mínimo 8 caracteres con mayúscula, minúscula y número; no puede contener el usuario ni repetir la actual |
 | Cambio obligatorio | Una contraseña asignada o restablecida por el administrador debe cambiarse en el siguiente ingreso |
 | Bitácora de auditoría | Registra ingresos, fallos, bloqueos, cambios de contraseña, desactivaciones y cada nota con su valor anterior y nuevo |
+| Mínimo privilegio | La app se conecta con `app_codice` (rol `rol_app_codice`): solo lee, inserta y actualiza; borra solo inscripciones; no puede modificar la bitácora, crear tablas ni desactivar triggers |
+| Secretos fuera del código | La contraseña de la cuenta de la app se lee desde una variable de entorno; la configuración local está en `.gitignore` |
 | Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; las notas se auditan en la misma transacción |
 | Inyección SQL | Todas las consultas son parametrizadas |
 | Configuración | Conexión en `appsettings.json` con autenticación de Windows, sin credenciales en el código |
@@ -142,3 +161,4 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | v1.3 | Bloqueo de cuenta persistente (3 intentos = 15 minutos); 4 pruebas nuevas del bloqueo. |
 | v1.4 | Política de contraseñas; formulario para cambiar la contraseña; cambio obligatorio tras asignación del administrador; 4 pruebas nuevas. |
 | v1.5 | Bitácora de auditoría inmutable con pantalla de consulta para el administrador; 2 pruebas nuevas. |
+| v1.6 | Mínimo privilegio: cuenta de la aplicación con rol limitado; contraseña desde variable de entorno; configuración local fuera del repositorio. |
