@@ -79,7 +79,7 @@ También se puede crear la base desde SSMS ejecutando en orden:
 - `BaseDatos/06_Auditoria.sql` -> Crea la bitácora de auditoría.
 
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (31 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (35 pruebas unitarias, no requieren base de datos).
 
 ### Cuentas de prueba
 
@@ -111,10 +111,26 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | Secretos fuera del código | La contraseña de la cuenta de la app se lee desde una variable de entorno; la configuración local está en `.gitignore` |
 | Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; las notas se auditan en la misma transacción |
 | Exportación controlada | Los informes se exportan a Excel o PDF solo con los datos que el usuario ya puede ver; cada exportación queda en la bitácora; las celdas de Excel se escriben como texto (evita la inyección de fórmulas) |
+| Aviso de privacidad | Accesible desde el login, antes de ingresar: responsable, datos tratados, finalidad, quién accede, conservación y derechos (Ley 21.719) |
+| Derechos del titular | Exportación de todos los datos de un estudiante en JSON (acceso y portabilidad), solo para el administrador, sin datos de terceros y con registro en la bitácora |
 | Inyección SQL | Todas las consultas son parametrizadas |
 | Configuración | Conexión en `appsettings.json` con autenticación de Windows, sin credenciales en el código |
 | Instalación segura | La creación automática solo actúa si la base no existe y solo ejecuta los scripts incluidos con la app |
 | Integridad de datos | Reglas de negocio validadas en el código y en la BD (CHECK, UNIQUE, FOREIGN KEY) |
+
+### Protección de datos personales (Ley 21.719)
+
+El sistema se diseñó considerando la Ley N° 21.719 de protección de datos personales de Chile.
+
+- [Registro de actividades de tratamiento](docs/RegistroTratamiento.md): qué datos se tratan, para qué, quién accede, cuánto tiempo se conservan, medidas de seguridad y brechas detectadas con su plan de acción.
+- **Deber de información:** aviso de privacidad en la pantalla de inicio de sesión.
+- **Derechos de acceso y portabilidad:** exportación de los datos del titular en JSON, un formato estructurado que otro sistema puede leer.
+- **Minimización:** la bitácora identifica a los estudiantes solo por RUT y las exportaciones no incluyen datos de terceros.
+- **Responsabilidad proactiva:** cada acceso, cambio de nota y exportación de datos personales queda en una bitácora inmutable.
+
+En desarrollo: bloqueo del tratamiento, verificación del certificado del servidor SQL y plan de respuesta ante incidentes.
+
+> Proyecto académico y de portafolio: la documentación describe cómo el sistema facilita el cumplimiento, pero no constituye asesoría legal.
 
 ### Arquitectura (3 capas)
 
@@ -140,6 +156,8 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-03 (Contraseñas) | `PoliticaContrasena`, `FormCambiarContrasena` |
 | Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, `AccionAuditoria.DetalleNota()`, tabla `Auditoria` |
+| Ley 21.719 (información) | `AvisoPrivacidad`, `FormAvisoPrivacidad`, `docs/RegistroTratamiento.md` |
+| Ley 21.719 (acceso y portabilidad) | `ServicioDatosTitular`, botón "Exportar datos del titular" en `FormEstudiantes` |
 | RNF-07 (Errores) | `Conexion.Probar()` y handler global en `Program.cs` |
 | Instalación | `InstaladorBaseDatos`, `appsettings.json` |
 
@@ -167,6 +185,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | v1.6 | Mínimo privilegio: cuenta de la aplicación con rol limitado; contraseña desde variable de entorno; configuración local fuera del repositorio. |
 | v1.7 | Exportación de informes a Excel (ClosedXML) y PDF (QuestPDF) con registro en la bitácora; 1 prueba nueva. |
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
+| v1.9 *(en desarrollo)* | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; 4 pruebas nuevas. |
 
 ### Licencias de terceros
 
