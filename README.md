@@ -11,35 +11,45 @@ Tarea 3 - PRO205 Taller de Programación.
 
 - Visual Studio 2022 (v17.8+)
 - Workload: Desarrollo de escritorio de .NET
-- SQL Server Express + SSMS
+- SQL Server Express o LocalDB (SSMS opcional)
 
-### Instalación
+### Instalación rápida
 
-**1. Base de datos**
-Abrir SSMS y ejecutar en orden (F5):
+1. Abrir `InstitutoCodice.sln` y presionar **F5** (el proyecto de inicio es `InstitutoCodice.App`).
+2. En la primera ejecución, la app detecta que la base no existe y ofrece crearla con los datos de demostración.
+3. Ingresar con `admin` / `Admin123`.
+
+**Elegir el servidor SQL**
+
+El servidor se configura en `InstitutoCodice.App/appsettings.json` (en la versión publicada, junto al `.exe`), sin recompilar:
+
+```json
+{
+  "BaseDatos": {
+    "Servidor": "localhost\\SQLEXPRESS",
+    "Nombre": "InstitutoCodiceDB",
+    "CrearSiNoExiste": true
+  }
+}
+```
+
+- SQL Server Express: `localhost\\SQLEXPRESS`
+- LocalDB (incluido con Visual Studio): `(localdb)\\MSSQLLocalDB`
+
+La conexión usa autenticación de Windows: no se guardan usuarios ni contraseñas de SQL.
+
+**Instalación manual (opcional)**
+
+También se puede crear la base desde SSMS ejecutando en orden:
 
 - `BaseDatos/01_InstitutoCodiceDB.sql` -> Crea la BD y las 9 tablas.
 - `BaseDatos/02_DatosEjemplo.sql` -> Carga datos de prueba.
-
-> Solo se ejecutan una vez, en una instalación nueva.
 
 **Actualización (solo instalaciones anteriores a la v1.1)**
 
 - `BaseDatos/03_ActualizarHashesPBKDF2.sql` -> Migra las contraseñas de las cuentas demo de SHA-256 a PBKDF2 y agrega la restricción de formato del hash.
 
-> No es necesario en una instalación nueva: los scripts 01 y 02 ya incluyen PBKDF2.
-
-**2. Conexión**
-- Abrir `InstitutoCodice.Datos/Conexion.cs`
-- Cambiar el `Server=` por el nombre de tu instancia de SQL Server.
-- Por defecto: `localhost\SQLEXPRESS`
-
-**3. Ejecutar**
-- Abrir `InstitutoCodice.sln`
-- Clic derecho en `InstitutoCodice.App` -> Establecer como proyecto de inicio
-- F5 para correr
-
-**4. Pruebas**
+**Pruebas**
 - Menú **Prueba -> Ejecutar todas las pruebas** (15 pruebas unitarias, no requieren base de datos).
 
 ### Cuentas de prueba
@@ -65,6 +75,8 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
 | Límite de intentos | Al 3er intento fallido la aplicación se cierra; mensaje genérico "usuario o contraseña incorrectos" |
 | Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad) |
 | Inyección SQL | Todas las consultas son parametrizadas |
+| Configuración | Conexión en `appsettings.json` con autenticación de Windows, sin credenciales en el código |
+| Instalación segura | La creación automática solo actúa si la base no existe y solo ejecuta los scripts incluidos con la app |
 | Integridad de datos | Reglas de negocio validadas en el código y en la BD (CHECK, UNIQUE, FOREIGN KEY) |
 
 ### Arquitectura (3 capas)
@@ -88,6 +100,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
 | RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-07 (Errores) | `Conexion.Probar()` y handler global en `Program.cs` |
+| Instalación | `InstaladorBaseDatos`, `appsettings.json` |
 
 ### Reglas del negocio
 
@@ -106,3 +119,4 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
 | :--- | :--- |
 | v1.0 | Versión entregada en la evaluación. |
 | v1.1 | Scripts de instalación incluidos en el proyecto; límite de 3 intentos en login; control de acceso en informes individuales; estado Parcial; migración a PBKDF2; 5 pruebas nuevas (autenticación y resultado parcial). |
+| v1.2 | Configuración en `appsettings.json`; soporte para LocalDB; creación automática de la base en la primera ejecución. |
