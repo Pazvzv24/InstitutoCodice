@@ -2,7 +2,7 @@
 
 **Sistema:** Instituto Códice - Sistema de Asistencia y Notas (aplicación de escritorio)
 **Marco de referencia:** Ley N° 21.719, que regula la protección y el tratamiento de los datos personales (modifica la Ley N° 19.628)
-**Versión del documento:** 1.2 - noviembre de 2026
+**Versión del documento:** 1.3 - noviembre de 2026
 **Estado:** borrador técnico para revisión de la institución
 
 > Este documento es parte de un proyecto académico y de portafolio. Describe cómo el sistema trata los datos personales para facilitar el cumplimiento de la ley, pero **no constituye asesoría legal**. Las decisiones marcadas como *"a definir por la institución"* corresponden al responsable de los datos y deben validarse con asesoría jurídica.
@@ -95,7 +95,7 @@
 | Secretos | La contraseña de la base de datos se lee de una variable de entorno y no se guarda en el código ni en el repositorio |
 | Integridad | Validaciones en el código y en la base (CHECK, UNIQUE, FOREIGN KEY); consultas parametrizadas contra inyección SQL |
 | Trazabilidad | Bitácora inmutable de accesos, fallos, bloqueos, cambios de notas, desactivaciones y exportaciones |
-| Cifrado en tránsito | La conexión a SQL Server va cifrada, pero hoy **no se verifica el certificado del servidor** (`TrustServerCertificate = true`). Ver brecha B5 |
+| Cifrado en tránsito | La conexión a SQL Server siempre va cifrada. Con `CertificadoServidor` configurado, la app solo acepta el certificado del servidor verdadero; sin él (modo desarrollo) no lo verifica. Procedimiento en [CertificadoSQL.md](CertificadoSQL.md) |
 
 ---
 
@@ -122,7 +122,7 @@ La ley reconoce a los titulares, entre otros, los derechos de **acceso, rectific
 | B2 | No hay forma de entregar al titular todos sus datos (acceso y portabilidad) | Botón **"Exportar datos del estudiante"** con registro en la bitácora | 9.3 | ✅ Resuelta (v1.9) |
 | B3 | No se puede bloquear el tratamiento de un estudiante | Marca de **tratamiento bloqueado**, que lo excluye de las operaciones sin borrar su historial | 9.4 | ✅ Resuelta (v1.9) |
 | B4 | El correo del estudiante se usa para comunicaciones académicas de la institución fuera del sistema, pero esa finalidad no está informada al titular | Declarar esta finalidad en el aviso de privacidad. Si en el futuro se agrega un portal para estudiantes, actualizar este registro con las nuevas finalidades (inicio de sesión, recuperación de contraseña y notificaciones) | 9.2 | ✅ Resuelta (v1.9) |
-| B5 | El certificado del servidor SQL no se verifica | Instalar un certificado de confianza en el servidor y desactivar `TrustServerCertificate` en producción | 9.5 | ⏳ Pendiente |
+| B5 | El certificado del servidor SQL no se verifica | Instalar un certificado de confianza en el servidor y desactivar `TrustServerCertificate` en producción | 9.5 | 🟡 Resuelta en la aplicación (v1.9); falta instalar el certificado en el servidor de producción |
 | B6 | No existe un procedimiento ante filtraciones de datos | Redactar un **plan de respuesta ante incidentes** | 9.6 | ⏳ Pendiente |
 | B7 | Los plazos de conservación no están definidos | Definir los plazos con la institución y documentarlos en este registro | Institución | ⏳ Pendiente |
 
@@ -145,3 +145,4 @@ Si se incorpora un **portal web para estudiantes** (registro, consulta de notas 
 | 1.0 | Noviembre de 2026 | Versión inicial, elaborada a partir de la estructura de la base de datos (v1.8 del sistema) |
 | 1.1 | Noviembre de 2026 | Se declara la finalidad del correo del estudiante (B4) y se agrega la evolución prevista hacia un portal web |
 | 1.2 | Noviembre de 2026 | Se resuelven B1 (aviso de privacidad), B2 (acceso y portabilidad), B3 (bloqueo) y B4 (finalidad del correo) |
+| 1.3 | Noviembre de 2026 | B5: la aplicación permite verificar el certificado del servidor SQL |

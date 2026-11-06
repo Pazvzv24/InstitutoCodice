@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using System.IO;
+using Microsoft.Data.SqlClient;
 
 namespace InstitutoCodice.Datos
 {
@@ -9,6 +10,12 @@ namespace InstitutoCodice.Datos
     /// - "Windows": usa la cuenta de Windows de quien ejecuta la app. Para instalar y administrar.
     /// - "Sql": usa la cuenta de la aplicación (app_codice) con permisos mínimos (rol_app_codice).
     ///   La contraseña NO está en el código ni en appsettings: se lee desde una variable de entorno.
+    ///
+    /// Cifrado en tránsito: la conexión siempre va cifrada (TLS).
+    /// - Con "CertificadoServidor" configurado: la app solo acepta ese certificado, así comprueba
+    ///   que se conecta al servidor verdadero (evita ataques "man in the middle").
+    /// - Sin él (modo desarrollo): acepta el certificado autogenerado de SQL Server sin verificarlo.
+    ///   Ver docs/CertificadoSQL.md para configurarlo.
     /// </summary>
     public static class Conexion
     {
@@ -20,7 +27,13 @@ namespace InstitutoCodice.Datos
         public static bool UsaAutenticacionWindows { get; private set; } = true;
         public static string? UsuarioSql { get; private set; }
 
+        /// <summary>
+        /// true si la app verifica el certificado del servidor (modo producción).
+        /// </summary>
+        public static bool VerificaCertificado => certificadoServidor != null;
+
         private static string? contrasenaSql;
+        private static string? certificadoServidor;
 
         /// <summary>
         /// Cadena de conexión hacia la base de datos de la aplicación.
@@ -38,10 +51,22 @@ namespace InstitutoCodice.Datos
         /// <summary>
         /// Define el servidor, la base y el modo de autenticación. Se llama una vez al iniciar la app.
         /// Con autenticación "Sql", la contraseña se lee de la variable de entorno indicada.
+        /// Con "certificadoServidor" (ruta a un archivo .cer), solo se acepta ese certificado.
         /// </summary>
         public static void Configurar(string? servidor, string? nombreBaseDatos,
-                                      string? autenticacion, string? usuarioSql, string? variableContrasena)
+                                      string? autenticacion, string? usuarioSql, string? variableContrasena,
+                                      string? certificadoServidor = null)
         {
+            Conexion.certificadoServidor = null;
+            if (!string.IsNullOrWhiteSpace(certificadoServidor))
+            {
+                string ruta = certificadoServidor.Trim();
+                if (!File.Exists(ruta))
+                    throw new InvalidOperationException("No se encontró el certificado del servidor indicado en appsettings "
+                        + "(\"CertificadoServidor\"): " + ruta + "\nRevise la ruta o deje el valor vacío en modo desarrollo.");
+                Conexion.certificadoServidor = ruta;
+            }
+
             if (!string.IsNullOrWhiteSpace(servidor))
                 Servidor = servidor.Trim();
 
@@ -112,11 +137,23 @@ namespace InstitutoCodice.Datos
             {
                 DataSource = Servidor,
                 InitialCatalog = baseDatos,
-                TrustServerCertificate = true,
+                Encrypt = SqlConnectionEncryptOption.Mandatory, // siempre cifrada
                 ConnectTimeout = 5,
                 ApplicationName = "InstitutoCodice",
                 PersistSecurityInfo = false // la contraseña no queda legible en la conexión abierta
             };
+
+            if (certificadoServidor != null)
+            {
+                // Producción: solo se acepta el certificado indicado (fijación de certificado)
+                builder.TrustServerCertificate = false;
+                builder.ServerCertificate = certificadoServidor;
+            }
+            else
+            {
+                // Desarrollo: certificado autogenerado de SQL Server, cifrado pero sin verificar (riesgo aceptado)
+                builder.TrustServerCertificate = true;
+            }
 
             if (UsaAutenticacionWindows)
             {

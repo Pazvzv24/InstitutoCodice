@@ -64,7 +64,8 @@ namespace InstitutoCodice.App
                     config["BaseDatos:Nombre"],
                     config["BaseDatos:Autenticacion"],
                     config["BaseDatos:Usuario"],
-                    config["BaseDatos:VariableContrasena"]);
+                    config["BaseDatos:VariableContrasena"],
+                    config["BaseDatos:CertificadoServidor"]);
             }
             catch (InvalidOperationException ex)
             {
