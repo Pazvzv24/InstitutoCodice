@@ -97,6 +97,16 @@ En cada push, [GitHub Actions](.github/workflows/ci.yml) compila la solución en
 
 [Dependabot](.github/dependabot.yml) propone automáticamente las actualizaciones de seguridad de los paquetes NuGet como pull requests, que pasan por las mismas pruebas antes de aceptarse.
 
+**Seguridad del repositorio (GitHub)**
+
+| Control | Qué hace |
+| :--- | :--- |
+| CodeQL | Análisis estático de seguridad del código C# y del workflow en cada push, pull request y semanalmente |
+| Dependabot | Alertas de vulnerabilidades y de malware en dependencias; pull requests automáticos con las correcciones de seguridad |
+| Secret Protection | Detecta contraseñas, tokens y claves en el historial del repositorio |
+| Push protection | Bloquea un push que contenga un secreto antes de que llegue a GitHub |
+| Reporte privado de vulnerabilidades | Canal privado para informar fallas de seguridad (pestaña *Security*) |
+
 ### Cuentas de prueba
 
 > Credenciales ficticias de demostración, solo para entorno local. Las cuentas demo no exigen cambio de contraseña al ingresar.
@@ -210,7 +220,7 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 | v1.7 | Exportación de informes a Excel (ClosedXML) y PDF (QuestPDF) con registro en la bitácora; 1 prueba nueva. |
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 | v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
-| v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; badge en el README. |
+| v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; análisis CodeQL; protección de secretos; reporte privado de vulnerabilidades; badge en el README. |
 
 ### Licencias de terceros
 
