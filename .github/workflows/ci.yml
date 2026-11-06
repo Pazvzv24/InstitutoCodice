@@ -29,7 +29,7 @@ jobs:
           persist-credentials: false   # no deja la credencial de GitHub guardada en el equipo
 
       - name: Instalar .NET 8
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
 
