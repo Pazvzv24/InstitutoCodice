@@ -57,8 +57,12 @@ También se puede crear la base desde SSMS ejecutando en orden:
 
 - `BaseDatos/05_CambioDeContrasena.sql` -> Agrega el cambio de contraseña obligatorio.
 
+**Actualización (solo instalaciones anteriores a la v1.5)**
+
+- `BaseDatos/06_Auditoria.sql` -> Crea la bitácora de auditoría.
+
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (23 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (25 pruebas unitarias, no requieren base de datos).
 
 ### Cuentas de prueba
 
@@ -85,6 +89,8 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad) |
 | Política de contraseñas | Mínimo 8 caracteres con mayúscula, minúscula y número; no puede contener el usuario ni repetir la actual |
 | Cambio obligatorio | Una contraseña asignada o restablecida por el administrador debe cambiarse en el siguiente ingreso |
+| Bitácora de auditoría | Registra ingresos, fallos, bloqueos, cambios de contraseña, desactivaciones y cada nota con su valor anterior y nuevo |
+| Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; las notas se auditan en la misma transacción |
 | Inyección SQL | Todas las consultas son parametrizadas |
 | Configuración | Conexión en `appsettings.json` con autenticación de Windows, sin credenciales en el código |
 | Instalación segura | La creación automática solo actúa si la base no existe y solo ejecuta los scripts incluidos con la app |
@@ -111,6 +117,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos, `PoliticaBloqueo` |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-03 (Contraseñas) | `PoliticaContrasena`, `FormCambiarContrasena` |
+| Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, tabla `Auditoria` |
 | RNF-07 (Errores) | `Conexion.Probar()` y handler global en `Program.cs` |
 | Instalación | `InstaladorBaseDatos`, `appsettings.json` |
 
@@ -133,4 +140,5 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y 
 | v1.1 | Scripts de instalación incluidos en el proyecto; límite de 3 intentos en login; control de acceso en informes individuales; estado Parcial; migración a PBKDF2; 5 pruebas nuevas (autenticación y resultado parcial). |
 | v1.2 | Configuración en `appsettings.json`; soporte para LocalDB; creación automática de la base en la primera ejecución. |
 | v1.3 | Bloqueo de cuenta persistente (3 intentos = 15 minutos); 4 pruebas nuevas del bloqueo. |
-| v1.4 | Política de contraseñas; formuDlario para cambiar la contraseña; cambio obligatorio tras asignación del administrador; 4 pruebas nuevas. |
+| v1.4 | Política de contraseñas; formulario para cambiar la contraseña; cambio obligatorio tras asignación del administrador; 4 pruebas nuevas. |
+| v1.5 | Bitácora de auditoría inmutable con pantalla de consulta para el administrador; 2 pruebas nuevas. |

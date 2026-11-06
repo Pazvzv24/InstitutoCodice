@@ -13,6 +13,7 @@ namespace InstitutoCodice.App.Formularios
     /// - Al 3er intento fallido de una cuenta, esta se bloquea 15 minutos en la base de datos
     ///   (el bloqueo se mantiene aunque se reinicie la aplicación).
     /// - Si la cuenta tiene una contraseña asignada por el administrador, se exige cambiarla.
+    /// - Cada ingreso, fallo y bloqueo queda en la bitácora de auditoría (nunca la contraseña).
     /// </summary>
     public partial class FormLogin : Form
     {
@@ -55,6 +56,7 @@ namespace InstitutoCodice.App.Formularios
             if (usuario != null && PoliticaBloqueo.EstaBloqueado(usuario, ahora))
             {
                 int minutos = PoliticaBloqueo.MinutosRestantes(usuario, ahora);
+                Bitacora.Registrar(AccionAuditoria.LoginBloqueado, "Intento de ingreso con la cuenta bloqueada.", usuario: usuario);
                 Mensajes.Advertencia($"Cuenta bloqueada temporalmente por intentos fallidos. Intente nuevamente en {minutos} minuto(s).");
                 txtContrasena.Clear();
                 return;
@@ -78,6 +80,14 @@ namespace InstitutoCodice.App.Formularios
                         return;
                     }
                 }
+
+                Bitacora.Registrar(AccionAuditoria.LoginFallido,
+                    usuario == null ? "Usuario inexistente." : (!usuario.Activo ? "Cuenta desactivada." : "Contraseña incorrecta."),
+                    usuario: usuario, nombreUsuario: nombreUsuario);
+                if (quedoBloqueada)
+                    Bitacora.Registrar(AccionAuditoria.CuentaBloqueada,
+                        $"Cuenta bloqueada {PoliticaBloqueo.DuracionBloqueo.TotalMinutes} minutos por {PoliticaBloqueo.MaxIntentos} intentos fallidos.",
+                        usuario: usuario);
 
                 intentosFallidos++;
 
@@ -120,6 +130,7 @@ namespace InstitutoCodice.App.Formularios
             }
 
             Sesion.Iniciar(usuario);
+            Bitacora.Registrar(AccionAuditoria.LoginExitoso);
 
             // Cambio de contraseña obligatorio (por ejemplo, contraseña asignada por el administrador)
             if (usuario.DebeCambiarContrasena)

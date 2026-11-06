@@ -33,11 +33,12 @@
             this.btnDocentes = new System.Windows.Forms.Button();
             this.btnAsignaturas = new System.Windows.Forms.Button();
             this.btnInscripciones = new System.Windows.Forms.Button();
+            this.btnAuditoria = new System.Windows.Forms.Button();
             this.grpDocencia = new System.Windows.Forms.GroupBox();
             this.btnAsistencia = new System.Windows.Forms.Button();
             this.btnCalificaciones = new System.Windows.Forms.Button();
             this.btnInformes = new System.Windows.Forms.Button();
-            this.btnCambiarContrasena = new System.Windows.Forms.Button(); // NUEVO
+            this.btnCambiarContrasena = new System.Windows.Forms.Button();
             this.btnCerrarSesion = new System.Windows.Forms.Button();
             this.grpGestion.SuspendLayout();
             this.grpDocencia.SuspendLayout();
@@ -67,9 +68,10 @@
             this.grpGestion.Controls.Add(this.btnDocentes);
             this.grpGestion.Controls.Add(this.btnAsignaturas);
             this.grpGestion.Controls.Add(this.btnInscripciones);
+            this.grpGestion.Controls.Add(this.btnAuditoria);
             this.grpGestion.Location = new System.Drawing.Point(20, 85);
             this.grpGestion.Name = "grpGestion";
-            this.grpGestion.Size = new System.Drawing.Size(230, 230);
+            this.grpGestion.Size = new System.Drawing.Size(230, 278);
             this.grpGestion.TabIndex = 2;
             this.grpGestion.Text = "Gestión (Administrador)";
             // 
@@ -113,6 +115,16 @@
             this.btnInscripciones.UseVisualStyleBackColor = true;
             this.btnInscripciones.Click += new System.EventHandler(this.btnInscripciones_Click);
             // 
+            // btnAuditoria (solo administrador: está dentro de grpGestion)
+            // 
+            this.btnAuditoria.Location = new System.Drawing.Point(15, 222);
+            this.btnAuditoria.Name = "btnAuditoria";
+            this.btnAuditoria.Size = new System.Drawing.Size(200, 38);
+            this.btnAuditoria.TabIndex = 7;
+            this.btnAuditoria.Text = "Bitácora de auditoría";
+            this.btnAuditoria.UseVisualStyleBackColor = true;
+            this.btnAuditoria.Click += new System.EventHandler(this.btnAuditoria_Click);
+            // 
             // grpDocencia
             // 
             this.grpDocencia.Controls.Add(this.btnAsistencia);
@@ -120,7 +132,7 @@
             this.grpDocencia.Controls.Add(this.btnInformes);
             this.grpDocencia.Location = new System.Drawing.Point(270, 85);
             this.grpDocencia.Name = "grpDocencia";
-            this.grpDocencia.Size = new System.Drawing.Size(230, 230);
+            this.grpDocencia.Size = new System.Drawing.Size(230, 278);
             this.grpDocencia.TabIndex = 7;
             this.grpDocencia.Text = "Docencia";
             // 
@@ -154,22 +166,22 @@
             this.btnInformes.UseVisualStyleBackColor = true;
             this.btnInformes.Click += new System.EventHandler(this.btnInformes_Click);
             // 
-            // btnCambiarContrasena (NUEVO: fuera de los grupos, visible para todos los roles)
+            // btnCambiarContrasena (fuera de los grupos, visible para todos los roles)
             // 
-            this.btnCambiarContrasena.Location = new System.Drawing.Point(20, 338);
+            this.btnCambiarContrasena.Location = new System.Drawing.Point(20, 386);
             this.btnCambiarContrasena.Name = "btnCambiarContrasena";
             this.btnCambiarContrasena.Size = new System.Drawing.Size(150, 34);
-            this.btnCambiarContrasena.TabIndex = 11;
+            this.btnCambiarContrasena.TabIndex = 12;
             this.btnCambiarContrasena.Text = "Cambiar contraseña";
             this.btnCambiarContrasena.UseVisualStyleBackColor = true;
             this.btnCambiarContrasena.Click += new System.EventHandler(this.btnCambiarContrasena_Click);
             // 
             // btnCerrarSesion
             // 
-            this.btnCerrarSesion.Location = new System.Drawing.Point(380, 338);
+            this.btnCerrarSesion.Location = new System.Drawing.Point(380, 386);
             this.btnCerrarSesion.Name = "btnCerrarSesion";
             this.btnCerrarSesion.Size = new System.Drawing.Size(120, 34);
-            this.btnCerrarSesion.TabIndex = 12;
+            this.btnCerrarSesion.TabIndex = 13;
             this.btnCerrarSesion.Text = "Cerrar sesión";
             this.btnCerrarSesion.UseVisualStyleBackColor = true;
             this.btnCerrarSesion.Click += new System.EventHandler(this.btnCerrarSesion_Click);
@@ -178,9 +190,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(520, 390);
+            this.ClientSize = new System.Drawing.Size(520, 438);
             this.Controls.Add(this.btnCerrarSesion);
-            this.Controls.Add(this.btnCambiarContrasena); // NUEVO
+            this.Controls.Add(this.btnCambiarContrasena);
             this.Controls.Add(this.grpDocencia);
             this.Controls.Add(this.grpGestion);
             this.Controls.Add(this.lblRol);
@@ -207,11 +219,12 @@
         private System.Windows.Forms.Button btnDocentes;
         private System.Windows.Forms.Button btnAsignaturas;
         private System.Windows.Forms.Button btnInscripciones;
+        private System.Windows.Forms.Button btnAuditoria;
         private System.Windows.Forms.GroupBox grpDocencia;
         private System.Windows.Forms.Button btnAsistencia;
         private System.Windows.Forms.Button btnCalificaciones;
         private System.Windows.Forms.Button btnInformes;
-        private System.Windows.Forms.Button btnCambiarContrasena; // NUEVO
+        private System.Windows.Forms.Button btnCambiarContrasena;
         private System.Windows.Forms.Button btnCerrarSesion;
     }
 }

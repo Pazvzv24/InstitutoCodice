@@ -72,6 +72,9 @@ namespace InstitutoCodice.App.Formularios
 
                 usuario.ContrasenaHash = nuevoHash;
                 usuario.DebeCambiarContrasena = false;
+                Bitacora.Registrar(AccionAuditoria.CambioContrasena,
+                    obligatorio ? "Cambio obligatorio al ingresar." : "Cambio voluntario desde el menú.",
+                    entidad: "Usuario", entidadId: usuario.Id);
 
                 Mensajes.Info("Contraseña actualizada correctamente.");
                 DialogResult = DialogResult.OK;

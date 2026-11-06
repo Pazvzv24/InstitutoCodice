@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using InstitutoCodice.Negocio.Servicios;
 
 namespace InstitutoCodice.App.Formularios
 {
@@ -36,10 +37,13 @@ namespace InstitutoCodice.App.Formularios
         private void btnCalificaciones_Click(object sender, EventArgs e) => Abrir(new FormCalificaciones());
         private void btnInformes_Click(object sender, EventArgs e) => Abrir(new FormInformes());
 
+        private void btnAuditoria_Click(object sender, EventArgs e) => Abrir(new FormAuditoria());
+
         private void btnCambiarContrasena_Click(object sender, EventArgs e) => Abrir(new FormCambiarContrasena(obligatorio: false));
 
         private void btnCerrarSesion_Click(object sender, EventArgs e)
         {
+            Bitacora.Registrar(AccionAuditoria.CierreSesion);
             Sesion.CerroSesion = true;
             Close();
         }

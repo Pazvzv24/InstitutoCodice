@@ -298,6 +298,23 @@ namespace InstitutoCodice.Pruebas
             Assert.IsTrue(PoliticaContrasena.EsValida("Docente456", "pperez", "Docente123"));
         }
 
+        // Auditoría: qué se registra al guardar una nota
+        [TestMethod]
+        public void AccionParaNota_DistingueRegistroModificacionYSinCambio()
+        {
+            Assert.AreEqual(AccionAuditoria.NotaRegistrada, AccionAuditoria.AccionParaNota(null, 5.5m), "Sin nota previa = registro.");
+            Assert.AreEqual(AccionAuditoria.NotaModificada, AccionAuditoria.AccionParaNota(4.0m, 5.5m), "Nota distinta = modificación.");
+            Assert.IsNull(AccionAuditoria.AccionParaNota(5.5m, 5.5m), "Misma nota = no se audita.");
+        }
+
+        [TestMethod]
+        public void Truncar_RecortaTextosLargosSinTocarLosCortos()
+        {
+            Assert.AreEqual("abc", AccionAuditoria.Truncar("abcdef", 3));
+            Assert.AreEqual("ab", AccionAuditoria.Truncar("ab", 3));
+            Assert.IsNull(AccionAuditoria.Truncar(null, 3));
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {

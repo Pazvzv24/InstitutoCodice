@@ -10,7 +10,7 @@ using InstitutoCodice.Negocio.Servicios;
 namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
-    /// Gestión de estudiantes (RF-01, RF-02).
+    /// Gestión de estudiantes (RF-01, RF-02). Las desactivaciones quedan en la bitácora.
     /// </summary>
     public partial class FormEstudiantes : Form
     {
@@ -130,6 +130,9 @@ namespace InstitutoCodice.App.Formularios
                 else
                 {
                     repositorio.Actualizar(estudiante);
+                    if (seleccionado != null && seleccionado.Activo && !estudiante.Activo)
+                        Bitacora.Registrar(AccionAuditoria.EstudianteDesactivado, "Estudiante " + estudiante.Rut + " desactivado.",
+                            entidad: "Estudiante", entidadId: estudiante.Id, valorAnterior: "Activo", valorNuevo: "Inactivo");
                     Mensajes.Info("Datos del estudiante actualizados.");
                 }
 
@@ -184,6 +187,8 @@ namespace InstitutoCodice.App.Formularios
             {
                 seleccionado.Desactivar();
                 repositorio.Actualizar(seleccionado);
+                Bitacora.Registrar(AccionAuditoria.EstudianteDesactivado, "Estudiante " + seleccionado.Rut + " desactivado.",
+                    entidad: "Estudiante", entidadId: seleccionado.Id, valorAnterior: "Activo", valorNuevo: "Inactivo");
                 Mensajes.Info("Estudiante desactivado.");
                 CargarEstudiantes();
                 LimpiarFormulario();

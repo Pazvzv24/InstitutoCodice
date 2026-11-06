@@ -5,11 +5,13 @@ using System.Linq;
 using System.Windows.Forms;
 using InstitutoCodice.Datos.Repositorios;
 using InstitutoCodice.Negocio.Modelos;
+using InstitutoCodice.Negocio.Servicios;
 
 namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Evaluaciones y calificaciones (RF-07, RF-08).
+    /// Cada nota registrada o modificada queda en la bitácora con su valor anterior y nuevo.
     /// </summary>
     public partial class FormCalificaciones : Form
     {
@@ -113,6 +115,9 @@ namespace InstitutoCodice.App.Formularios
             {
                 asignaturaActual.AgregarEvaluacion(evaluacion);
                 evaluacionRepositorio.Agregar(evaluacion, asignaturaActual.Id);
+                Bitacora.Registrar(AccionAuditoria.EvaluacionCreada,
+                    "Evaluación \"" + evaluacion.Nombre + "\" (" + evaluacion.Ponderacion.ToString("0.##") + " %) en " + asignaturaActual.Codigo + ".",
+                    entidad: "Evaluacion", entidadId: evaluacion.Id);
                 txtNombreEval.Clear();
                 CargarEvaluaciones();
             }
@@ -205,7 +210,7 @@ namespace InstitutoCodice.App.Formularios
 
             try
             {
-                calificacionRepositorio.GuardarLista(lista);
+                calificacionRepositorio.GuardarLista(lista, Sesion.UsuarioActual); // incluye auditoría de cada nota
                 Mensajes.Info("Se guardaron " + lista.Count + " notas.");
                 CargarNotas();
             }
