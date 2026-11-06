@@ -14,6 +14,7 @@ namespace InstitutoCodice.App.Formularios
     ///   (el bloqueo se mantiene aunque se reinicie la aplicación).
     /// - Si la cuenta tiene una contraseña asignada por el administrador, se exige cambiarla.
     /// - Cada ingreso, fallo y bloqueo queda en la bitácora de auditoría (nunca la contraseña).
+    /// - Enlace al aviso de privacidad (Ley 21.719), disponible antes de ingresar.
     /// </summary>
     public partial class FormLogin : Form
     {
@@ -165,6 +166,15 @@ namespace InstitutoCodice.App.Formularios
             else
             {
                 Close();
+            }
+        }
+
+        // Ley 21.719: el aviso se puede leer antes de ingresar
+        private void lnkPrivacidad_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            using (var aviso = Contenedor.Crear<FormAvisoPrivacidad>())
+            {
+                aviso.ShowDialog(this);
             }
         }
 

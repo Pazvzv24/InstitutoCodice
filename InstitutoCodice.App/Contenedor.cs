@@ -43,6 +43,7 @@ namespace InstitutoCodice.App
 
             // Capa de negocio
             registro.AddTransient<ServicioInformes>();
+            registro.AddTransient<ServicioDatosTitular>();
 
             // ValidateOnBuild: si falta registrar algo, la app avisa al iniciar
             // y no recién cuando el usuario abre la pantalla

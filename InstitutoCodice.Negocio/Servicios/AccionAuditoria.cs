@@ -32,6 +32,7 @@ namespace InstitutoCodice.Negocio.Servicios
 
         // Datos personales que salen del sistema
         public const string InformeExportado = "InformeExportado";
+        public const string DatosTitularExportados = "DatosTitularExportados"; // Ley 21.719: acceso y portabilidad
 
         /// <summary>
         /// Todas las acciones, para el filtro de la pantalla de consulta.
@@ -42,7 +43,7 @@ namespace InstitutoCodice.Negocio.Servicios
             CambioContrasena, ContrasenaAsignada,
             UsuarioCreado, UsuarioDesactivado, UsuarioReactivado, EstudianteDesactivado,
             EvaluacionCreada, NotaRegistrada, NotaModificada,
-            InformeExportado
+            InformeExportado, DatosTitularExportados
         };
 
         /// <summary>

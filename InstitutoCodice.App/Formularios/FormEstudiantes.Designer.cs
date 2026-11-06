@@ -41,6 +41,7 @@
             this.btnNuevo = new System.Windows.Forms.Button();
             this.btnGuardar = new System.Windows.Forms.Button();
             this.btnDesactivar = new System.Windows.Forms.Button();
+            this.btnExportarDatos = new System.Windows.Forms.Button();
             this.lblModo = new System.Windows.Forms.Label();
             this.lblAyudaRut = new System.Windows.Forms.Label();
             this.lblBuscar = new System.Windows.Forms.Label();
@@ -74,11 +75,12 @@
             this.grpDatos.Controls.Add(this.btnNuevo);
             this.grpDatos.Controls.Add(this.btnGuardar);
             this.grpDatos.Controls.Add(this.btnDesactivar);
+            this.grpDatos.Controls.Add(this.btnExportarDatos);
             this.grpDatos.Controls.Add(this.lblModo);
             this.grpDatos.Controls.Add(this.lblAyudaRut);
             this.grpDatos.Location = new System.Drawing.Point(15, 15);
             this.grpDatos.Name = "grpDatos";
-            this.grpDatos.Size = new System.Drawing.Size(300, 430);
+            this.grpDatos.Size = new System.Drawing.Size(300, 465);
             this.grpDatos.TabIndex = 0;
             this.grpDatos.Text = "Datos del estudiante";
             // 
@@ -197,22 +199,32 @@
             this.btnDesactivar.UseVisualStyleBackColor = true;
             this.btnDesactivar.Click += new System.EventHandler(this.btnDesactivar_Click);
             // 
+            // btnExportarDatos
+            // 
+            this.btnExportarDatos.Location = new System.Drawing.Point(15, 334);
+            this.btnExportarDatos.Name = "btnExportarDatos";
+            this.btnExportarDatos.Size = new System.Drawing.Size(265, 32);
+            this.btnExportarDatos.TabIndex = 15;
+            this.btnExportarDatos.Text = "Exportar datos del titular (JSON)";
+            this.btnExportarDatos.UseVisualStyleBackColor = true;
+            this.btnExportarDatos.Click += new System.EventHandler(this.btnExportarDatos_Click);
+            // 
             // lblModo
             // 
             this.lblModo.ForeColor = System.Drawing.Color.DimGray;
-            this.lblModo.Location = new System.Drawing.Point(15, 340);
+            this.lblModo.Location = new System.Drawing.Point(15, 378);
             this.lblModo.Name = "lblModo";
-            this.lblModo.Size = new System.Drawing.Size(265, 40);
-            this.lblModo.TabIndex = 15;
+            this.lblModo.Size = new System.Drawing.Size(265, 35);
+            this.lblModo.TabIndex = 16;
             this.lblModo.Text = "Modo: nuevo estudiante";
             // 
             // lblAyudaRut
             // 
             this.lblAyudaRut.ForeColor = System.Drawing.Color.DimGray;
-            this.lblAyudaRut.Location = new System.Drawing.Point(15, 385);
+            this.lblAyudaRut.Location = new System.Drawing.Point(15, 418);
             this.lblAyudaRut.Name = "lblAyudaRut";
             this.lblAyudaRut.Size = new System.Drawing.Size(265, 35);
-            this.lblAyudaRut.TabIndex = 16;
+            this.lblAyudaRut.TabIndex = 17;
             this.lblAyudaRut.Text = "RUT sin puntos y con guion, por ejemplo 12345678-5.";
             // 
             // lblBuscar
@@ -220,7 +232,7 @@
             this.lblBuscar.AutoSize = true;
             this.lblBuscar.Location = new System.Drawing.Point(330, 20);
             this.lblBuscar.Name = "lblBuscar";
-            this.lblBuscar.TabIndex = 17;
+            this.lblBuscar.TabIndex = 18;
             this.lblBuscar.Text = "Buscar:";
             // 
             // txtBuscar
@@ -228,7 +240,7 @@
             this.txtBuscar.Location = new System.Drawing.Point(390, 17);
             this.txtBuscar.Name = "txtBuscar";
             this.txtBuscar.Size = new System.Drawing.Size(300, 23);
-            this.txtBuscar.TabIndex = 18;
+            this.txtBuscar.TabIndex = 19;
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
             // 
             // dgvEstudiantes
@@ -254,7 +266,7 @@
             this.dgvEstudiantes.Location = new System.Drawing.Point(330, 50);
             this.dgvEstudiantes.Name = "dgvEstudiantes";
             this.dgvEstudiantes.Size = new System.Drawing.Size(555, 395);
-            this.dgvEstudiantes.TabIndex = 19;
+            this.dgvEstudiantes.TabIndex = 20;
             this.dgvEstudiantes.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvEstudiantes_CellClick);
             // 
             // colId
@@ -319,7 +331,7 @@
             this.btnCerrar.Location = new System.Drawing.Point(785, 462);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
-            this.btnCerrar.TabIndex = 20;
+            this.btnCerrar.TabIndex = 21;
             this.btnCerrar.Text = "Cerrar";
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
@@ -362,6 +374,7 @@
         private System.Windows.Forms.Button btnNuevo;
         private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Button btnDesactivar;
+        private System.Windows.Forms.Button btnExportarDatos;
         private System.Windows.Forms.Label lblModo;
         private System.Windows.Forms.Label lblAyudaRut;
         private System.Windows.Forms.Label lblBuscar;

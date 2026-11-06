@@ -34,6 +34,7 @@
             this.txtContrasena = new System.Windows.Forms.TextBox();
             this.btnIngresar = new System.Windows.Forms.Button();
             this.btnSalir = new System.Windows.Forms.Button();
+            this.lnkPrivacidad = new System.Windows.Forms.LinkLabel();
             this.SuspendLayout();
             // 
             // lblTitulo
@@ -105,17 +106,29 @@
             this.btnSalir.UseVisualStyleBackColor = true;
             this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
             // 
+            // lnkPrivacidad
+            // 
+            this.lnkPrivacidad.AutoSize = true;
+            this.lnkPrivacidad.Location = new System.Drawing.Point(120, 216);
+            this.lnkPrivacidad.Name = "lnkPrivacidad";
+            this.lnkPrivacidad.TabIndex = 8;
+            this.lnkPrivacidad.TabStop = true;
+            this.lnkPrivacidad.Text = "Aviso de privacidad";
+            this.lnkPrivacidad.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkPrivacidad_LinkClicked);
+            // 
             // FormLogin
             // 
             this.AcceptButton = this.btnIngresar;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(380, 230);
+            this.ClientSize = new System.Drawing.Size(380, 250);
+            this.Controls.Add(this.lnkPrivacidad);
             this.Controls.Add(this.btnSalir);
             this.Controls.Add(this.btnIngresar);
             this.Controls.Add(this.txtContrasena);
             this.Controls.Add(this.lblContrasena);
             this.Controls.Add(this.txtUsuario);
+            this.Controls.Add(this.lblUsuario);
             this.Controls.Add(this.lblSubtitulo);
             this.Controls.Add(this.lblTitulo);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -138,5 +151,6 @@
         private System.Windows.Forms.TextBox txtContrasena;
         private System.Windows.Forms.Button btnIngresar;
         private System.Windows.Forms.Button btnSalir;
+        private System.Windows.Forms.LinkLabel lnkPrivacidad;
     }
 }

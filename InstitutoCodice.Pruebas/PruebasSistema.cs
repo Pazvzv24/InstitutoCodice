@@ -421,6 +421,99 @@ namespace InstitutoCodice.Pruebas
             Assert.IsFalse(laMisma.EsDuplicada(existentes), "Una inscripción no se compara consigo misma (al editar).");
         }
 
+        // Ley 21.719: deber de información
+        [TestMethod]
+        public void AvisoPrivacidad_IncluyeLosElementosQueExigeLaLey()
+        {
+            string texto = AvisoPrivacidad.Texto;
+
+            StringAssert.Contains(texto, "RESPONSABLE", "Debe indicar quién es el responsable.");
+            StringAssert.Contains(texto, "PARA QUÉ LOS USAMOS", "Debe indicar la finalidad.");
+            StringAssert.Contains(texto, "correo", "Debe informar para qué se usa el correo.");
+            StringAssert.Contains(texto, "QUIÉN PUEDE VERLOS", "Debe indicar quién accede.");
+            StringAssert.Contains(texto, "CUÁNTO TIEMPO", "Debe indicar la conservación.");
+            StringAssert.Contains(texto, "21.719", "Debe citar la ley.");
+            foreach (string derecho in new[] { "acceso", "rectificación", "supresión", "oposición", "portabilidad", "bloqueo" })
+                StringAssert.Contains(texto, derecho, "Debe mencionar el derecho de " + derecho + ".");
+            StringAssert.Contains(texto, "Versión " + AvisoPrivacidad.Version, "El aviso debe estar versionado.");
+        }
+
+        // Ley 21.719: derechos de acceso y portabilidad
+        [TestMethod]
+        public void DatosTitular_IncluyeSusAsignaturasNotasYAsistencia()
+        {
+            // Arrange: Ana está en POO (con una nota) y en BDD (con 2 asistencias, ingresadas desordenadas)
+            var poo = new Asignatura { Id = 1, Codigo = "POO101", Nombre = "Programación Orientada a Objetos", Curso = "TI-301" };
+            var bdd = new Asignatura { Id = 2, Codigo = "BDD201", Nombre = "Bases de Datos", Curso = "TI-301" };
+            var ana = new Estudiante { Id = 10, Rut = "11111111-1", Nombres = "Ana", Apellidos = "Pérez", Curso = "TI-301" };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(ana, poo, bdd);
+            fuente.AgregarNota(ana, poo, new Calificacion
+            {
+                Nota = 6.5m,
+                Evaluacion = new Evaluacion { Nombre = "Prueba 1", Ponderacion = 40m, Fecha = new DateTime(2026, 10, 15) }
+            });
+            fuente.AgregarAsistencia(ana, bdd, new Asistencia { Fecha = new DateTime(2026, 10, 8), Estado = EstadoAsistencia.Ausente });
+            fuente.AgregarAsistencia(ana, bdd, new Asistencia { Fecha = new DateTime(2026, 10, 1), Estado = EstadoAsistencia.Presente });
+
+            var servicio = new ServicioDatosTitular(fuente);
+
+            // Act
+            var datos = servicio.Generar(ana, new DateTime(2026, 11, 6, 20, 0, 0));
+
+            // Assert
+            Assert.AreEqual("11111111-1", datos.Titular.Rut);
+            Assert.AreEqual(2, datos.Asignaturas.Count, "Debe incluir todas sus asignaturas.");
+
+            var notasPoo = datos.Asignaturas.Find(a => a.Codigo == "POO101")!.Notas;
+            Assert.AreEqual(1, notasPoo.Count);
+            Assert.AreEqual(6.5m, notasPoo[0].Nota);
+            Assert.AreEqual("2026-10-15", notasPoo[0].Fecha);
+
+            var asistenciaBdd = datos.Asignaturas.Find(a => a.Codigo == "BDD201")!.Asistencia;
+            Assert.AreEqual(2, asistenciaBdd.Count);
+            Assert.AreEqual("2026-10-01", asistenciaBdd[0].Fecha, "La asistencia debe venir ordenada por fecha.");
+            Assert.AreEqual("Ausente", asistenciaBdd[1].Estado);
+        }
+
+        [TestMethod]
+        public void DatosTitular_NoIncluyeDatosDeOtrosEstudiantes()
+        {
+            // Arrange: Ana y Bruno comparten la asignatura POO; Bruno tiene una nota
+            var poo = new Asignatura { Id = 1, Codigo = "POO101", Nombre = "POO" };
+            var ana = new Estudiante { Id = 10, Rut = "11111111-1", Nombres = "Ana", Apellidos = "Pérez" };
+            var bruno = new Estudiante { Id = 20, Rut = "22222222-2", Nombres = "Bruno", Apellidos = "Soto" };
+
+            var fuente = new FuenteDatosConInscripciones();
+            fuente.Inscribir(ana, poo);
+            fuente.Inscribir(bruno, poo);
+            fuente.AgregarNota(bruno, poo, new Calificacion { Nota = 3.0m, Evaluacion = new Evaluacion { Nombre = "Prueba 1", Ponderacion = 40m } });
+
+            // Act: se exportan los datos de Ana
+            string json = ServicioDatosTitular.ConvertirAJson(new ServicioDatosTitular(fuente).Generar(ana, DateTime.UtcNow));
+
+            // Assert
+            StringAssert.Contains(json, "11111111-1");
+            Assert.IsFalse(json.Contains("22222222-2"), "No debe incluir el RUT de otro estudiante.");
+            Assert.IsFalse(json.Contains("Bruno"), "No debe incluir el nombre de otro estudiante.");
+            Assert.IsFalse(json.Contains("\"nota\": 3"), "No debe incluir notas de otro estudiante.");
+        }
+
+        [TestMethod]
+        public void DatosTitular_Json_EsLegibleYCitaLaLey()
+        {
+            var ana = new Estudiante { Id = 10, Rut = "11111111-1", Nombres = "Ana", Apellidos = "Pérez" };
+
+            string json = ServicioDatosTitular.ConvertirAJson(
+                new ServicioDatosTitular(new FuenteDatosConInscripciones()).Generar(ana, DateTime.UtcNow));
+
+            StringAssert.Contains(json, "\"rut\": \"11111111-1\"", "Formato JSON con nombres en camelCase.");
+            StringAssert.Contains(json, "Pérez", "Las tildes deben quedar legibles, sin códigos \\u00e9.");
+            StringAssert.Contains(json, ServicioDatosTitular.Formato, "Debe identificar el formato.");
+            StringAssert.Contains(json, "21.719", "Debe citar la ley.");
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {
@@ -484,7 +577,38 @@ namespace InstitutoCodice.Pruebas
             return inscritos;
         }
 
-        public List<Calificacion> ObtenerCalificaciones(int estudianteId, int asignaturaId) => new List<Calificacion>();
-        public List<Asistencia> ObtenerAsistencias(int estudianteId, int asignaturaId) => new List<Asistencia>();
+        // Notas y asistencia por (estudiante, asignatura); vacías si no se agregan
+        private readonly Dictionary<(int, int), List<Calificacion>> notas = new Dictionary<(int, int), List<Calificacion>>();
+        private readonly Dictionary<(int, int), List<Asistencia>> asistencias = new Dictionary<(int, int), List<Asistencia>>();
+
+        public void AgregarNota(Estudiante estudiante, Asignatura asignatura, Calificacion calificacion)
+        {
+            var clave = (estudiante.Id, asignatura.Id);
+            if (!notas.ContainsKey(clave))
+                notas[clave] = new List<Calificacion>();
+            notas[clave].Add(calificacion);
+        }
+
+        public void AgregarAsistencia(Estudiante estudiante, Asignatura asignatura, Asistencia asistencia)
+        {
+            var clave = (estudiante.Id, asignatura.Id);
+            if (!asistencias.ContainsKey(clave))
+                asistencias[clave] = new List<Asistencia>();
+            asistencias[clave].Add(asistencia);
+        }
+
+        public List<Calificacion> ObtenerCalificaciones(int estudianteId, int asignaturaId)
+        {
+            return notas.ContainsKey((estudianteId, asignaturaId))
+                ? new List<Calificacion>(notas[(estudianteId, asignaturaId)])
+                : new List<Calificacion>();
+        }
+
+        public List<Asistencia> ObtenerAsistencias(int estudianteId, int asignaturaId)
+        {
+            return asistencias.ContainsKey((estudianteId, asignaturaId))
+                ? new List<Asistencia>(asistencias[(estudianteId, asignaturaId)])
+                : new List<Asistencia>();
+        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -11,17 +13,22 @@ namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Gestión de estudiantes (RF-01, RF-02). Las desactivaciones quedan en la bitácora.
+    /// Ley 21.719: exporta todos los datos de un titular (derechos de acceso y portabilidad).
     /// </summary>
     public partial class FormEstudiantes : Form
     {
-        private readonly EstudianteRepositorio repositorio; // llega por el constructor
-        private List<Estudiante> estudiantes = new List<Estudiante>();
-        private Estudiante seleccionado;
+        // Dependencias: llegan por el constructor (las entrega el Contenedor)
+        private readonly EstudianteRepositorio repositorio;
+        private readonly ServicioDatosTitular servicioDatosTitular;
 
-        public FormEstudiantes(EstudianteRepositorio repositorio)
+        private List<Estudiante> estudiantes = new List<Estudiante>();
+        private Estudiante? seleccionado;
+
+        public FormEstudiantes(EstudianteRepositorio repositorio, ServicioDatosTitular servicioDatosTitular)
         {
             InitializeComponent();
             this.repositorio = repositorio;
+            this.servicioDatosTitular = servicioDatosTitular;
             dgvEstudiantes.AutoGenerateColumns = false;
         }
 
@@ -197,6 +204,63 @@ namespace InstitutoCodice.App.Formularios
             catch (Exception ex)
             {
                 Mensajes.Error(ex);
+            }
+        }
+
+        // ------------------------------------------------------------ Ley 21.719
+
+        /// <summary>
+        /// Derechos de acceso y portabilidad: guarda en un archivo JSON todos los datos
+        /// que el sistema tiene del estudiante seleccionado. Queda en la bitácora.
+        /// </summary>
+        private void btnExportarDatos_Click(object sender, EventArgs e)
+        {
+            // Defensa en profundidad: solo el administrador atiende las solicitudes de los titulares
+            if (!Sesion.EsAdministrador)
+            {
+                Mensajes.Advertencia("Solo el administrador puede exportar los datos de un titular.");
+                return;
+            }
+
+            if (seleccionado == null)
+            {
+                Mensajes.Advertencia("Seleccione un estudiante de la lista.");
+                return;
+            }
+
+            using (var dialogo = new SaveFileDialog())
+            {
+                dialogo.Title = "Guardar datos del titular";
+                dialogo.Filter = "Archivo JSON (*.json)|*.json";
+                dialogo.FileName = ServicioDatosTitular.NombreArchivo(seleccionado.Rut, DateTime.Now);
+                dialogo.OverwritePrompt = true;
+
+                if (dialogo.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                try
+                {
+                    Cursor = Cursors.WaitCursor;
+                    var datos = servicioDatosTitular.Generar(seleccionado, DateTime.UtcNow);
+                    File.WriteAllText(dialogo.FileName, ServicioDatosTitular.ConvertirAJson(datos), new UTF8Encoding(false));
+                    Cursor = Cursors.Default;
+
+                    // Datos personales salen del sistema: queda registro de quién, de qué titular y cuándo
+                    Bitacora.Registrar(AccionAuditoria.DatosTitularExportados,
+                        "Datos del titular RUT " + seleccionado.Rut + " exportados (" + datos.Asignaturas.Count
+                        + " asignaturas). Derechos de acceso y portabilidad.",
+                        entidad: "Estudiante", entidadId: seleccionado.Id, valorNuevo: "JSON");
+
+                    if (Mensajes.Confirmar("Datos exportados correctamente.\n\n"
+                        + "Entregue el archivo solo al titular, por un medio seguro.\n\n"
+                        + "¿Desea abrir la carpeta donde se guardó?"))
+                        Process.Start("explorer.exe", "/select,\"" + dialogo.FileName + "\"");
+                }
+                catch (Exception ex)
+                {
+                    Cursor = Cursors.Default;
+                    Mensajes.Error(ex);
+                }
             }
         }
 
