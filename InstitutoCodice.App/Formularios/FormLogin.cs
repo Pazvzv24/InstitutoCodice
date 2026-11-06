@@ -2,19 +2,22 @@
 using System.Windows.Forms;
 using InstitutoCodice.Datos.Repositorios;
 using InstitutoCodice.Negocio.Modelos;
+using InstitutoCodice.Negocio.Servicios;
 
 namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Login de usuarios (RF-12).
     /// - La contraseña distingue mayúsculas (se compara por hash).
-    /// - Al 3er intento fallido la aplicación se cierra.
+    /// - Al 3er intento fallido en la sesión, la aplicación se cierra.
+    /// - Al 3er intento fallido de una cuenta, esta se bloquea 15 minutos en la base de datos
+    ///   (el bloqueo se mantiene aunque se reinicie la aplicación).
     /// </summary>
     public partial class FormLogin : Form
     {
         private readonly UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
 
-        // NUEVO: control de intentos fallidos
+        // Control de intentos fallidos en esta sesión de la aplicación
         private const int MaxIntentos = 3;
         private int intentosFallidos = 0;
 
@@ -34,6 +37,7 @@ namespace InstitutoCodice.App.Formularios
                 return;
             }
 
+            DateTime ahora = DateTime.UtcNow;
             Usuario usuario;
             try
             {
@@ -46,9 +50,34 @@ namespace InstitutoCodice.App.Formularios
                 return;
             }
 
+            // Cuenta bloqueada: no se verifica la contraseña mientras dure el bloqueo
+            if (usuario != null && PoliticaBloqueo.EstaBloqueado(usuario, ahora))
+            {
+                int minutos = PoliticaBloqueo.MinutosRestantes(usuario, ahora);
+                Mensajes.Advertencia($"Cuenta bloqueada temporalmente por intentos fallidos. Intente nuevamente en {minutos} minuto(s).");
+                txtContrasena.Clear();
+                return;
+            }
+
             if (usuario == null || !usuario.Activo || !usuario.VerificarContrasena(clave))
             {
-                // NUEVO: registrar intento fallido
+                bool quedoBloqueada = false;
+
+                // Se registra el fallo en la cuenta (si existe)
+                if (usuario != null)
+                {
+                    try
+                    {
+                        quedoBloqueada = PoliticaBloqueo.RegistrarFallo(usuario, ahora);
+                        usuarioRepositorio.ActualizarEstadoAcceso(usuario);
+                    }
+                    catch (Exception ex)
+                    {
+                        Mensajes.Error(ex);
+                        return;
+                    }
+                }
+
                 intentosFallidos++;
 
                 if (intentosFallidos >= MaxIntentos)
@@ -58,15 +87,36 @@ namespace InstitutoCodice.App.Formularios
                     return;
                 }
 
-                int restantes = MaxIntentos - intentosFallidos;
-                Mensajes.Advertencia($"Usuario o contraseña incorrectos. Intentos restantes: {restantes}.");
+                if (quedoBloqueada)
+                {
+                    Mensajes.Advertencia($"Cuenta bloqueada por {PoliticaBloqueo.DuracionBloqueo.TotalMinutes} minutos debido a intentos fallidos.");
+                }
+                else
+                {
+                    int restantes = MaxIntentos - intentosFallidos;
+                    Mensajes.Advertencia($"Usuario o contraseña incorrectos. Intentos restantes: {restantes}.");
+                }
+
                 txtContrasena.Clear();
                 txtContrasena.Focus();
                 return;
             }
 
-            // NUEVO: login correcto, se reinicia el contador
+            // Login correcto: se reinician los contadores
             intentosFallidos = 0;
+            if (usuario.IntentosFallidos > 0 || usuario.BloqueadoHasta.HasValue)
+            {
+                try
+                {
+                    PoliticaBloqueo.RegistrarExito(usuario);
+                    usuarioRepositorio.ActualizarEstadoAcceso(usuario);
+                }
+                catch (Exception ex)
+                {
+                    Mensajes.Error(ex);
+                    return;
+                }
+            }
 
             Sesion.Iniciar(usuario);
             Hide();

@@ -1,3 +1,4 @@
+using System;
 using InstitutoCodice.Negocio.Servicios;
 
 namespace InstitutoCodice.Negocio.Modelos
@@ -12,6 +13,16 @@ namespace InstitutoCodice.Negocio.Modelos
         public string ContrasenaHash { get; set; }
         public string Nombre { get; set; }
         public bool Activo { get; set; }
+
+        /// <summary>
+        /// Intentos fallidos de ingreso consecutivos (se reinicia al ingresar correctamente).
+        /// </summary>
+        public int IntentosFallidos { get; set; }
+
+        /// <summary>
+        /// Fecha y hora (UTC) hasta la que la cuenta está bloqueada. Null si no está bloqueada.
+        /// </summary>
+        public DateTime? BloqueadoHasta { get; set; }
 
         protected Usuario()
         {

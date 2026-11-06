@@ -211,6 +211,63 @@ namespace InstitutoCodice.Pruebas
             Assert.IsTrue(ServicioInformes.EsDefinitivo(completas), "Con 100% evaluado es definitivo.");
         }
 
+        // RF-12 / RNF-03: Bloqueo de cuenta por intentos fallidos
+        private static readonly DateTime Ahora = new DateTime(2026, 11, 6, 12, 0, 0, DateTimeKind.Utc);
+
+        [TestMethod]
+        public void RegistrarFallo_TresVeces_BloqueaLaCuenta()
+        {
+            var usuario = new Administrador();
+
+            bool bloqueo1 = PoliticaBloqueo.RegistrarFallo(usuario, Ahora);
+            bool bloqueo2 = PoliticaBloqueo.RegistrarFallo(usuario, Ahora);
+            bool bloqueo3 = PoliticaBloqueo.RegistrarFallo(usuario, Ahora);
+
+            Assert.IsFalse(bloqueo1, "1er fallo no bloquea.");
+            Assert.IsFalse(bloqueo2, "2do fallo no bloquea.");
+            Assert.IsTrue(bloqueo3, "3er fallo debe bloquear.");
+            Assert.IsTrue(PoliticaBloqueo.EstaBloqueado(usuario, Ahora));
+            Assert.AreEqual(15, PoliticaBloqueo.MinutosRestantes(usuario, Ahora));
+        }
+
+        [TestMethod]
+        public void EstaBloqueado_DespuesDe15Minutos_SeLevantaElBloqueo()
+        {
+            var usuario = new Administrador();
+            for (int i = 0; i < PoliticaBloqueo.MaxIntentos; i++)
+                PoliticaBloqueo.RegistrarFallo(usuario, Ahora);
+
+            Assert.IsTrue(PoliticaBloqueo.EstaBloqueado(usuario, Ahora.AddMinutes(14)), "A los 14 min sigue bloqueada.");
+            Assert.IsFalse(PoliticaBloqueo.EstaBloqueado(usuario, Ahora.AddMinutes(16)), "A los 16 min ya no.");
+        }
+
+        [TestMethod]
+        public void RegistrarFallo_DespuesDeBloqueoExpirado_ReiniciaElContador()
+        {
+            var usuario = new Administrador();
+            for (int i = 0; i < PoliticaBloqueo.MaxIntentos; i++)
+                PoliticaBloqueo.RegistrarFallo(usuario, Ahora);
+
+            bool bloqueo = PoliticaBloqueo.RegistrarFallo(usuario, Ahora.AddMinutes(20));
+
+            Assert.IsFalse(bloqueo, "Tras expirar el bloqueo, un fallo no vuelve a bloquear.");
+            Assert.AreEqual(1, usuario.IntentosFallidos, "El contador parte de cero.");
+        }
+
+        [TestMethod]
+        public void RegistrarExito_ReiniciaContadorYBloqueo()
+        {
+            var usuario = new Administrador();
+            PoliticaBloqueo.RegistrarFallo(usuario, Ahora);
+            PoliticaBloqueo.RegistrarFallo(usuario, Ahora);
+
+            PoliticaBloqueo.RegistrarExito(usuario);
+
+            Assert.AreEqual(0, usuario.IntentosFallidos);
+            Assert.IsNull(usuario.BloqueadoHasta);
+            Assert.IsFalse(PoliticaBloqueo.EstaBloqueado(usuario, Ahora));
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {

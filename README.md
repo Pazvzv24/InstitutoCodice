@@ -49,8 +49,12 @@ También se puede crear la base desde SSMS ejecutando en orden:
 
 - `BaseDatos/03_ActualizarHashesPBKDF2.sql` -> Migra las contraseñas de las cuentas demo de SHA-256 a PBKDF2 y agrega la restricción de formato del hash.
 
+**Actualización (solo instalaciones anteriores a la v1.3)**
+
+- `BaseDatos/04_BloqueoDeCuenta.sql` -> Agrega las columnas de bloqueo de cuenta. Incluye el comando para desbloquear una cuenta manualmente.
+
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (15 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (19 pruebas unitarias, no requieren base de datos).
 
 ### Cuentas de prueba
 
@@ -62,7 +66,7 @@ También se puede crear la base desde SSMS ejecutando en orden:
 | **pmunoz** | Docente123 | Docente | POO101, TPR205 |
 | **cvaldes** | Docente123 | Docente | BDD201 |
 
-La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
+La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y la cuenta queda bloqueada 15 minutos.
 
 ### Seguridad
 
@@ -73,6 +77,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
 | Comparación segura | `CryptographicOperations.FixedTimeEquals` (tiempo constante, evita ataques de temporización) |
 | Defensa en la BD | Restricción `CK_Usuario_HashFormato`: la base rechaza contraseñas en texto plano |
 | Límite de intentos | Al 3er intento fallido la aplicación se cierra; mensaje genérico "usuario o contraseña incorrectos" |
+| Bloqueo de cuenta | 3 intentos fallidos bloquean la cuenta 15 minutos, guardado en la BD (persiste al reiniciar la app); durante el bloqueo no se verifica la contraseña |
 | Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad) |
 | Inyección SQL | Todas las consultas son parametrizadas |
 | Configuración | Conexión en `appsettings.json` con autenticación de Windows, sin credenciales en el código |
@@ -97,7 +102,7 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
 | RF-05, RF-06 (Asistencia) | `FormAsistencia`, `ValidarFecha()` |
 | RF-07, RF-08 (Notas) | `FormCalificaciones`, `ValidarNota()` |
 | RF-09, RF-10, RF-11 (Informes) | `FormInformes`, `ServicioInformes`, `EsDefinitivo()` |
-| RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos |
+| RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos, `PoliticaBloqueo` |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-07 (Errores) | `Conexion.Probar()` y handler global en `Program.cs` |
 | Instalación | `InstaladorBaseDatos`, `appsettings.json` |
@@ -120,3 +125,4 @@ La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra.
 | v1.0 | Versión entregada en la evaluación. |
 | v1.1 | Scripts de instalación incluidos en el proyecto; límite de 3 intentos en login; control de acceso en informes individuales; estado Parcial; migración a PBKDF2; 5 pruebas nuevas (autenticación y resultado parcial). |
 | v1.2 | Configuración en `appsettings.json`; soporte para LocalDB; creación automática de la base en la primera ejecución. |
+| v1.3 | Bloqueo de cuenta persistente (3 intentos = 15 minutos); 4 pruebas nuevas del bloqueo. |
