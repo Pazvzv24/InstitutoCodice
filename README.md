@@ -105,7 +105,7 @@ En cada push, [GitHub Actions](.github/workflows/ci.yml) compila la solución en
 | Dependabot | Alertas de vulnerabilidades y de malware en dependencias; pull requests automáticos con las correcciones de seguridad |
 | Secret Protection | Detecta contraseñas, tokens y claves en el historial del repositorio |
 | Push protection | Bloquea un push que contenga un secreto antes de que llegue a GitHub |
-| Reporte privado de vulnerabilidades | Canal privado para informar fallas de seguridad (pestaña *Security*) |
+| Reporte privado de vulnerabilidades | Canal privado para informar fallas de seguridad (pestaña *Security*). Ver la [política de seguridad](SECURITY.md) |
 
 ### Cuentas de prueba
 
@@ -120,6 +120,8 @@ En cada push, [GitHub Actions](.github/workflows/ci.yml) compila la solución en
 La contraseña distingue mayúsculas. Al 3er intento fallido la app se cierra y la cuenta queda bloqueada 15 minutos.
 
 ### Seguridad
+
+El diseño de seguridad se analizó con la metodología STRIDE: [modelo de amenazas](docs/ModeloAmenazas.md) con 20 amenazas, sus controles y los riesgos residuales.
 
 | Control | Implementación |
 | :--- | :--- |
@@ -221,6 +223,7 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 | v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
 | v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; análisis CodeQL; protección de secretos; reporte privado de vulnerabilidades; badge en el README. |
+| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`). |
 
 ### Licencias de terceros
 
