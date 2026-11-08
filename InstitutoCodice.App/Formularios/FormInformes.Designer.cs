@@ -46,6 +46,7 @@
             this.btnExportarExcel = new System.Windows.Forms.Button();
             this.btnExportarPdf = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnRecargar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInforme)).BeginInit();
             this.grpEstudiante.SuspendLayout();
             this.grpCurso.SuspendLayout();
@@ -110,6 +111,7 @@
             // lblTituloInforme
             // 
             this.lblTituloInforme.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblTituloInforme.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.lblTituloInforme.Location = new System.Drawing.Point(15, 115);
             this.lblTituloInforme.Name = "lblTituloInforme";
             this.lblTituloInforme.Size = new System.Drawing.Size(870, 22);
@@ -136,6 +138,7 @@
                         this.colPromedio,
                         this.colAsistencia,
                         this.colEstado});
+            this.dgvInforme.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvInforme.Location = new System.Drawing.Point(15, 142);
             this.dgvInforme.Name = "dgvInforme";
             this.dgvInforme.Size = new System.Drawing.Size(870, 320);
@@ -193,7 +196,8 @@
             // lblResumen
             // 
             this.lblResumen.ForeColor = System.Drawing.Color.DimGray;
-            this.lblResumen.Location = new System.Drawing.Point(15, 472);
+            this.lblResumen.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
+            this.lblResumen.Location = new System.Drawing.Point(15, 467);
             this.lblResumen.Name = "lblResumen";
             this.lblResumen.Size = new System.Drawing.Size(870, 20);
             this.lblResumen.TabIndex = 8;
@@ -201,7 +205,8 @@
             // lblCriterio
             // 
             this.lblCriterio.ForeColor = System.Drawing.Color.DimGray;
-            this.lblCriterio.Location = new System.Drawing.Point(15, 495);
+            this.lblCriterio.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+            this.lblCriterio.Location = new System.Drawing.Point(15, 489);
             this.lblCriterio.Name = "lblCriterio";
             this.lblCriterio.Size = new System.Drawing.Size(420, 20);
             this.lblCriterio.TabIndex = 9;
@@ -209,6 +214,7 @@
             // 
             // btnExportarExcel
             // 
+            this.btnExportarExcel.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnExportarExcel.Location = new System.Drawing.Point(455, 512);
             this.btnExportarExcel.Name = "btnExportarExcel";
             this.btnExportarExcel.Size = new System.Drawing.Size(155, 32);
@@ -219,6 +225,7 @@
             // 
             // btnExportarPdf
             // 
+            this.btnExportarPdf.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnExportarPdf.Location = new System.Drawing.Point(620, 512);
             this.btnExportarPdf.Name = "btnExportarPdf";
             this.btnExportarPdf.Size = new System.Drawing.Size(155, 32);
@@ -229,6 +236,7 @@
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCerrar.Location = new System.Drawing.Point(785, 512);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
@@ -237,12 +245,25 @@
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
+            // btnRecargar
+            // 
+            this.btnRecargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+            this.btnRecargar.Location = new System.Drawing.Point(15, 512);
+            this.btnRecargar.Name = "btnRecargar";
+            this.btnRecargar.Size = new System.Drawing.Size(110, 32);
+            this.btnRecargar.TabIndex = 50;
+            this.btnRecargar.Text = "Recargar";
+            this.btnRecargar.UseVisualStyleBackColor = true;
+            this.btnRecargar.Click += new System.EventHandler(this.btnRecargar_Click);
+            // 
             // FormInformes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 560);
+            this.MinimumSize = new System.Drawing.Size(916, 599); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnRecargar);
             this.Controls.Add(this.btnExportarPdf);
             this.Controls.Add(this.btnExportarExcel);
             this.Controls.Add(this.lblCriterio);
@@ -251,10 +272,12 @@
             this.Controls.Add(this.lblTituloInforme);
             this.Controls.Add(this.grpCurso);
             this.Controls.Add(this.grpEstudiante);
+            this.KeyPreview = true; // F5 = Recargar
             this.Name = "FormInformes";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Informes de notas y asistencia";
             this.Load += new System.EventHandler(this.FormInformes_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormInformes_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvInforme)).EndInit();
             this.grpEstudiante.ResumeLayout(false);
             this.grpEstudiante.PerformLayout();
@@ -286,5 +309,6 @@
         private System.Windows.Forms.Button btnExportarExcel;
         private System.Windows.Forms.Button btnExportarPdf;
         private System.Windows.Forms.Button btnCerrar;
+        private System.Windows.Forms.Button btnRecargar;
     }
 }

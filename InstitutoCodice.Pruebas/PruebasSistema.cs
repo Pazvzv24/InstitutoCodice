@@ -570,6 +570,58 @@ namespace InstitutoCodice.Pruebas
             Assert.AreEqual(5.0m, datos.Asignaturas[0].Notas[0].Nota);
         }
 
+        // RF-07: Editar y eliminar evaluaciones
+        [TestMethod]
+        public void ActualizarEvaluacion_DentroDelLimite_SeAplica()
+        {
+            var asignatura = new Asignatura();
+            asignatura.AgregarEvaluacion(new Evaluacion { Id = 1, Nombre = "Prueba 1", Ponderacion = 60m });
+            asignatura.AgregarEvaluacion(new Evaluacion { Id = 2, Nombre = "Prueba 2", Ponderacion = 40m });
+
+            asignatura.ActualizarEvaluacion(2, "Prueba 2 (corregida)", new DateTime(2026, 11, 20), 30m);
+
+            var editada = asignatura.Evaluaciones.Find(e => e.Id == 2)!;
+            Assert.AreEqual("Prueba 2 (corregida)", editada.Nombre);
+            Assert.AreEqual(30m, editada.Ponderacion);
+            Assert.AreEqual(90m, asignatura.SumaPonderaciones());
+        }
+
+        [TestMethod]
+        public void ActualizarEvaluacion_QueSuperaCienPorCiento_EsRechazadaSinCambios()
+        {
+            var asignatura = new Asignatura();
+            asignatura.AgregarEvaluacion(new Evaluacion { Id = 1, Nombre = "Prueba 1", Ponderacion = 60m });
+            asignatura.AgregarEvaluacion(new Evaluacion { Id = 2, Nombre = "Prueba 2", Ponderacion = 40m });
+
+            bool lanzoExcepcion = false;
+            try
+            {
+                asignatura.ActualizarEvaluacion(2, "Prueba 2", DateTime.Today, 50m); // 60 + 50 = 110 %
+            }
+            catch (InvalidOperationException)
+            {
+                lanzoExcepcion = true;
+            }
+
+            Assert.IsTrue(lanzoExcepcion, "No puede superar el 100 %.");
+            Assert.AreEqual(40m, asignatura.Evaluaciones.Find(e => e.Id == 2)!.Ponderacion, "La evaluación no debe cambiar.");
+            Assert.AreEqual(100m, asignatura.SumaPonderaciones());
+        }
+
+        [TestMethod]
+        public void QuitarEvaluacion_LiberaSuPonderacion()
+        {
+            var asignatura = new Asignatura();
+            asignatura.AgregarEvaluacion(new Evaluacion { Id = 1, Nombre = "Prueba 1", Ponderacion = 60m });
+            asignatura.AgregarEvaluacion(new Evaluacion { Id = 2, Nombre = "Prueba 2", Ponderacion = 40m });
+
+            asignatura.QuitarEvaluacion(1);
+            asignatura.AgregarEvaluacion(new Evaluacion { Id = 3, Nombre = "Examen", Ponderacion = 60m });
+
+            Assert.AreEqual(2, asignatura.Evaluaciones.Count);
+            Assert.AreEqual(100m, asignatura.SumaPonderaciones(), "Al quitar una evaluación, su ponderación vuelve a estar disponible.");
+        }
+
         // Helpers
         private static Evaluacion CrearEvaluacion(string nombre, decimal ponderacion)
         {

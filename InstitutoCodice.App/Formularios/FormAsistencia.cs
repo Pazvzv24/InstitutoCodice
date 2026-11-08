@@ -9,6 +9,7 @@ namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Gestión de asistencia por fecha (RF-05, RF-06).
+    /// F5 o "Recargar" vuelve a leer las asignaturas y la lista cargada desde la base.
     /// </summary>
     public partial class FormAsistencia : Form
     {
@@ -36,9 +37,22 @@ namespace InstitutoCodice.App.Formularios
             dtpFecha.MaxDate = DateTime.Today;
             dtpFecha.Value = DateTime.Today;
 
+            CargarAsignaturas();
+        }
+
+        /// <summary>
+        /// Carga las asignaturas del usuario, manteniendo la que estaba seleccionada.
+        /// </summary>
+        private void CargarAsignaturas()
+        {
+            int? idAnterior = (cmbAsignatura.SelectedItem as Asignatura)?.Id;
             try
             {
-                cmbAsignatura.DataSource = asignaturaRepositorio.ListarParaUsuario(Sesion.UsuarioActual);
+                var asignaturas = asignaturaRepositorio.ListarParaUsuario(Sesion.UsuarioActual).ToList();
+                cmbAsignatura.DataSource = asignaturas;
+                var previa = asignaturas.FirstOrDefault(a => a.Id == idAnterior);
+                if (previa != null)
+                    cmbAsignatura.SelectedItem = previa;
             }
             catch (Exception ex)
             {
@@ -144,6 +158,33 @@ namespace InstitutoCodice.App.Formularios
             {
                 Mensajes.Error(ex);
             }
+        }
+
+        // ------------------------------------------------------------ Recargar (F5)
+
+        private void btnRecargar_Click(object sender, EventArgs e) => Recargar();
+
+        private void FormAsistencia_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                Recargar();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Vuelve a leer los datos desde la base (por ejemplo, si se modificaron en otra ventana).
+        /// </summary>
+        private void Recargar()
+        {
+            if (dgvAsistencia.Rows.Count > 0 &&
+                !Mensajes.Confirmar("Se volverá a leer la lista y se perderán los cambios de asistencia que no haya guardado.\n\n¿Continuar?"))
+                return;
+
+            CargarAsignaturas();
+            if (asignaturaCargada != null)
+                CargarLista();
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)

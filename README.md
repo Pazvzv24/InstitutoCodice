@@ -52,13 +52,13 @@ Por defecto la app usa autenticación de Windows, necesaria para instalar la bas
    ```sql
    CREATE LOGIN app_codice WITH PASSWORD = N'...', DEFAULT_DATABASE = InstitutoCodiceDB, CHECK_POLICY = ON;
    ```
-3. Ejecutar `BaseDatos/07_Rol_App_Codice.sql` (crea el rol `rol_app_codice` y asigna el usuario).
+3. Ejecutar `BaseDatos/07_Rol_App_Codice.sql` (crea el rol `rol_app_codice` con sus permisos mínimos y asigna el usuario).
 4. Crear en Windows la variable de entorno de usuario `INSTITUTOCODICE_DB_CLAVE` con la contraseña.
 5. Crear `InstitutoCodice.App/appsettings.local.json` (está en `.gitignore`):
    ```json
    { "BaseDatos": { "Autenticacion": "Sql" } }
    ```
-6. Opcional: ejecutar `BaseDatos/08_PruebaPermisos.sql` para comprobar los bloqueos.
+6. Opcional: ejecutar `BaseDatos/08_PruebaPermisos.sql` para comprobar qué puede y qué no puede hacer la cuenta de la aplicación (todas las líneas deben salir con ✅).
 
 **Instalación manual (opcional)**
 
@@ -87,8 +87,12 @@ También se puede crear la base desde SSMS ejecutando en orden:
 
 - `BaseDatos/09_BloqueoTratamiento.sql` -> Agrega el bloqueo del tratamiento de datos (Ley 21.719). Ejecutar con una cuenta administradora.
 
+**Actualización (solo instalaciones anteriores a la v2.0)**
+
+- `BaseDatos/10_PermisosEliminacion.sql` -> Permite a la cuenta de la aplicación eliminar notas y evaluaciones sin notas. Ejecutar con una cuenta administradora.
+
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (38 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (41 pruebas unitarias, no requieren base de datos).
 - Desde la consola: `dotnet test InstitutoCodice.sln`
 
 **Integración continua**
@@ -134,8 +138,8 @@ El diseño de seguridad se analizó con la metodología STRIDE: [modelo de amena
 | Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad); si no hay permisos definidos, no muestra nada (falla cerrada); cubierto por pruebas automáticas |
 | Política de contraseñas | Mínimo 8 caracteres con mayúscula, minúscula y número; no puede contener el usuario ni repetir la actual |
 | Cambio obligatorio | Una contraseña asignada o restablecida por el administrador debe cambiarse en el siguiente ingreso |
-| Bitácora de auditoría | Registra ingresos, fallos, bloqueos, cambios de contraseña, desactivaciones y cada nota con su valor anterior y nuevo, identificando al estudiante por RUT (minimización de datos: sin nombres) |
-| Mínimo privilegio | La app se conecta con `app_codice` (rol `rol_app_codice`): solo lee, inserta y actualiza; borra solo inscripciones; no puede modificar la bitácora, crear tablas ni desactivar triggers |
+| Bitácora de auditoría | Registra ingresos, fallos, bloqueos, cambios de contraseña, desactivaciones, cambios y eliminaciones de evaluaciones, y cada nota registrada, modificada o eliminada con su valor anterior y nuevo, identificando al estudiante por RUT (minimización de datos: sin nombres) |
+| Mínimo privilegio | La app se conecta con `app_codice` (rol `rol_app_codice`): solo lee, inserta y actualiza; borra solo inscripciones, notas y evaluaciones sin notas; no puede modificar la bitácora, crear tablas ni desactivar triggers |
 | Secretos fuera del código | La contraseña de la cuenta de la app se lee desde una variable de entorno; la configuración local está en `.gitignore` |
 | Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; las notas se auditan en la misma transacción |
 | Exportación controlada | Los informes se exportan a Excel o PDF solo con los datos que el usuario ya puede ver; cada exportación queda en la bitácora; las celdas de Excel se escriben como texto (evita la inyección de fórmulas) |
@@ -207,6 +211,9 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 - Aprobación: Promedio >= 4.0 y Asistencia >= 75%.
 - Resultado **Parcial**: si las evaluaciones con nota no suman el 100% de la ponderación, el estado no es definitivo y no se informa como aprobado ni reprobado.
 - Un docente solo accede a la información de sus propias asignaturas; el administrador accede a todo.
+- Una evaluación se puede editar sin que la suma de ponderaciones supere el 100 %, y solo se puede eliminar si no tiene notas (lo valida la aplicación y también la base de datos).
+- Una nota se elimina dejando su celda vacía; la eliminación queda en la bitácora con la nota que tenía.
+- Estudiantes y docentes no se eliminan, se desactivan (borrado lógico): así se conserva el historial académico y la trazabilidad.
 
 ### Historial de versiones
 
@@ -223,7 +230,7 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 | v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
 | v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; análisis CodeQL; protección de secretos; reporte privado de vulnerabilidades; badge en el README. |
-| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`). |
+| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`); varias pantallas abiertas a la vez (se cierran todas al cerrar sesión); pantallas que se adaptan al tamaño de la ventana; botón Recargar y tecla F5; edición y eliminación de evaluaciones; eliminación de notas con registro en la bitácora; 3 pruebas nuevas. |
 
 ### Licencias de terceros
 

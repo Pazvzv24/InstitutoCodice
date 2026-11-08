@@ -3,7 +3,7 @@
 **Sistema:** Instituto Códice - Sistema de Asistencia y Notas
 **Versión del sistema analizada:** v1.10
 **Metodología:** STRIDE por elemento del diagrama de flujo de datos
-**Versión del documento:** 1.0 - noviembre de 2026
+**Versión del documento:** 1.1 - noviembre de 2026
 
 Este documento identifica qué podría salir mal en el sistema desde el punto de vista de la seguridad, qué control lo evita o lo reduce y qué riesgo queda. Complementa el [registro de actividades de tratamiento](RegistroTratamiento.md) (qué datos se protegen) y el [plan de respuesta ante incidentes](PlanRespuestaIncidentes.md) (qué hacer si un control falla).
 
@@ -65,7 +65,7 @@ flowchart LR
 
 | Id | Amenaza | Controles implementados | Riesgo residual |
 | :--- | :--- | :--- | :--- |
-| T1 | Un docente modifica notas de asignaturas que no dicta | Cada docente solo ve y edita sus asignaturas (`ListarParaUsuario`); notas validadas entre 1,0 y 7,0 en el código y en la base (CHECK); cada cambio queda en la bitácora con su valor anterior y nuevo, en la misma transacción | 🟢 |
+| T1 | Un docente modifica notas de asignaturas que no dicta | Cada docente solo ve y edita sus asignaturas (`ListarParaUsuario`); notas validadas entre 1,0 y 7,0 en el código y en la base (CHECK); cada registro, cambio o eliminación de una nota queda en la bitácora con su valor anterior y nuevo, en la misma transacción | 🟢 |
 | T2 | Inyección SQL a través de los campos de la aplicación | Todas las consultas son parametrizadas; la cadena de conexión se arma con `SqlConnectionStringBuilder` | 🟢 |
 | T3 | Alguien borra o modifica la bitácora para ocultar lo que hizo | Trigger `TR_Auditoria_SoloInsercion` que rechaza UPDATE y DELETE; la cuenta de la aplicación tiene denegados UPDATE y DELETE sobre la tabla | 🟡 Un administrador de SQL Server (sysadmin) podría desactivar el trigger; se mitiga con la auditoría propia de SQL Server, fuera del alcance de la aplicación |
 | T4 | Un nombre malicioso, por ejemplo `=HIPERVINCULO(...)`, se ejecuta como fórmula al abrir un informe en Excel | Las celdas de texto se escriben con formato de texto, por lo que Excel no las interpreta como fórmulas (`ExportadorInformes`) | 🟢 |
@@ -75,7 +75,7 @@ flowchart LR
 
 | Id | Amenaza | Controles implementados | Riesgo residual |
 | :--- | :--- | :--- | :--- |
-| R1 | Un usuario niega haber cambiado una nota, exportado datos o bloqueado a un estudiante | Bitácora inmutable con usuario, fecha y hora (UTC), acción, detalle y valores anterior y nuevo: ingresos, fallos, bloqueos, cambios de contraseña y de notas, exportaciones y bloqueos del tratamiento | 🟡 Si dos personas comparten una cuenta, la bitácora no puede distinguirlas: las cuentas deben ser personales |
+| R1 | Un usuario niega haber cambiado una nota, exportado datos o bloqueado a un estudiante | Bitácora inmutable con usuario, fecha y hora (UTC), acción, detalle y valores anterior y nuevo: ingresos, fallos, bloqueos, cambios de contraseña, cambios y eliminaciones de notas y evaluaciones, exportaciones y bloqueos del tratamiento | 🟡 Si dos personas comparten una cuenta, la bitácora no puede distinguirlas: las cuentas deben ser personales |
 
 ### I - Divulgación de información (*Information disclosure*)
 
@@ -100,7 +100,7 @@ flowchart LR
 | Id | Amenaza | Controles implementados | Riesgo residual |
 | :--- | :--- | :--- | :--- |
 | E1 | Un docente accede a funciones de administrador | Los botones de gestión se desactivan según el rol; la bitácora y la exportación de datos del titular vuelven a comprobar el rol al abrirse (defensa en profundidad) | 🟡 Las demás pantallas de gestión (estudiantes, docentes, asignaturas, inscripciones) dependen solo del menú. Mejora propuesta: comprobar el rol también al abrir cada una |
-| E2 | Si la aplicación fuera comprometida, el atacante obtiene control total de la base | Mínimo privilegio: la cuenta `app_codice` solo lee, inserta y actualiza; borra solo inscripciones; no puede modificar la bitácora, crear tablas ni desactivar triggers. La instalación usa otra cuenta | 🟢 |
+| E2 | Si la aplicación fuera comprometida, el atacante obtiene control total de la base | Mínimo privilegio: la cuenta `app_codice` solo lee, inserta y actualiza; borra solo inscripciones, notas y evaluaciones sin notas; no puede modificar la bitácora, crear tablas ni desactivar triggers. La instalación usa otra cuenta | 🟢 |
 | E3 | Un workflow de GitHub comprometido modifica el código del repositorio | El workflow tiene solo permisos de lectura, no guarda la credencial de GitHub (`persist-credentials: false`) y no usa secretos | 🟢 |
 
 ---
@@ -134,3 +134,4 @@ flowchart LR
 | Versión | Fecha | Cambios |
 | :--- | :--- | :--- |
 | 1.0 | Noviembre de 2026 | Versión inicial, sobre la versión v1.10 del sistema |
+| 1.1 | Noviembre de 2026 | Eliminación de notas y de evaluaciones sin notas: se actualizan T1, R1 y E2 |

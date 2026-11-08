@@ -45,6 +45,7 @@
             this.colCurso = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colDocente = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnRecargar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAsignaturas)).BeginInit();
             this.grpDatos.SuspendLayout();
             this.SuspendLayout();
@@ -176,6 +177,7 @@
                         this.colNombre,
                         this.colCurso,
                         this.colDocente});
+            this.dgvAsignaturas.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvAsignaturas.Location = new System.Drawing.Point(330, 15);
             this.dgvAsignaturas.Name = "dgvAsignaturas";
             this.dgvAsignaturas.Size = new System.Drawing.Size(555, 400);
@@ -225,6 +227,7 @@
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCerrar.Location = new System.Drawing.Point(785, 432);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
@@ -233,18 +236,33 @@
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
+            // btnRecargar
+            // 
+            this.btnRecargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+            this.btnRecargar.Location = new System.Drawing.Point(675, 432);
+            this.btnRecargar.Name = "btnRecargar";
+            this.btnRecargar.Size = new System.Drawing.Size(100, 32);
+            this.btnRecargar.TabIndex = 50;
+            this.btnRecargar.Text = "Recargar";
+            this.btnRecargar.UseVisualStyleBackColor = true;
+            this.btnRecargar.Click += new System.EventHandler(this.btnRecargar_Click);
+            // 
             // FormAsignaturas
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 480);
+            this.MinimumSize = new System.Drawing.Size(916, 519); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnRecargar);
             this.Controls.Add(this.dgvAsignaturas);
             this.Controls.Add(this.grpDatos);
+            this.KeyPreview = true; // F5 = Recargar
             this.Name = "FormAsignaturas";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gestión de asignaturas";
             this.Load += new System.EventHandler(this.FormAsignaturas_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormAsignaturas_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAsignaturas)).EndInit();
             this.grpDatos.ResumeLayout(false);
             this.grpDatos.PerformLayout();
@@ -273,5 +291,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colCurso;
         private System.Windows.Forms.DataGridViewTextBoxColumn colDocente;
         private System.Windows.Forms.Button btnCerrar;
+        private System.Windows.Forms.Button btnRecargar;
     }
 }

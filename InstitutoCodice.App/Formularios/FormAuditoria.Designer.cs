@@ -140,6 +140,7 @@
                         this.colDetalle,
                         this.colAnterior,
                         this.colNuevo});
+            this.dgvAuditoria.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvAuditoria.Location = new System.Drawing.Point(15, 60);
             this.dgvAuditoria.Name = "dgvAuditoria";
             this.dgvAuditoria.Size = new System.Drawing.Size(950, 440);
@@ -191,6 +192,7 @@
             // 
             this.lblTotal.AutoSize = true;
             this.lblTotal.ForeColor = System.Drawing.Color.DimGray;
+            this.lblTotal.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblTotal.Location = new System.Drawing.Point(15, 517);
             this.lblTotal.Name = "lblTotal";
             this.lblTotal.TabIndex = 10;
@@ -198,6 +200,7 @@
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCerrar.Location = new System.Drawing.Point(865, 510);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
@@ -212,6 +215,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(980, 555);
+            this.MinimumSize = new System.Drawing.Size(996, 594); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
             this.Controls.Add(this.lblTotal);
             this.Controls.Add(this.dgvAuditoria);

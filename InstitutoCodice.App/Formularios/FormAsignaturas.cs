@@ -8,6 +8,7 @@ namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Gestión de asignaturas (RF-03).
+    /// F5 o "Recargar" vuelve a leer las asignaturas y los docentes desde la base.
     /// </summary>
     public partial class FormAsignaturas : Form
     {
@@ -15,7 +16,7 @@ namespace InstitutoCodice.App.Formularios
         private readonly AsignaturaRepositorio repositorio;
         private readonly DocenteRepositorio docenteRepositorio;
 
-        private Asignatura seleccionada;
+        private Asignatura? seleccionada; // null = modo "nueva asignatura"
 
         public FormAsignaturas(AsignaturaRepositorio repositorio, DocenteRepositorio docenteRepositorio)
         {
@@ -27,19 +28,31 @@ namespace InstitutoCodice.App.Formularios
 
         private void FormAsignaturas_Load(object sender, EventArgs e)
         {
+            CargarDocentes();
+            CargarAsignaturas();
+            LimpiarFormulario();
+        }
+
+        /// <summary>
+        /// Carga los docentes en la lista, manteniendo el que estaba seleccionado.
+        /// </summary>
+        private void CargarDocentes()
+        {
+            object? seleccionado = cmbDocente.SelectedValue;
             try
             {
                 cmbDocente.DataSource = docenteRepositorio.Listar();
                 cmbDocente.DisplayMember = "Nombre";
                 cmbDocente.ValueMember = "Id";
+                if (seleccionado != null)
+                    cmbDocente.SelectedValue = seleccionado;
+                else
+                    cmbDocente.SelectedIndex = -1;
             }
             catch (Exception ex)
             {
                 Mensajes.Error(ex);
             }
-
-            CargarAsignaturas();
-            LimpiarFormulario();
         }
 
         private void CargarAsignaturas()
@@ -90,13 +103,14 @@ namespace InstitutoCodice.App.Formularios
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
+            var docente = cmbDocente.SelectedItem as Docente;
             var asignatura = new Asignatura
             {
                 Id = seleccionada != null ? seleccionada.Id : 0,
                 Codigo = txtCodigo.Text.Trim().ToUpper(),
                 Nombre = txtNombre.Text.Trim(),
                 Curso = txtCurso.Text.Trim(),
-                Docente = cmbDocente.SelectedItem as Docente
+                Docente = docente ?? new Docente()
             };
 
             var errores = new StringBuilder();
@@ -106,7 +120,7 @@ namespace InstitutoCodice.App.Formularios
                 errores.AppendLine("- El nombre es obligatorio.");
             if (asignatura.Curso.Length == 0)
                 errores.AppendLine("- El curso es obligatorio.");
-            if (asignatura.Docente == null)
+            if (docente == null)
                 errores.AppendLine("- Seleccione el docente a cargo.");
 
             if (errores.Length > 0)
@@ -135,6 +149,28 @@ namespace InstitutoCodice.App.Formularios
             {
                 Mensajes.Error(ex);
             }
+        }
+
+        // ------------------------------------------------------------ Recargar (F5)
+
+        private void btnRecargar_Click(object sender, EventArgs e) => Recargar();
+
+        private void FormAsignaturas_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                Recargar();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Vuelve a leer los datos desde la base (por ejemplo, si se modificaron en otra ventana).
+        /// </summary>
+        private void Recargar()
+        {
+            CargarDocentes();
+            CargarAsignaturas();
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)

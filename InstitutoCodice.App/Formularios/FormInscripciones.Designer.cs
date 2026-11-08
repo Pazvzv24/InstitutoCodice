@@ -41,6 +41,7 @@
             this.colFecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblTotal = new System.Windows.Forms.Label();
             this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnRecargar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInscritos)).BeginInit();
             this.SuspendLayout();
             // 
@@ -124,6 +125,7 @@
                         this.colEstudiante,
                         this.colCurso,
                         this.colFecha});
+            this.dgvInscritos.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvInscritos.Location = new System.Drawing.Point(15, 120);
             this.dgvInscritos.Name = "dgvInscritos";
             this.dgvInscritos.Size = new System.Drawing.Size(725, 318);
@@ -167,6 +169,7 @@
             // lblTotal
             // 
             this.lblTotal.AutoSize = true;
+            this.lblTotal.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblTotal.Location = new System.Drawing.Point(15, 452);
             this.lblTotal.Name = "lblTotal";
             this.lblTotal.TabIndex = 8;
@@ -174,6 +177,7 @@
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCerrar.Location = new System.Drawing.Point(640, 450);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
@@ -182,12 +186,25 @@
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
+            // btnRecargar
+            // 
+            this.btnRecargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+            this.btnRecargar.Location = new System.Drawing.Point(640, 14);
+            this.btnRecargar.Name = "btnRecargar";
+            this.btnRecargar.Size = new System.Drawing.Size(100, 29);
+            this.btnRecargar.TabIndex = 50;
+            this.btnRecargar.Text = "Recargar";
+            this.btnRecargar.UseVisualStyleBackColor = true;
+            this.btnRecargar.Click += new System.EventHandler(this.btnRecargar_Click);
+            // 
             // FormInscripciones
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(760, 500);
+            this.MinimumSize = new System.Drawing.Size(776, 539); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnRecargar);
             this.Controls.Add(this.lblTotal);
             this.Controls.Add(this.dgvInscritos);
             this.Controls.Add(this.lblInscritos);
@@ -197,10 +214,12 @@
             this.Controls.Add(this.lblEstudiante);
             this.Controls.Add(this.cmbAsignatura);
             this.Controls.Add(this.lblAsignatura);
+            this.KeyPreview = true; // F5 = Recargar
             this.Name = "FormInscripciones";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Inscripción de estudiantes en asignaturas";
             this.Load += new System.EventHandler(this.FormInscripciones_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormInscripciones_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvInscritos)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -223,5 +242,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colFecha;
         private System.Windows.Forms.Label lblTotal;
         private System.Windows.Forms.Button btnCerrar;
+        private System.Windows.Forms.Button btnRecargar;
     }
 }

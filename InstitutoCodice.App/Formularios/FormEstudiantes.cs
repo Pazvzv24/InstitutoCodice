@@ -15,6 +15,7 @@ namespace InstitutoCodice.App.Formularios
     /// Gestión de estudiantes (RF-01, RF-02). Las desactivaciones quedan en la bitácora.
     /// Ley 21.719: exporta todos los datos de un titular (derechos de acceso y portabilidad)
     /// y permite bloquear el tratamiento de sus datos sin borrar su historial.
+    /// F5 o "Recargar" vuelve a leer la lista desde la base.
     /// </summary>
     public partial class FormEstudiantes : Form
     {
@@ -282,6 +283,27 @@ namespace InstitutoCodice.App.Formularios
                     Mensajes.Error(ex);
                 }
             }
+        }
+
+        // ------------------------------------------------------------ Recargar (F5)
+
+        private void btnRecargar_Click(object sender, EventArgs e) => Recargar();
+
+        private void FormEstudiantes_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                Recargar();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Vuelve a leer los datos desde la base (por ejemplo, si se modificaron en otra ventana).
+        /// </summary>
+        private void Recargar()
+        {
+            CargarEstudiantes(); // mantiene el filtro de búsqueda
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)

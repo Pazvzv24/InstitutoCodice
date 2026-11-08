@@ -11,11 +11,12 @@ namespace InstitutoCodice.App.Formularios
     /// <summary>
     /// Gestión de docentes (solo administrador).
     /// Las contraseñas asignadas deben cumplir la PoliticaContrasena.
+    /// F5 o "Recargar" vuelve a leer la lista desde la base.
     /// </summary>
     public partial class FormDocentes : Form
     {
         private readonly DocenteRepositorio repositorio; // llega por el constructor
-        private Docente seleccionado;
+        private Docente? seleccionado; // null = modo "nuevo docente"
 
         public FormDocentes(DocenteRepositorio repositorio)
         {
@@ -88,7 +89,7 @@ namespace InstitutoCodice.App.Formularios
 
             var docente = new Docente
             {
-                Id = esNuevo ? 0 : seleccionado.Id,
+                Id = seleccionado?.Id ?? 0,
                 Nombre = txtNombre.Text.Trim(),
                 Rut = ValidadorRut.Normalizar(txtRut.Text),
                 Correo = txtCorreo.Text.Trim(),
@@ -139,10 +140,10 @@ namespace InstitutoCodice.App.Formularios
                         Bitacora.Registrar(AccionAuditoria.ContrasenaAsignada,
                             "Contraseña asignada por el administrador a " + docente.NombreUsuario + ".",
                             entidad: "Usuario", entidadId: docente.Id);
-                    if (seleccionado.Activo && !docente.Activo)
+                    if (seleccionado != null && seleccionado.Activo && !docente.Activo)
                         Bitacora.Registrar(AccionAuditoria.UsuarioDesactivado, "Docente " + docente.NombreUsuario + " desactivado.",
                             entidad: "Usuario", entidadId: docente.Id, valorAnterior: "Activo", valorNuevo: "Inactivo");
-                    else if (!seleccionado.Activo && docente.Activo)
+                    else if (seleccionado != null && !seleccionado.Activo && docente.Activo)
                         Bitacora.Registrar(AccionAuditoria.UsuarioReactivado, "Docente " + docente.NombreUsuario + " reactivado.",
                             entidad: "Usuario", entidadId: docente.Id, valorAnterior: "Inactivo", valorNuevo: "Activo");
                     Mensajes.Info(clave.Length > 0
@@ -157,6 +158,27 @@ namespace InstitutoCodice.App.Formularios
             {
                 Mensajes.Error(ex);
             }
+        }
+
+        // ------------------------------------------------------------ Recargar (F5)
+
+        private void btnRecargar_Click(object sender, EventArgs e) => Recargar();
+
+        private void FormDocentes_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                Recargar();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Vuelve a leer los datos desde la base (por ejemplo, si se modificaron en otra ventana).
+        /// </summary>
+        private void Recargar()
+        {
+            CargarDocentes();
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)

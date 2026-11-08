@@ -40,6 +40,7 @@
             this.colEstado = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.btnGuardar = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnRecargar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAsistencia)).BeginInit();
             this.SuspendLayout();
             // 
@@ -54,6 +55,7 @@
             // cmbAsignatura
             // 
             this.cmbAsignatura.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbAsignatura.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.cmbAsignatura.Location = new System.Drawing.Point(100, 17);
             this.cmbAsignatura.Name = "cmbAsignatura";
             this.cmbAsignatura.Size = new System.Drawing.Size(310, 23);
@@ -62,6 +64,7 @@
             // lblFecha
             // 
             this.lblFecha.AutoSize = true;
+            this.lblFecha.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.lblFecha.Location = new System.Drawing.Point(425, 20);
             this.lblFecha.Name = "lblFecha";
             this.lblFecha.TabIndex = 2;
@@ -70,6 +73,7 @@
             // dtpFecha
             // 
             this.dtpFecha.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpFecha.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.dtpFecha.Location = new System.Drawing.Point(475, 17);
             this.dtpFecha.Name = "dtpFecha";
             this.dtpFecha.Size = new System.Drawing.Size(130, 23);
@@ -77,6 +81,7 @@
             // 
             // btnCargar
             // 
+            this.btnCargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.btnCargar.Location = new System.Drawing.Point(620, 14);
             this.btnCargar.Name = "btnCargar";
             this.btnCargar.Size = new System.Drawing.Size(120, 29);
@@ -88,6 +93,7 @@
             // lblEstadoCarga
             // 
             this.lblEstadoCarga.ForeColor = System.Drawing.Color.DimGray;
+            this.lblEstadoCarga.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.lblEstadoCarga.Location = new System.Drawing.Point(15, 58);
             this.lblEstadoCarga.Name = "lblEstadoCarga";
             this.lblEstadoCarga.Size = new System.Drawing.Size(510, 20);
@@ -96,6 +102,7 @@
             // 
             // btnTodosPresentes
             // 
+            this.btnTodosPresentes.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
             this.btnTodosPresentes.Location = new System.Drawing.Point(540, 52);
             this.btnTodosPresentes.Name = "btnTodosPresentes";
             this.btnTodosPresentes.Size = new System.Drawing.Size(200, 29);
@@ -121,6 +128,7 @@
                         this.colRut,
                         this.colNombre,
                         this.colEstado});
+            this.dgvAsistencia.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvAsistencia.Location = new System.Drawing.Point(15, 90);
             this.dgvAsistencia.Name = "dgvAsistencia";
             this.dgvAsistencia.Size = new System.Drawing.Size(725, 340);
@@ -160,6 +168,7 @@
             // 
             // btnGuardar
             // 
+            this.btnGuardar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnGuardar.Location = new System.Drawing.Point(480, 445);
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(150, 36);
@@ -170,6 +179,7 @@
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCerrar.Location = new System.Drawing.Point(640, 445);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 36);
@@ -178,12 +188,25 @@
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
+            // btnRecargar
+            // 
+            this.btnRecargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+            this.btnRecargar.Location = new System.Drawing.Point(15, 445);
+            this.btnRecargar.Name = "btnRecargar";
+            this.btnRecargar.Size = new System.Drawing.Size(110, 36);
+            this.btnRecargar.TabIndex = 50;
+            this.btnRecargar.Text = "Recargar";
+            this.btnRecargar.UseVisualStyleBackColor = true;
+            this.btnRecargar.Click += new System.EventHandler(this.btnRecargar_Click);
+            // 
             // FormAsistencia
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(760, 520);
+            this.MinimumSize = new System.Drawing.Size(776, 559); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnRecargar);
             this.Controls.Add(this.btnGuardar);
             this.Controls.Add(this.dgvAsistencia);
             this.Controls.Add(this.btnTodosPresentes);
@@ -193,10 +216,12 @@
             this.Controls.Add(this.lblFecha);
             this.Controls.Add(this.cmbAsignatura);
             this.Controls.Add(this.lblAsignatura);
+            this.KeyPreview = true; // F5 = Recargar
             this.Name = "FormAsistencia";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Registro de asistencia";
             this.Load += new System.EventHandler(this.FormAsistencia_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormAsistencia_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAsistencia)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -218,5 +243,6 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn colEstado;
         private System.Windows.Forms.Button btnGuardar;
         private System.Windows.Forms.Button btnCerrar;
+        private System.Windows.Forms.Button btnRecargar;
     }
 }

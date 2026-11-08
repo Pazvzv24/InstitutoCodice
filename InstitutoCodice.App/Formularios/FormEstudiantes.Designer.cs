@@ -57,6 +57,7 @@
             this.colActivo = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colBloqueado = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnRecargar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvEstudiantes)).BeginInit();
             this.grpDatos.SuspendLayout();
             this.SuspendLayout();
@@ -248,6 +249,8 @@
             // 
             // txtBuscar
             // 
+            this.txtBuscar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtBuscar.Location = new System.Drawing.Point(390, 17);
             this.txtBuscar.Name = "txtBuscar";
             this.txtBuscar.Size = new System.Drawing.Size(300, 23);
@@ -275,6 +278,9 @@
                         this.colCurso,
                         this.colActivo,
                         this.colBloqueado});
+            this.dgvEstudiantes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvEstudiantes.Location = new System.Drawing.Point(330, 50);
             this.dgvEstudiantes.Name = "dgvEstudiantes";
             this.dgvEstudiantes.Size = new System.Drawing.Size(555, 395);
@@ -301,7 +307,7 @@
             // colNombres
             // 
             this.colNombres.DataPropertyName = "Nombres";
-            this.colNombres.FillWeight = 110F;
+            this.colNombres.FillWeight = 100F;
             this.colNombres.HeaderText = "Nombres";
             this.colNombres.Name = "colNombres";
             this.colNombres.ReadOnly = true;
@@ -317,7 +323,7 @@
             // colCorreo
             // 
             this.colCorreo.DataPropertyName = "Correo";
-            this.colCorreo.FillWeight = 140F;
+            this.colCorreo.FillWeight = 100F;
             this.colCorreo.HeaderText = "Correo";
             this.colCorreo.Name = "colCorreo";
             this.colCorreo.ReadOnly = true;
@@ -341,13 +347,14 @@
             // colBloqueado
             // 
             this.colBloqueado.DataPropertyName = "TratamientoBloqueado";
-            this.colBloqueado.FillWeight = 60F;
+            this.colBloqueado.FillWeight = 85F;
             this.colBloqueado.HeaderText = "Bloqueado";
             this.colBloqueado.Name = "colBloqueado";
             this.colBloqueado.ReadOnly = true;
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCerrar.Location = new System.Drawing.Point(785, 490);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
@@ -356,20 +363,35 @@
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
+            // btnRecargar
+            // 
+            this.btnRecargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
+            this.btnRecargar.Location = new System.Drawing.Point(785, 14);
+            this.btnRecargar.Name = "btnRecargar";
+            this.btnRecargar.Size = new System.Drawing.Size(100, 29);
+            this.btnRecargar.TabIndex = 50;
+            this.btnRecargar.Text = "Recargar";
+            this.btnRecargar.UseVisualStyleBackColor = true;
+            this.btnRecargar.Click += new System.EventHandler(this.btnRecargar_Click);
+            // 
             // FormEstudiantes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 535);
+            this.MinimumSize = new System.Drawing.Size(916, 574); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnRecargar);
             this.Controls.Add(this.dgvEstudiantes);
             this.Controls.Add(this.txtBuscar);
             this.Controls.Add(this.lblBuscar);
             this.Controls.Add(this.grpDatos);
+            this.KeyPreview = true; // F5 = Recargar
             this.Name = "FormEstudiantes";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gestión de estudiantes";
             this.Load += new System.EventHandler(this.FormEstudiantes_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormEstudiantes_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvEstudiantes)).EndInit();
             this.grpDatos.ResumeLayout(false);
             this.grpDatos.PerformLayout();
@@ -410,5 +432,6 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn colActivo;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colBloqueado;
         private System.Windows.Forms.Button btnCerrar;
+        private System.Windows.Forms.Button btnRecargar;
     }
 }

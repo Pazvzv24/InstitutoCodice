@@ -8,8 +8,8 @@ namespace InstitutoCodice.Datos.Repositorios
 {
     /// <summary>
     /// Acceso a datos de calificaciones por evaluación con guardado en lote.
-    /// Cada nota registrada o modificada queda en la bitácora de auditoría,
-    /// dentro de la misma transacción.
+    /// Cada nota registrada, modificada o eliminada queda en la bitácora de auditoría,
+    /// dentro de la misma transacción: si algo falla, no se guarda nada.
     /// </summary>
     public class CalificacionRepositorio : RepositorioBase
     {
@@ -45,6 +45,17 @@ namespace InstitutoCodice.Datos.Repositorios
         /// y registra en la auditoría quién las ingresó o modificó.
         /// </summary>
         public void GuardarLista(List<Calificacion> calificaciones, Usuario autor)
+        {
+            GuardarCambios(calificaciones, null, new List<int>(), autor);
+        }
+
+        /// <summary>
+        /// Guarda las notas nuevas o modificadas y elimina las notas de los estudiantes
+        /// indicados (celdas que quedaron vacías), todo en una sola transacción.
+        /// Cada eliminación queda en la bitácora con la nota que tenía.
+        /// </summary>
+        public void GuardarCambios(List<Calificacion> calificaciones, Evaluacion? evaluacion,
+                                   IReadOnlyCollection<int> estudiantesSinNota, Usuario autor)
         {
             // Trae el RUT del estudiante y, si ya existe, su nota en esta evaluación
             const string sqlBuscar = @"
@@ -124,7 +135,58 @@ namespace InstitutoCodice.Datos.Repositorios
                         ValorNuevo = calificacion.Nota.ToString("0.0", CultureInfo.InvariantCulture)
                     }, conexion, transaccion);
                 }
+
+                if (evaluacion != null)
+                {
+                    foreach (int estudianteId in estudiantesSinNota)
+                        EliminarNota(evaluacion, estudianteId, autor, conexion, transaccion);
+                }
             });
+        }
+
+        private static void EliminarNota(Evaluacion evaluacion, int estudianteId, Usuario autor,
+                                         SqlConnection conexion, SqlTransaction transaccion)
+        {
+            const string sqlBuscar = @"
+                SELECT c.Id, c.Nota, e.Rut
+                FROM Calificacion c
+                INNER JOIN Estudiante e ON e.Id = c.EstudianteId
+                WHERE c.EstudianteId = @EstudianteId AND c.EvaluacionId = @EvaluacionId";
+            const string sqlEliminar = "DELETE FROM Calificacion WHERE Id = @Id";
+
+            int id;
+            decimal notaAnterior;
+            string rut;
+            using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion, transaccion))
+            {
+                comando.Parameters.AddWithValue("@EstudianteId", estudianteId);
+                comando.Parameters.AddWithValue("@EvaluacionId", evaluacion.Id);
+                using (SqlDataReader lector = comando.ExecuteReader())
+                {
+                    if (!lector.Read())
+                        return; // no tenía nota: no hay nada que eliminar
+                    id = lector.GetInt32(0);
+                    notaAnterior = lector.GetDecimal(1);
+                    rut = lector.GetString(2);
+                }
+            }
+
+            using (SqlCommand comando = new SqlCommand(sqlEliminar, conexion, transaccion))
+            {
+                comando.Parameters.AddWithValue("@Id", id);
+                comando.ExecuteNonQuery();
+            }
+
+            AuditoriaRepositorio.Registrar(new RegistroAuditoria
+            {
+                UsuarioId = autor.Id,
+                NombreUsuario = autor.NombreUsuario,
+                Accion = AccionAuditoria.NotaEliminada,
+                Detalle = AccionAuditoria.DetalleNota(evaluacion.Nombre, evaluacion.Id, rut, estudianteId),
+                Entidad = "Calificacion",
+                EntidadId = id,
+                ValorAnterior = notaAnterior.ToString("0.0", CultureInfo.InvariantCulture)
+            }, conexion, transaccion);
         }
     }
 }

@@ -50,6 +50,7 @@
             this.colUsuario = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colActivo = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnRecargar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocentes)).BeginInit();
             this.grpDatos.SuspendLayout();
             this.SuspendLayout();
@@ -220,6 +221,7 @@
                         this.colCorreo,
                         this.colUsuario,
                         this.colActivo});
+            this.dgvDocentes.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvDocentes.Location = new System.Drawing.Point(330, 15);
             this.dgvDocentes.Name = "dgvDocentes";
             this.dgvDocentes.Size = new System.Drawing.Size(555, 400);
@@ -277,6 +279,7 @@
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCerrar.Location = new System.Drawing.Point(785, 432);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
@@ -285,18 +288,33 @@
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
+            // btnRecargar
+            // 
+            this.btnRecargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
+            this.btnRecargar.Location = new System.Drawing.Point(675, 432);
+            this.btnRecargar.Name = "btnRecargar";
+            this.btnRecargar.Size = new System.Drawing.Size(100, 32);
+            this.btnRecargar.TabIndex = 50;
+            this.btnRecargar.Text = "Recargar";
+            this.btnRecargar.UseVisualStyleBackColor = true;
+            this.btnRecargar.Click += new System.EventHandler(this.btnRecargar_Click);
+            // 
             // FormDocentes
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(900, 480);
+            this.MinimumSize = new System.Drawing.Size(916, 519); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnRecargar);
             this.Controls.Add(this.dgvDocentes);
             this.Controls.Add(this.grpDatos);
+            this.KeyPreview = true; // F5 = Recargar
             this.Name = "FormDocentes";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gestión de docentes";
             this.Load += new System.EventHandler(this.FormDocentes_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormDocentes_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDocentes)).EndInit();
             this.grpDatos.ResumeLayout(false);
             this.grpDatos.PerformLayout();
@@ -330,5 +348,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colUsuario;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colActivo;
         private System.Windows.Forms.Button btnCerrar;
+        private System.Windows.Forms.Button btnRecargar;
     }
 }

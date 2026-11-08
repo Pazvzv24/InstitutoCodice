@@ -53,6 +53,9 @@
             this.lblAyudaNotas = new System.Windows.Forms.Label();
             this.btnGuardarNotas = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
+            this.btnEliminarEval = new System.Windows.Forms.Button();
+            this.btnNuevaEval = new System.Windows.Forms.Button();
+            this.btnRecargar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvEvaluaciones)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPonderacion)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvNotas)).BeginInit();
@@ -89,6 +92,9 @@
             this.grpEvaluaciones.Controls.Add(this.lblPonderacion);
             this.grpEvaluaciones.Controls.Add(this.nudPonderacion);
             this.grpEvaluaciones.Controls.Add(this.btnAgregarEval);
+            this.grpEvaluaciones.Controls.Add(this.btnNuevaEval);
+            this.grpEvaluaciones.Controls.Add(this.btnEliminarEval);
+            this.grpEvaluaciones.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.grpEvaluaciones.Location = new System.Drawing.Point(15, 55);
             this.grpEvaluaciones.Name = "grpEvaluaciones";
             this.grpEvaluaciones.Size = new System.Drawing.Size(430, 440);
@@ -112,6 +118,7 @@
                         this.colEvalNombre,
                         this.colEvalFecha,
                         this.colEvalPonderacion});
+            this.dgvEvaluaciones.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvEvaluaciones.Location = new System.Drawing.Point(15, 25);
             this.dgvEvaluaciones.Name = "dgvEvaluaciones";
             this.dgvEvaluaciones.Size = new System.Drawing.Size(400, 215);
@@ -150,6 +157,7 @@
             // lblSuma
             // 
             this.lblSuma.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblSuma.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblSuma.Location = new System.Drawing.Point(15, 250);
             this.lblSuma.Name = "lblSuma";
             this.lblSuma.Size = new System.Drawing.Size(400, 20);
@@ -160,6 +168,7 @@
             // 
             this.lblNuevaEval.AutoSize = true;
             this.lblNuevaEval.ForeColor = System.Drawing.Color.DimGray;
+            this.lblNuevaEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblNuevaEval.Location = new System.Drawing.Point(15, 282);
             this.lblNuevaEval.Name = "lblNuevaEval";
             this.lblNuevaEval.TabIndex = 5;
@@ -168,6 +177,7 @@
             // lblNombreEval
             // 
             this.lblNombreEval.AutoSize = true;
+            this.lblNombreEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblNombreEval.Location = new System.Drawing.Point(15, 310);
             this.lblNombreEval.Name = "lblNombreEval";
             this.lblNombreEval.TabIndex = 6;
@@ -175,6 +185,7 @@
             // 
             // txtNombreEval
             // 
+            this.txtNombreEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.txtNombreEval.Location = new System.Drawing.Point(120, 307);
             this.txtNombreEval.Name = "txtNombreEval";
             this.txtNombreEval.Size = new System.Drawing.Size(295, 23);
@@ -183,6 +194,7 @@
             // lblFechaEval
             // 
             this.lblFechaEval.AutoSize = true;
+            this.lblFechaEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblFechaEval.Location = new System.Drawing.Point(15, 345);
             this.lblFechaEval.Name = "lblFechaEval";
             this.lblFechaEval.TabIndex = 8;
@@ -191,6 +203,7 @@
             // dtpFechaEval
             // 
             this.dtpFechaEval.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpFechaEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.dtpFechaEval.Location = new System.Drawing.Point(120, 342);
             this.dtpFechaEval.Name = "dtpFechaEval";
             this.dtpFechaEval.Size = new System.Drawing.Size(140, 23);
@@ -199,6 +212,7 @@
             // lblPonderacion
             // 
             this.lblPonderacion.AutoSize = true;
+            this.lblPonderacion.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblPonderacion.Location = new System.Drawing.Point(15, 380);
             this.lblPonderacion.Name = "lblPonderacion";
             this.lblPonderacion.TabIndex = 10;
@@ -210,6 +224,7 @@
             this.nudPonderacion.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             this.nudPonderacion.Maximum = new decimal(new int[] { 100, 0, 0, 0 });
             this.nudPonderacion.Value = new decimal(new int[] { 25, 0, 0, 0 });
+            this.nudPonderacion.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.nudPonderacion.Location = new System.Drawing.Point(120, 377);
             this.nudPonderacion.Name = "nudPonderacion";
             this.nudPonderacion.Size = new System.Drawing.Size(80, 23);
@@ -217,6 +232,7 @@
             // 
             // btnAgregarEval
             // 
+            this.btnAgregarEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.btnAgregarEval.Location = new System.Drawing.Point(225, 373);
             this.btnAgregarEval.Name = "btnAgregarEval";
             this.btnAgregarEval.Size = new System.Drawing.Size(190, 30);
@@ -231,6 +247,7 @@
             this.grpNotas.Controls.Add(this.dgvNotas);
             this.grpNotas.Controls.Add(this.lblAyudaNotas);
             this.grpNotas.Controls.Add(this.btnGuardarNotas);
+            this.grpNotas.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.grpNotas.Location = new System.Drawing.Point(460, 55);
             this.grpNotas.Name = "grpNotas";
             this.grpNotas.Size = new System.Drawing.Size(525, 440);
@@ -240,6 +257,7 @@
             // lblEvaluacionSel
             // 
             this.lblEvaluacionSel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblEvaluacionSel.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.lblEvaluacionSel.Location = new System.Drawing.Point(15, 25);
             this.lblEvaluacionSel.Name = "lblEvaluacionSel";
             this.lblEvaluacionSel.Size = new System.Drawing.Size(495, 20);
@@ -263,6 +281,7 @@
                         this.colNotaRut,
                         this.colNotaNombre,
                         this.colNota});
+            this.dgvNotas.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
             this.dgvNotas.Location = new System.Drawing.Point(15, 50);
             this.dgvNotas.Name = "dgvNotas";
             this.dgvNotas.Size = new System.Drawing.Size(495, 320);
@@ -300,14 +319,16 @@
             // lblAyudaNotas
             // 
             this.lblAyudaNotas.ForeColor = System.Drawing.Color.DimGray;
+            this.lblAyudaNotas.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
             this.lblAyudaNotas.Location = new System.Drawing.Point(15, 385);
             this.lblAyudaNotas.Name = "lblAyudaNotas";
             this.lblAyudaNotas.Size = new System.Drawing.Size(330, 40);
             this.lblAyudaNotas.TabIndex = 16;
-            this.lblAyudaNotas.Text = "Notas entre 1,0 y 7,0. Deja la celda vacía si el estudiante aún no tiene nota.";
+            this.lblAyudaNotas.Text = "Notas entre 1,0 y 7,0. Para eliminar una nota, deje la celda vacía y guarde.";
             // 
             // btnGuardarNotas
             // 
+            this.btnGuardarNotas.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnGuardarNotas.Location = new System.Drawing.Point(360, 385);
             this.btnGuardarNotas.Name = "btnGuardarNotas";
             this.btnGuardarNotas.Size = new System.Drawing.Size(150, 32);
@@ -318,6 +339,7 @@
             // 
             // btnCerrar
             // 
+            this.btnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right));
             this.btnCerrar.Location = new System.Drawing.Point(885, 510);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(100, 32);
@@ -326,20 +348,58 @@
             this.btnCerrar.UseVisualStyleBackColor = true;
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
+            // btnRecargar
+            // 
+            this.btnRecargar.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left));
+            this.btnRecargar.Location = new System.Drawing.Point(455, 14);
+            this.btnRecargar.Name = "btnRecargar";
+            this.btnRecargar.Size = new System.Drawing.Size(100, 29);
+            this.btnRecargar.TabIndex = 50;
+            this.btnRecargar.Text = "Recargar";
+            this.btnRecargar.UseVisualStyleBackColor = true;
+            this.btnRecargar.Click += new System.EventHandler(this.btnRecargar_Click);
+            // 
+            // btnNuevaEval
+            // 
+            this.btnNuevaEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+            this.btnNuevaEval.Location = new System.Drawing.Point(15, 405);
+            this.btnNuevaEval.Name = "btnNuevaEval";
+            this.btnNuevaEval.Size = new System.Drawing.Size(95, 30);
+            this.btnNuevaEval.TabIndex = 51;
+            this.btnNuevaEval.Text = "Nueva";
+            this.btnNuevaEval.UseVisualStyleBackColor = true;
+            this.btnNuevaEval.Click += new System.EventHandler(this.btnNuevaEval_Click);
+            // 
+            // btnEliminarEval
+            // 
+            this.btnEliminarEval.Anchor = ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left));
+            this.btnEliminarEval.Enabled = false;
+            this.btnEliminarEval.Location = new System.Drawing.Point(225, 405);
+            this.btnEliminarEval.Name = "btnEliminarEval";
+            this.btnEliminarEval.Size = new System.Drawing.Size(190, 30);
+            this.btnEliminarEval.TabIndex = 52;
+            this.btnEliminarEval.Text = "Eliminar evaluación";
+            this.btnEliminarEval.UseVisualStyleBackColor = true;
+            this.btnEliminarEval.Click += new System.EventHandler(this.btnEliminarEval_Click);
+            // 
             // FormCalificaciones
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1000, 560);
+            this.MinimumSize = new System.Drawing.Size(1016, 599); // no se puede achicar más que el diseño original
             this.Controls.Add(this.btnCerrar);
+            this.Controls.Add(this.btnRecargar);
             this.Controls.Add(this.grpNotas);
             this.Controls.Add(this.grpEvaluaciones);
             this.Controls.Add(this.cmbAsignatura);
             this.Controls.Add(this.lblAsignatura);
+            this.KeyPreview = true; // F5 = Recargar
             this.Name = "FormCalificaciones";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Evaluaciones y calificaciones";
             this.Load += new System.EventHandler(this.FormCalificaciones_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormCalificaciones_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.dgvEvaluaciones)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPonderacion)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvNotas)).EndInit();
@@ -380,5 +440,8 @@
         private System.Windows.Forms.Label lblAyudaNotas;
         private System.Windows.Forms.Button btnGuardarNotas;
         private System.Windows.Forms.Button btnCerrar;
+        private System.Windows.Forms.Button btnEliminarEval;
+        private System.Windows.Forms.Button btnNuevaEval;
+        private System.Windows.Forms.Button btnRecargar;
     }
 }

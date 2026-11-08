@@ -9,6 +9,7 @@ namespace InstitutoCodice.App.Formularios
 {
     /// <summary>
     /// Inscripción de estudiantes en asignaturas (RF-04).
+    /// F5 o "Recargar" vuelve a leer asignaturas, estudiantes e inscritos desde la base.
     /// </summary>
     public partial class FormInscripciones : Form
     {
@@ -32,11 +33,31 @@ namespace InstitutoCodice.App.Formularios
 
         private void FormInscripciones_Load(object sender, EventArgs e)
         {
+            CargarListas();
+            CargarInscritos();
+        }
+
+        /// <summary>
+        /// Carga asignaturas y estudiantes, manteniendo lo que estaba seleccionado.
+        /// </summary>
+        private void CargarListas()
+        {
+            int? asignaturaAnterior = (cmbAsignatura.SelectedItem as Asignatura)?.Id;
+            int? estudianteAnterior = (cmbEstudiante.SelectedItem as Estudiante)?.Id;
             try
             {
                 cargando = true;
-                cmbAsignatura.DataSource = asignaturaRepositorio.Listar();
-                cmbEstudiante.DataSource = estudianteRepositorio.Listar().Where(x => x.Activo && x.PuedeTratarse()).ToList(); // Ley 21.719: sin bloqueados
+                var asignaturas = asignaturaRepositorio.Listar().ToList();
+                cmbAsignatura.DataSource = asignaturas;
+                var asignatura = asignaturas.FirstOrDefault(a => a.Id == asignaturaAnterior);
+                if (asignatura != null)
+                    cmbAsignatura.SelectedItem = asignatura;
+
+                var estudiantes = estudianteRepositorio.Listar().Where(x => x.Activo && x.PuedeTratarse()).ToList(); // Ley 21.719: sin bloqueados
+                cmbEstudiante.DataSource = estudiantes;
+                var estudiante = estudiantes.FirstOrDefault(x => x.Id == estudianteAnterior);
+                if (estudiante != null)
+                    cmbEstudiante.SelectedItem = estudiante;
             }
             catch (Exception ex)
             {
@@ -46,8 +67,6 @@ namespace InstitutoCodice.App.Formularios
             {
                 cargando = false;
             }
-
-            CargarInscritos();
         }
 
         private void cmbAsignatura_SelectedIndexChanged(object sender, EventArgs e)
@@ -142,6 +161,28 @@ namespace InstitutoCodice.App.Formularios
             {
                 Mensajes.Error(ex);
             }
+        }
+
+        // ------------------------------------------------------------ Recargar (F5)
+
+        private void btnRecargar_Click(object sender, EventArgs e) => Recargar();
+
+        private void FormInscripciones_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                Recargar();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Vuelve a leer los datos desde la base (por ejemplo, si se modificaron en otra ventana).
+        /// </summary>
+        private void Recargar()
+        {
+            CargarListas();
+            CargarInscritos();
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)

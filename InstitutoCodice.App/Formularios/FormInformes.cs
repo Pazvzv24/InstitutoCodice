@@ -16,6 +16,7 @@ namespace InstitutoCodice.App.Formularios
     /// los estudiantes y asignaturas de los cursos que dicta.
     /// Exportación a Excel y PDF de lo que está en pantalla (ya filtrado por permisos);
     /// cada exportación queda en la bitácora de auditoría.
+    /// F5 o "Recargar" vuelve a leer las listas y el informe mostrado.
     /// </summary>
     public partial class FormInformes : Form
     {
@@ -47,16 +48,32 @@ namespace InstitutoCodice.App.Formularios
 
         private void FormInformes_Load(object sender, EventArgs e)
         {
+            CargarListas();
+        }
+
+        /// <summary>
+        /// Carga asignaturas y estudiantes permitidos, manteniendo lo que estaba seleccionado.
+        /// </summary>
+        private void CargarListas()
+        {
+            int? asignaturaAnterior = (cmbAsignatura.SelectedItem as Asignatura)?.Id;
+            int? estudianteAnterior = (cmbEstudiante.SelectedItem as Estudiante)?.Id;
             try
             {
                 asignaturasPermitidas = asignaturaRepositorio.ListarParaUsuario(Sesion.UsuarioActual).ToList();
                 cmbAsignatura.DataSource = asignaturasPermitidas;
+                var asignatura = asignaturasPermitidas.FirstOrDefault(a => a.Id == asignaturaAnterior);
+                if (asignatura != null)
+                    cmbAsignatura.SelectedItem = asignatura;
 
                 // Un docente solo ve a los estudiantes inscritos en sus asignaturas
-                if (Sesion.EsAdministrador)
-                    cmbEstudiante.DataSource = estudianteRepositorio.Listar().Where(x => x.PuedeTratarse()).ToList(); // Ley 21.719: sin bloqueados
-                else
-                    cmbEstudiante.DataSource = servicio.ObtenerEstudiantesDe(asignaturasPermitidas);
+                List<Estudiante> estudiantes = Sesion.EsAdministrador
+                    ? estudianteRepositorio.Listar().Where(x => x.PuedeTratarse()).ToList() // Ley 21.719: sin bloqueados
+                    : servicio.ObtenerEstudiantesDe(asignaturasPermitidas);
+                cmbEstudiante.DataSource = estudiantes;
+                var estudiante = estudiantes.FirstOrDefault(x => x.Id == estudianteAnterior);
+                if (estudiante != null)
+                    cmbEstudiante.SelectedItem = estudiante;
             }
             catch (Exception ex)
             {
@@ -228,6 +245,34 @@ namespace InstitutoCodice.App.Formularios
                     Mensajes.Error(ex);
                 }
             }
+        }
+
+        // ------------------------------------------------------------ Recargar (F5)
+
+        private void btnRecargar_Click(object sender, EventArgs e) => Recargar();
+
+        private void FormInformes_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F5)
+            {
+                Recargar();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Vuelve a leer los datos desde la base (por ejemplo, si se modificaron en otra ventana).
+        /// </summary>
+        private void Recargar()
+        {
+            CargarListas();
+
+            // Si había un informe en pantalla, se vuelve a generar con los datos actuales,
+            // solo si el mismo curso o estudiante sigue disponible en la lista
+            if (tipoActual == "Curso" && (cmbAsignatura.SelectedItem as Asignatura)?.Codigo == referenciaActual)
+                btnVerCurso_Click(this, EventArgs.Empty);
+            else if (tipoActual == "Estudiante" && (cmbEstudiante.SelectedItem as Estudiante)?.Rut == referenciaActual)
+                btnVerEstudiante_Click(this, EventArgs.Empty);
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)
