@@ -315,6 +315,33 @@ namespace InstitutoCodice.Pruebas
             Assert.IsNull(AccionAuditoria.Truncar(null, 3));
         }
 
+        // Auditoría de asistencia
+        [TestMethod]
+        public void AccionParaAsistencia_DistingueRegistroModificacionYSinCambio()
+        {
+            Assert.AreEqual(AccionAuditoria.AsistenciaRegistrada,
+                AccionAuditoria.AccionParaAsistencia(null, EstadoAsistencia.Presente), "Sin registro previo = registro.");
+            Assert.AreEqual(AccionAuditoria.AsistenciaModificada,
+                AccionAuditoria.AccionParaAsistencia(EstadoAsistencia.Presente, EstadoAsistencia.Ausente), "Estado distinto = modificación.");
+            Assert.IsNull(AccionAuditoria.AccionParaAsistencia(EstadoAsistencia.Ausente, EstadoAsistencia.Ausente),
+                "Mismo estado = no se audita.");
+        }
+
+        [TestMethod]
+        public void DetalleAsistencia_IdentificaAlEstudianteSoloPorRut()
+        {
+            // Arrange
+            var fecha = new DateTime(2026, 11, 7);
+
+            // Act
+            string conRut = AccionAuditoria.DetalleAsistencia("BDD201", fecha, " 20456789-1 ", 5);
+            string sinRut = AccionAuditoria.DetalleAsistencia("BDD201", fecha, null, 5);
+
+            // Assert
+            Assert.AreEqual("Asistencia BDD201 del 07-11-2026, estudiante RUT 20456789-1", conRut);
+            Assert.AreEqual("Asistencia BDD201 del 07-11-2026, estudiante Id 5", sinRut);
+        }
+
         // Auditoría de modificaciones (estudiantes, docentes y asignaturas)
         [TestMethod]
         public void ResumirCambios_SinDiferencias_NoHayCambios()

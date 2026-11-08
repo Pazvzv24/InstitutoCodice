@@ -3,7 +3,7 @@
 **Sistema:** Instituto Códice - Sistema de Asistencia y Notas
 **Versión del sistema analizada:** v1.10
 **Metodología:** STRIDE por elemento del diagrama de flujo de datos
-**Versión del documento:** 1.2 - noviembre de 2026
+**Versión del documento:** 1.3 - noviembre de 2026
 
 Este documento identifica qué podría salir mal en el sistema desde el punto de vista de la seguridad, qué control lo evita o lo reduce y qué riesgo queda. Complementa el [registro de actividades de tratamiento](RegistroTratamiento.md) (qué datos se protegen) y el [plan de respuesta ante incidentes](PlanRespuestaIncidentes.md) (qué hacer si un control falla).
 
@@ -75,7 +75,7 @@ flowchart LR
 
 | Id | Amenaza | Controles implementados | Riesgo residual |
 | :--- | :--- | :--- | :--- |
-| R1 | Un usuario niega haber cambiado una nota, modificado los datos de un estudiante, anulado una inscripción, exportado datos o bloqueado a un estudiante | Bitácora inmutable con usuario, fecha y hora (UTC), acción, detalle y valores anterior y nuevo: ingresos, fallos, bloqueos, cambios de contraseña, altas y modificaciones de estudiantes, docentes y asignaturas, inscripciones y anulaciones, cambios y eliminaciones de notas y evaluaciones, exportaciones y bloqueos del tratamiento. Cada cambio de datos se audita en la misma transacción: no puede guardarse un cambio sin su registro | 🟡 Si dos personas comparten una cuenta, la bitácora no puede distinguirlas: las cuentas deben ser personales |
+| R1 | Un usuario niega haber cambiado una nota o una asistencia, modificado los datos de un estudiante, anulado una inscripción, exportado datos o bloqueado a un estudiante | Bitácora inmutable con usuario, fecha y hora (UTC), acción, detalle y valores anterior y nuevo: ingresos, fallos, bloqueos, cambios de contraseña, altas y modificaciones de estudiantes, docentes y asignaturas, inscripciones y anulaciones, cambios y eliminaciones de notas y evaluaciones, asistencia registrada o modificada, exportaciones y bloqueos del tratamiento. Cada cambio de datos se audita en la misma transacción: no puede guardarse un cambio sin su registro | 🟡 Si dos personas comparten una cuenta, la bitácora no puede distinguirlas: las cuentas deben ser personales |
 
 ### I - Divulgación de información (*Information disclosure*)
 
@@ -136,3 +136,4 @@ flowchart LR
 | 1.0 | Noviembre de 2026 | Versión inicial, sobre la versión v1.10 del sistema |
 | 1.1 | Noviembre de 2026 | Eliminación de notas y de evaluaciones sin notas: se actualizan T1, R1 y E2 |
 | 1.2 | Noviembre de 2026 | Auditoría completa de cambios de datos (estudiantes, docentes, asignaturas e inscripciones): se actualizan R1 e I5 |
+| 1.3 | Noviembre de 2026 | Auditoría de la asistencia registrada o modificada: se actualiza R1 |

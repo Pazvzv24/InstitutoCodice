@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using InstitutoCodice.Negocio.Modelos;
 
 namespace InstitutoCodice.Negocio.Servicios
 {
@@ -40,6 +42,8 @@ namespace InstitutoCodice.Negocio.Servicios
         public const string NotaRegistrada = "NotaRegistrada";
         public const string NotaModificada = "NotaModificada";
         public const string NotaEliminada = "NotaEliminada";
+        public const string AsistenciaRegistrada = "AsistenciaRegistrada";
+        public const string AsistenciaModificada = "AsistenciaModificada";
 
         // Datos personales que salen del sistema
         public const string InformeExportado = "InformeExportado";
@@ -59,6 +63,7 @@ namespace InstitutoCodice.Negocio.Servicios
             AsignaturaCreada, AsignaturaModificada, InscripcionCreada, InscripcionEliminada,
             EvaluacionCreada, EvaluacionModificada, EvaluacionEliminada,
             NotaRegistrada, NotaModificada, NotaEliminada,
+            AsistenciaRegistrada, AsistenciaModificada,
             InformeExportado, DatosTitularExportados, TratamientoBloqueado, TratamientoDesbloqueado
         };
 
@@ -86,6 +91,33 @@ namespace InstitutoCodice.Negocio.Servicios
                 : "estudiante RUT " + rutEstudiante.Trim();
 
             return "Evaluación \"" + nombreEvaluacion + "\" (Id " + evaluacionId + "), " + estudiante;
+        }
+
+        /// <summary>
+        /// Decide qué registrar al guardar la asistencia de un estudiante:
+        /// sin registro anterior = AsistenciaRegistrada; estado distinto = AsistenciaModificada;
+        /// mismo estado = nada (null).
+        /// </summary>
+        public static string? AccionParaAsistencia(EstadoAsistencia? estadoAnterior, EstadoAsistencia estadoNuevo)
+        {
+            if (!estadoAnterior.HasValue)
+                return AsistenciaRegistrada;
+
+            return estadoAnterior.Value != estadoNuevo ? AsistenciaModificada : null;
+        }
+
+        /// <summary>
+        /// Arma el detalle legible de un registro de asistencia para la bitácora.
+        /// Identifica al estudiante solo por RUT (minimización); si no se encontró, deja el Id.
+        /// Ejemplo: Asistencia BDD201 del 07-11-2026, estudiante RUT 20456789-1
+        /// </summary>
+        public static string DetalleAsistencia(string? codigoAsignatura, DateTime fecha, string? rutEstudiante, int estudianteId)
+        {
+            string estudiante = string.IsNullOrWhiteSpace(rutEstudiante)
+                ? "estudiante Id " + estudianteId
+                : "estudiante RUT " + rutEstudiante.Trim();
+
+            return "Asistencia " + codigoAsignatura + " del " + fecha.ToString("dd-MM-yyyy") + ", " + estudiante;
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ namespace InstitutoCodice.App.Formularios
     /// <summary>
     /// Gestión de asistencia por fecha (RF-05, RF-06).
     /// F5 o "Recargar" vuelve a leer las asignaturas y la lista cargada desde la base.
+    /// Cada asistencia registrada o modificada queda en la bitácora.
     /// </summary>
     public partial class FormAsistencia : Form
     {
@@ -149,7 +150,8 @@ namespace InstitutoCodice.App.Formularios
 
             try
             {
-                asistenciaRepositorio.GuardarLista(lista);
+                // Guarda y audita en la misma transacción (solo los estados que cambiaron)
+                asistenciaRepositorio.GuardarLista(lista, Sesion.UsuarioActual);
                 int presentes = lista.Count(a => a.Estado == EstadoAsistencia.Presente);
                 Mensajes.Info("Asistencia guardada: " + presentes + " de " + lista.Count + " presentes.");
                 CargarLista();

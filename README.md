@@ -119,7 +119,7 @@ También se puede crear la base desde SSMS ejecutando en orden:
 - `BaseDatos/10_PermisosEliminacion.sql` -> Permite a la cuenta de la aplicación eliminar notas y evaluaciones sin notas. Ejecutar con una cuenta administradora.
 
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (44 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (46 pruebas unitarias, no requieren base de datos).
 - Desde la consola: `dotnet test InstitutoCodice.sln`
 
 **Integración continua**
@@ -165,10 +165,10 @@ El diseño de seguridad se analizó con la metodología STRIDE: [modelo de amena
 | Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad); si no hay permisos definidos, no muestra nada (falla cerrada); cubierto por pruebas automáticas |
 | Política de contraseñas | Mínimo 8 caracteres con mayúscula, minúscula y número; no puede contener el usuario ni repetir la actual |
 | Cambio obligatorio | Una contraseña asignada o restablecida por el administrador debe cambiarse en el siguiente ingreso |
-| Bitácora de auditoría | Registra ingresos, fallos, bloqueos y cambios de contraseña; altas, modificaciones, desactivaciones y reactivaciones de estudiantes y docentes; altas y modificaciones de asignaturas; inscripciones y anulaciones; cambios y eliminaciones de evaluaciones; y cada nota registrada, modificada o eliminada con su valor anterior y nuevo. Identifica al estudiante por RUT y, de nombres, RUT de docentes y correos, registra solo qué campo cambió, no su valor (minimización de datos) |
+| Bitácora de auditoría | Registra ingresos, fallos, bloqueos y cambios de contraseña; altas, modificaciones, desactivaciones y reactivaciones de estudiantes y docentes; altas y modificaciones de asignaturas; inscripciones y anulaciones; cambios y eliminaciones de evaluaciones; cada nota registrada, modificada o eliminada, y cada asistencia registrada o modificada, con su valor anterior y nuevo. Identifica al estudiante por RUT y, de nombres, RUT de docentes y correos, registra solo qué campo cambió, no su valor (minimización de datos) |
 | Mínimo privilegio | La app se conecta con `app_codice` (rol `rol_app_codice`): solo lee, inserta y actualiza; borra solo inscripciones, notas y evaluaciones sin notas; no puede modificar la bitácora, crear tablas ni desactivar triggers |
 | Secretos fuera del código | La contraseña de la cuenta de la app se lee desde una variable de entorno; la configuración local está en `.gitignore` |
-| Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; los cambios de estudiantes, docentes, asignaturas, inscripciones, evaluaciones y notas se auditan en la misma transacción que el cambio: se guardan los dos o ninguno |
+| Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; los cambios de estudiantes, docentes, asignaturas, inscripciones, evaluaciones, notas y asistencia se auditan en la misma transacción que el cambio: se guardan los dos o ninguno |
 | Exportación controlada | Los informes se exportan a Excel o PDF solo con los datos que el usuario ya puede ver; cada exportación queda en la bitácora; las celdas de Excel se escriben como texto (evita la inyección de fórmulas) |
 | Aviso de privacidad | Accesible desde el login, antes de ingresar: responsable, datos tratados, finalidad, quién accede, conservación y derechos (Ley 21.719) |
 | Derechos del titular | Exportación de todos los datos de un estudiante en JSON (acceso y portabilidad), solo para el administrador, sin datos de terceros y con registro en la bitácora |
@@ -190,7 +190,7 @@ El sistema se diseñó considerando la Ley N° 21.719 de protección de datos pe
 - **Derechos de acceso y portabilidad:** exportación de los datos del titular en JSON, un formato estructurado que otro sistema puede leer.
 - **Derecho de bloqueo:** el administrador puede bloquear temporalmente el tratamiento de los datos de un estudiante sin borrar su historial. Bloquear y desbloquear quedan en la bitácora.
 - **Minimización:** la bitácora identifica a los estudiantes solo por RUT, registra que un nombre o correo cambió sin guardar su valor, y las exportaciones no incluyen datos de terceros.
-- **Responsabilidad proactiva:** cada acceso, cada creación o modificación de estudiantes y docentes, cada inscripción, cada cambio de nota y cada exportación queda en una bitácora inmutable.
+- **Responsabilidad proactiva:** cada acceso, cada creación o modificación de estudiantes y docentes, cada inscripción, cada cambio de nota o de asistencia y cada exportación queda en una bitácora inmutable.
 - **Respuesta ante incidentes:** plan documentado con roles, fases, criterios de notificación y registro de incidentes.
 
 Pendiente de la institución: definir los plazos de conservación e instalar el certificado del servidor en producción.
@@ -220,7 +220,7 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 | RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos, `PoliticaBloqueo` |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-03 (Contraseñas) | `PoliticaContrasena`, `FormCambiarContrasena` |
-| Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, `AccionAuditoria.DetalleNota()`, `CambiosAuditoria` (qué campos cambiaron), tabla `Auditoria` |
+| Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, `AccionAuditoria.DetalleNota()`, `AccionAuditoria.DetalleAsistencia()`, `CambiosAuditoria` (qué campos cambiaron), tabla `Auditoria` |
 | Ley 21.719 (información) | `AvisoPrivacidad`, `FormAvisoPrivacidad`, `docs/RegistroTratamiento.md` |
 | Ley 21.719 (acceso y portabilidad) | `ServicioDatosTitular`, botón "Exportar datos del titular" en `FormEstudiantes` |
 | Ley 21.719 (bloqueo) | `Estudiante.PuedeTratarse()`, `ServicioInformes`, casilla "Tratamiento bloqueado" en `FormEstudiantes`, `09_BloqueoTratamiento.sql` |
@@ -272,7 +272,7 @@ No se incluyen el enunciado, la pauta de evaluación ni datos de la institución
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 | v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
 | v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; análisis CodeQL; protección de secretos; reporte privado de vulnerabilidades; badge en el README. |
-| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`); varias pantallas abiertas a la vez (se cierran todas al cerrar sesión); pantallas que se adaptan al tamaño de la ventana; botón Recargar y tecla F5; edición y eliminación de evaluaciones; eliminación de notas con registro en la bitácora; auditoría de cambios de estudiantes, docentes, asignaturas, inscripciones y evaluaciones en la misma transacción, con minimización de datos personales; capturas de pantalla en el README; 6 pruebas nuevas. |
+| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`); varias pantallas abiertas a la vez (se cierran todas al cerrar sesión); pantallas que se adaptan al tamaño de la ventana; botón Recargar y tecla F5; edición y eliminación de evaluaciones; eliminación de notas con registro en la bitácora; auditoría de cambios de estudiantes, docentes, asignaturas, inscripciones, evaluaciones y asistencia en la misma transacción, con minimización de datos personales; capturas de pantalla en el README; 8 pruebas nuevas. |
 
 ### Licencias de terceros
 
