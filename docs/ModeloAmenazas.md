@@ -3,7 +3,7 @@
 **Sistema:** Instituto Códice - Sistema de Asistencia y Notas
 **Versión del sistema analizada:** v1.10
 **Metodología:** STRIDE por elemento del diagrama de flujo de datos
-**Versión del documento:** 1.1 - noviembre de 2026
+**Versión del documento:** 1.2 - noviembre de 2026
 
 Este documento identifica qué podría salir mal en el sistema desde el punto de vista de la seguridad, qué control lo evita o lo reduce y qué riesgo queda. Complementa el [registro de actividades de tratamiento](RegistroTratamiento.md) (qué datos se protegen) y el [plan de respuesta ante incidentes](PlanRespuestaIncidentes.md) (qué hacer si un control falla).
 
@@ -75,7 +75,7 @@ flowchart LR
 
 | Id | Amenaza | Controles implementados | Riesgo residual |
 | :--- | :--- | :--- | :--- |
-| R1 | Un usuario niega haber cambiado una nota, exportado datos o bloqueado a un estudiante | Bitácora inmutable con usuario, fecha y hora (UTC), acción, detalle y valores anterior y nuevo: ingresos, fallos, bloqueos, cambios de contraseña, cambios y eliminaciones de notas y evaluaciones, exportaciones y bloqueos del tratamiento | 🟡 Si dos personas comparten una cuenta, la bitácora no puede distinguirlas: las cuentas deben ser personales |
+| R1 | Un usuario niega haber cambiado una nota, modificado los datos de un estudiante, anulado una inscripción, exportado datos o bloqueado a un estudiante | Bitácora inmutable con usuario, fecha y hora (UTC), acción, detalle y valores anterior y nuevo: ingresos, fallos, bloqueos, cambios de contraseña, altas y modificaciones de estudiantes, docentes y asignaturas, inscripciones y anulaciones, cambios y eliminaciones de notas y evaluaciones, exportaciones y bloqueos del tratamiento. Cada cambio de datos se audita en la misma transacción: no puede guardarse un cambio sin su registro | 🟡 Si dos personas comparten una cuenta, la bitácora no puede distinguirlas: las cuentas deben ser personales |
 
 ### I - Divulgación de información (*Information disclosure*)
 
@@ -85,7 +85,7 @@ flowchart LR
 | I2 | Se filtra la base de datos y se obtienen las contraseñas de los usuarios | Solo se guardan hashes PBKDF2 con sal; la restricción `CK_Usuario_HashFormato` impide guardar contraseñas en texto plano | 🟢 |
 | I3 | La contraseña de `app_codice` termina publicada en el repositorio | Se lee desde una variable de entorno; la configuración local está en `.gitignore`; Secret Protection y Push protection en GitHub | 🟢 |
 | I4 | Un informe exportado llega a quien no corresponde | Solo se exporta lo que el usuario puede ver; cada exportación queda en la bitácora; los documentos llevan una leyenda de datos personales | 🔴 Una vez exportado, el archivo queda fuera del control del sistema. Se recomienda guardarlo solo en ubicaciones autorizadas y, si se divulga, aplicar el plan de incidentes |
-| I5 | Se exponen más datos de los necesarios | Minimización: la bitácora identifica a los estudiantes solo por RUT; la exportación de datos del titular no incluye datos de terceros | 🟢 |
+| I5 | Se exponen más datos de los necesarios | Minimización: la bitácora identifica a los estudiantes solo por RUT y, cuando cambia un nombre o un correo, registra el campo pero no su valor; la exportación de datos del titular no incluye datos de terceros | 🟢 |
 
 ### D - Denegación de servicio (*Denial of service*)
 
@@ -135,3 +135,4 @@ flowchart LR
 | :--- | :--- | :--- |
 | 1.0 | Noviembre de 2026 | Versión inicial, sobre la versión v1.10 del sistema |
 | 1.1 | Noviembre de 2026 | Eliminación de notas y de evaluaciones sin notas: se actualizan T1, R1 y E2 |
+| 1.2 | Noviembre de 2026 | Auditoría completa de cambios de datos (estudiantes, docentes, asignaturas e inscripciones): se actualizan R1 e I5 |

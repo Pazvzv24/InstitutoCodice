@@ -205,10 +205,7 @@ namespace InstitutoCodice.App.Formularios
             try
             {
                 asignaturaActual.AgregarEvaluacion(evaluacion);
-                evaluacionRepositorio.Agregar(evaluacion, asignaturaActual.Id);
-                Bitacora.Registrar(AccionAuditoria.EvaluacionCreada,
-                    "Evaluación \"" + evaluacion.Nombre + "\" (" + evaluacion.Ponderacion.ToString("0.##") + " %) en " + asignaturaActual.Codigo + ".",
-                    entidad: "Evaluacion", entidadId: evaluacion.Id);
+                evaluacionRepositorio.Agregar(evaluacion, asignaturaActual.Id, Sesion.UsuarioActual); // se audita en la misma transacción
                 txtNombreEval.Clear();
                 CargarEvaluaciones();
             }
@@ -230,15 +227,10 @@ namespace InstitutoCodice.App.Formularios
                 return;
             }
 
-            string antes = DescribirEvaluacion(evaluacion.Nombre, evaluacion.Fecha, evaluacion.Ponderacion);
             try
             {
                 asignatura.ActualizarEvaluacion(evaluacion.Id, nombre, fecha, ponderacion); // valida el 100 %
-                evaluacionRepositorio.Actualizar(evaluacion);
-                Bitacora.Registrar(AccionAuditoria.EvaluacionModificada,
-                    "Evaluación (Id " + evaluacion.Id + ") de " + asignatura.Codigo + " modificada.",
-                    entidad: "Evaluacion", entidadId: evaluacion.Id,
-                    valorAnterior: antes, valorNuevo: DescribirEvaluacion(nombre, fecha, ponderacion));
+                evaluacionRepositorio.Actualizar(evaluacion, Sesion.UsuarioActual); // audita el valor anterior y el nuevo
                 Mensajes.Info("Evaluación actualizada.");
             }
             catch (Exception ex)
@@ -263,7 +255,8 @@ namespace InstitutoCodice.App.Formularios
             try
             {
                 // La base solo la elimina si no tiene notas (además lo impide la clave foránea)
-                if (!evaluacionRepositorio.EliminarSiNoTieneNotas(evaluacion.Id))
+                // y audita la eliminación en la misma transacción
+                if (!evaluacionRepositorio.EliminarSiNoTieneNotas(evaluacion.Id, Sesion.UsuarioActual))
                 {
                     Mensajes.Advertencia("No se puede eliminar \"" + evaluacion.Nombre + "\" porque ya tiene notas registradas.\n\n"
                         + "Si realmente debe eliminarse, primero borre sus notas (deje las celdas vacías y guarde).");
@@ -271,10 +264,6 @@ namespace InstitutoCodice.App.Formularios
                 }
 
                 asignaturaActual.QuitarEvaluacion(evaluacion.Id);
-                Bitacora.Registrar(AccionAuditoria.EvaluacionEliminada,
-                    "Evaluación (Id " + evaluacion.Id + ") de " + asignaturaActual.Codigo + " eliminada (no tenía notas).",
-                    entidad: "Evaluacion", entidadId: evaluacion.Id,
-                    valorAnterior: DescribirEvaluacion(evaluacion.Nombre, evaluacion.Fecha, evaluacion.Ponderacion));
                 Mensajes.Info("Evaluación eliminada.");
             }
             catch (Exception ex)
@@ -282,11 +271,6 @@ namespace InstitutoCodice.App.Formularios
                 Mensajes.Error(ex);
             }
             CargarEvaluaciones();
-        }
-
-        private static string DescribirEvaluacion(string nombre, DateTime fecha, decimal ponderacion)
-        {
-            return nombre + " | " + fecha.ToString("dd-MM-yyyy") + " | " + ponderacion.ToString("0.##") + " %";
         }
 
         private void dgvEvaluaciones_CellClick(object sender, DataGridViewCellEventArgs e)

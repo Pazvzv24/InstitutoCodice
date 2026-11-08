@@ -43,6 +43,27 @@ namespace InstitutoCodice.Datos.Repositorios
         }
 
         /// <summary>
+        /// Atajo para registrar, dentro de una transacción existente, una acción hecha por un usuario.
+        /// Lo usan los repositorios para que cada cambio de datos y su auditoría se guarden juntos.
+        /// </summary>
+        public static void Registrar(Usuario autor, string accion, string detalle, string entidad, int entidadId,
+                                     string? valorAnterior, string? valorNuevo,
+                                     SqlConnection conexion, SqlTransaction transaccion)
+        {
+            Registrar(new RegistroAuditoria
+            {
+                UsuarioId = autor.Id,
+                NombreUsuario = autor.NombreUsuario,
+                Accion = accion,
+                Detalle = detalle,
+                Entidad = entidad,
+                EntidadId = entidadId,
+                ValorAnterior = valorAnterior,
+                ValorNuevo = valorNuevo
+            }, conexion, transaccion);
+        }
+
+        /// <summary>
         /// Consulta los registros entre dos fechas (UTC), con filtros opcionales. Máximo 500, los más recientes primero.
         /// </summary>
         public List<RegistroAuditoria> Listar(DateTime desdeUtc, DateTime hastaUtc, string? accion, string? nombreUsuario)

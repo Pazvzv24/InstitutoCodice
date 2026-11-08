@@ -6,13 +6,17 @@ using InstitutoCodice.Negocio.Modelos;
 namespace InstitutoCodice.App
 {
     /// <summary>
-    /// Punto único para registrar eventos en la bitácora de auditoría desde la interfaz.
+    /// Punto único para registrar desde la interfaz los eventos que NO modifican datos:
+    /// ingresos, cierres de sesión, cambios de contraseña y exportaciones.
     /// Por defecto usa el usuario de la sesión actual.
     ///
     /// Si la bitácora falla (por ejemplo, un corte de conexión), el error se anota en la
     /// salida de depuración y la aplicación continúa: un problema de registro no debe
-    /// impedir que el usuario trabaje. Las notas son la excepción: se auditan dentro de
-    /// la misma transacción en CalificacionRepositorio.
+    /// impedir que el usuario trabaje.
+    ///
+    /// Los cambios de datos (estudiantes, docentes, asignaturas, inscripciones, evaluaciones
+    /// y notas) NO pasan por aquí: cada repositorio los audita dentro de la misma transacción
+    /// que el cambio, así que se guardan los dos o ninguno.
     /// </summary>
     public static class Bitacora
     {

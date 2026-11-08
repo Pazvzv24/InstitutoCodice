@@ -130,7 +130,7 @@ namespace InstitutoCodice.App.Formularios
 
             try
             {
-                repositorio.Agregar(nueva);
+                repositorio.Agregar(nueva, Sesion.UsuarioActual); // se audita en la misma transacción
                 CargarInscritos();
             }
             catch (Exception ex)
@@ -154,7 +154,7 @@ namespace InstitutoCodice.App.Formularios
 
             try
             {
-                repositorio.Eliminar(id);
+                repositorio.Eliminar(id, Sesion.UsuarioActual); // se audita en la misma transacción
                 CargarInscritos();
             }
             catch (Exception ex)

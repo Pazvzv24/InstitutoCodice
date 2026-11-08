@@ -145,23 +145,14 @@ namespace InstitutoCodice.App.Formularios
             {
                 if (estudiante.Id == 0)
                 {
-                    repositorio.Agregar(estudiante);
+                    repositorio.Agregar(estudiante, Sesion.UsuarioActual); // se audita en la misma transacción
                     Mensajes.Info("Estudiante registrado correctamente.");
                 }
                 else
                 {
-                    repositorio.Actualizar(estudiante);
-                    if (seleccionado != null && seleccionado.Activo && !estudiante.Activo)
-                        Bitacora.Registrar(AccionAuditoria.EstudianteDesactivado, "Estudiante " + estudiante.Rut + " desactivado.",
-                            entidad: "Estudiante", entidadId: estudiante.Id, valorAnterior: "Activo", valorNuevo: "Inactivo");
-                    if (seleccionado != null && seleccionado.TratamientoBloqueado != estudiante.TratamientoBloqueado)
-                        Bitacora.Registrar(
-                            estudiante.TratamientoBloqueado ? AccionAuditoria.TratamientoBloqueado : AccionAuditoria.TratamientoDesbloqueado,
-                            "Tratamiento de datos del estudiante RUT " + estudiante.Rut
-                            + (estudiante.TratamientoBloqueado ? " bloqueado" : " desbloqueado") + " a solicitud del titular (Ley 21.719).",
-                            entidad: "Estudiante", entidadId: estudiante.Id,
-                            valorAnterior: seleccionado.TratamientoBloqueado ? "Bloqueado" : "Habilitado",
-                            valorNuevo: estudiante.TratamientoBloqueado ? "Bloqueado" : "Habilitado");
+                    // El repositorio audita, en la misma transacción, los datos modificados,
+                    // la desactivación o reactivación y el bloqueo del tratamiento
+                    repositorio.Actualizar(estudiante, Sesion.UsuarioActual);
                     Mensajes.Info("Datos del estudiante actualizados.");
                 }
 
@@ -215,9 +206,7 @@ namespace InstitutoCodice.App.Formularios
             try
             {
                 seleccionado.Desactivar();
-                repositorio.Actualizar(seleccionado);
-                Bitacora.Registrar(AccionAuditoria.EstudianteDesactivado, "Estudiante " + seleccionado.Rut + " desactivado.",
-                    entidad: "Estudiante", entidadId: seleccionado.Id, valorAnterior: "Activo", valorNuevo: "Inactivo");
+                repositorio.Actualizar(seleccionado, Sesion.UsuarioActual); // audita la desactivación
                 Mensajes.Info("Estudiante desactivado.");
                 CargarEstudiantes();
                 LimpiarFormulario();

@@ -127,25 +127,15 @@ namespace InstitutoCodice.App.Formularios
 
                 if (esNuevo)
                 {
-                    repositorio.Agregar(docente);
-                    Bitacora.Registrar(AccionAuditoria.UsuarioCreado, "Docente " + docente.NombreUsuario + " creado.",
-                        entidad: "Usuario", entidadId: docente.Id);
+                    repositorio.Agregar(docente, Sesion.UsuarioActual); // se audita en la misma transacción
                     Mensajes.Info("Docente registrado. Deberá cambiar su contraseña en el primer ingreso.");
                 }
                 else
                 {
-                    repositorio.Actualizar(docente, clave.Length > 0);
+                    // El repositorio audita, en la misma transacción, los datos modificados,
+                    // la contraseña asignada y la desactivación o reactivación
+                    repositorio.Actualizar(docente, clave.Length > 0, Sesion.UsuarioActual);
 
-                    if (clave.Length > 0)
-                        Bitacora.Registrar(AccionAuditoria.ContrasenaAsignada,
-                            "Contraseña asignada por el administrador a " + docente.NombreUsuario + ".",
-                            entidad: "Usuario", entidadId: docente.Id);
-                    if (seleccionado != null && seleccionado.Activo && !docente.Activo)
-                        Bitacora.Registrar(AccionAuditoria.UsuarioDesactivado, "Docente " + docente.NombreUsuario + " desactivado.",
-                            entidad: "Usuario", entidadId: docente.Id, valorAnterior: "Activo", valorNuevo: "Inactivo");
-                    else if (seleccionado != null && !seleccionado.Activo && docente.Activo)
-                        Bitacora.Registrar(AccionAuditoria.UsuarioReactivado, "Docente " + docente.NombreUsuario + " reactivado.",
-                            entidad: "Usuario", entidadId: docente.Id, valorAnterior: "Inactivo", valorNuevo: "Activo");
                     Mensajes.Info(clave.Length > 0
                         ? "Datos actualizados. El docente deberá cambiar su contraseña en el próximo ingreso."
                         : "Datos del docente actualizados.");

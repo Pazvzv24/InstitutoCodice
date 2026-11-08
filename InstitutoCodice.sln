@@ -48,6 +48,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{F24F9284-E322-432C-AA3D-B95E0B6013C9}"
+	ProjectSection(SolutionItems) = preProject
+		docs\img\asignaturas.png = docs\img\asignaturas.png
+		docs\img\asistencia.png = docs\img\asistencia.png
+		docs\img\aviso-privacidad.png = docs\img\aviso-privacidad.png
+		docs\img\bitacora.png = docs\img\bitacora.png
+		docs\img\calificaciones.png = docs\img\calificaciones.png
+		docs\img\docentes.png = docs\img\docentes.png
+		docs\img\estudiantes.png = docs\img\estudiantes.png
+		docs\img\exportacion-excel.png = docs\img\exportacion-excel.png
+		docs\img\exportacion-pdf.png = docs\img\exportacion-pdf.png
+		docs\img\informes.png = docs\img\informes.png
+		docs\img\inscripciones.png = docs\img\inscripciones.png
+		docs\img\login.png = docs\img\login.png
+		docs\img\menu-principal.png = docs\img\menu-principal.png
+		docs\img\prueba-permisos.png = docs\img\prueba-permisos.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -76,6 +94,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8231099C-BBB2-47BF-A4EA-72D4EEDA1E78} = {5FD88C42-4048-4F45-9558-6749E5FCBF43}
+		{F24F9284-E322-432C-AA3D-B95E0B6013C9} = {8CCA8B9F-4472-4B89-9314-E1E7E47F6C83}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEBFEAC8-F266-4363-AA2D-7D6FF7D092B3}

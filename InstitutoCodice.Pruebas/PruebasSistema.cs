@@ -315,6 +315,49 @@ namespace InstitutoCodice.Pruebas
             Assert.IsNull(AccionAuditoria.Truncar(null, 3));
         }
 
+        // Auditoría de modificaciones (estudiantes, docentes y asignaturas)
+        [TestMethod]
+        public void ResumirCambios_SinDiferencias_NoHayCambios()
+        {
+            // Arrange: mismo curso y correo vacío frente a nulo (el correo es opcional)
+            var curso = new CampoAuditado("Curso", "TI-301", "TI-301");
+            var correo = new CampoAuditado("Correo", null, "", esDatoPersonal: true);
+
+            // Act
+            ResumenCambios resumen = CambiosAuditoria.Resumir(curso, correo);
+
+            // Assert
+            Assert.IsFalse(resumen.HayCambios);
+            Assert.IsNull(resumen.ValorAnterior);
+            Assert.IsNull(resumen.ValorNuevo);
+        }
+
+        [TestMethod]
+        public void ResumirCambios_DatoNoPersonal_RegistraValorAnteriorYNuevo()
+        {
+            ResumenCambios resumen = CambiosAuditoria.Resumir(
+                new CampoAuditado("RUT", "20456789-1", "20456789-1"),
+                new CampoAuditado("Curso", "TI-301", "TI-304"));
+
+            Assert.AreEqual("Curso", resumen.TextoCampos);
+            Assert.AreEqual("Curso: TI-301", resumen.ValorAnterior);
+            Assert.AreEqual("Curso: TI-304", resumen.ValorNuevo);
+        }
+
+        [TestMethod]
+        public void ResumirCambios_DatoPersonal_RegistraElCampoPeroNoSuValor()
+        {
+            // Minimización (Ley 21.719): la bitácora sabe QUE el correo cambió, no cuál era
+            ResumenCambios resumen = CambiosAuditoria.Resumir(
+                new CampoAuditado("Correo", "camila@codice.cl", "camila.g@codice.cl", esDatoPersonal: true),
+                new CampoAuditado("Curso", "TI-301", "TI-302"));
+
+            CollectionAssert.AreEqual(new[] { "Correo", "Curso" }, new List<string>(resumen.CamposModificados));
+            Assert.IsFalse(resumen.ValorAnterior!.Contains("camila"), "No debe guardar el correo anterior.");
+            Assert.IsFalse(resumen.ValorNuevo!.Contains("camila"), "No debe guardar el correo nuevo.");
+            Assert.AreEqual("Curso: TI-301", resumen.ValorAnterior);
+        }
+
         // Exportación: nombres de archivo seguros
         [TestMethod]
         public void NombreArchivo_ConCaracteresNoPermitidos_LosReemplaza()

@@ -3,9 +3,36 @@
 [![CI](https://github.com/Pazvzv24/InstitutoCodice/actions/workflows/ci.yml/badge.svg)](https://github.com/Pazvzv24/InstitutoCodice/actions/workflows/ci.yml)
 
 Aplicación de escritorio para gestión académica: estudiantes, asignaturas, inscripciones, asistencia, calificaciones e informes, con control de acceso por rol.
-Tarea 3 - PRO205 Taller de Programación.
+Proyecto académico de **AIEP**, carrera **Técnico en Programación y Análisis de Sistemas**: Tarea 3 del ramo **PRO205 Taller de Programación**, continuado como proyecto de portafolio. Ver [Contexto](#contexto).
 
 **Stack:** C# / .NET 8 / Windows Forms / SQL Server / MSTest / Microsoft.Extensions.DependencyInjection / ClosedXML / QuestPDF
+
+### Capturas
+
+| Inicio de sesión | Menú principal (administrador) |
+| :---: | :---: |
+| ![Pantalla de inicio de sesión con enlace al aviso de privacidad](docs/img/login.png) | ![Menú principal con las opciones de gestión y docencia](docs/img/menu-principal.png) |
+| **Estudiantes** | **Evaluaciones y notas** |
+| ![Gestión de estudiantes con desactivación, bloqueo del tratamiento y exportación de datos del titular](docs/img/estudiantes.png) | ![Edición de evaluaciones con control del 100 % de ponderación y registro de notas](docs/img/calificaciones.png) |
+| **Informe por curso** | **Bitácora de auditoría** |
+| ![Informe por curso con estados Aprobado, Reprobado y Parcial](docs/img/informes.png) | ![Bitácora de auditoría con filtros por fecha, acción y usuario](docs/img/bitacora.png) |
+
+<details>
+<summary><b>Más capturas</b></summary>
+
+| Docentes | Asignaturas |
+| :---: | :---: |
+| ![Gestión de docentes](docs/img/docentes.png) | ![Gestión de asignaturas](docs/img/asignaturas.png) |
+| **Inscripciones** | **Registro de asistencia** |
+| ![Inscripción de estudiantes en asignaturas](docs/img/inscripciones.png) | ![Registro de asistencia por fecha](docs/img/asistencia.png) |
+| **Aviso de privacidad (Ley 21.719)** | **Prueba de permisos de la cuenta de la aplicación** |
+| ![Aviso de privacidad accesible antes de ingresar](docs/img/aviso-privacidad.png) | ![Resultado del script 08: lo que la cuenta app_codice puede y no puede hacer](docs/img/prueba-permisos.png) |
+| **Informe exportado a PDF** | **Informe exportado a Excel** |
+| ![Informe exportado a PDF con emisor y fecha](docs/img/exportacion-pdf.png) | ![Informe exportado a Excel con leyenda de datos personales](docs/img/exportacion-excel.png) |
+
+</details>
+
+> Todos los datos que aparecen en las capturas son ficticios.
 
 ---
 
@@ -92,7 +119,7 @@ También se puede crear la base desde SSMS ejecutando en orden:
 - `BaseDatos/10_PermisosEliminacion.sql` -> Permite a la cuenta de la aplicación eliminar notas y evaluaciones sin notas. Ejecutar con una cuenta administradora.
 
 **Pruebas**
-- Menú **Prueba -> Ejecutar todas las pruebas** (41 pruebas unitarias, no requieren base de datos).
+- Menú **Prueba -> Ejecutar todas las pruebas** (44 pruebas unitarias, no requieren base de datos).
 - Desde la consola: `dotnet test InstitutoCodice.sln`
 
 **Integración continua**
@@ -138,10 +165,10 @@ El diseño de seguridad se analizó con la metodología STRIDE: [modelo de amena
 | Control de acceso | Un docente solo ve estudiantes, asignaturas e informes de los cursos que dicta; filtrado en la interfaz y en el servicio (defensa en profundidad); si no hay permisos definidos, no muestra nada (falla cerrada); cubierto por pruebas automáticas |
 | Política de contraseñas | Mínimo 8 caracteres con mayúscula, minúscula y número; no puede contener el usuario ni repetir la actual |
 | Cambio obligatorio | Una contraseña asignada o restablecida por el administrador debe cambiarse en el siguiente ingreso |
-| Bitácora de auditoría | Registra ingresos, fallos, bloqueos, cambios de contraseña, desactivaciones, cambios y eliminaciones de evaluaciones, y cada nota registrada, modificada o eliminada con su valor anterior y nuevo, identificando al estudiante por RUT (minimización de datos: sin nombres) |
+| Bitácora de auditoría | Registra ingresos, fallos, bloqueos y cambios de contraseña; altas, modificaciones, desactivaciones y reactivaciones de estudiantes y docentes; altas y modificaciones de asignaturas; inscripciones y anulaciones; cambios y eliminaciones de evaluaciones; y cada nota registrada, modificada o eliminada con su valor anterior y nuevo. Identifica al estudiante por RUT y, de nombres, RUT de docentes y correos, registra solo qué campo cambió, no su valor (minimización de datos) |
 | Mínimo privilegio | La app se conecta con `app_codice` (rol `rol_app_codice`): solo lee, inserta y actualiza; borra solo inscripciones, notas y evaluaciones sin notas; no puede modificar la bitácora, crear tablas ni desactivar triggers |
 | Secretos fuera del código | La contraseña de la cuenta de la app se lee desde una variable de entorno; la configuración local está en `.gitignore` |
-| Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; las notas se auditan en la misma transacción |
+| Bitácora inmutable | Un trigger en la BD rechaza UPDATE y DELETE sobre la tabla Auditoria; los cambios de estudiantes, docentes, asignaturas, inscripciones, evaluaciones y notas se auditan en la misma transacción que el cambio: se guardan los dos o ninguno |
 | Exportación controlada | Los informes se exportan a Excel o PDF solo con los datos que el usuario ya puede ver; cada exportación queda en la bitácora; las celdas de Excel se escriben como texto (evita la inyección de fórmulas) |
 | Aviso de privacidad | Accesible desde el login, antes de ingresar: responsable, datos tratados, finalidad, quién accede, conservación y derechos (Ley 21.719) |
 | Derechos del titular | Exportación de todos los datos de un estudiante en JSON (acceso y portabilidad), solo para el administrador, sin datos de terceros y con registro en la bitácora |
@@ -162,8 +189,8 @@ El sistema se diseñó considerando la Ley N° 21.719 de protección de datos pe
 - **Deber de información:** aviso de privacidad en la pantalla de inicio de sesión.
 - **Derechos de acceso y portabilidad:** exportación de los datos del titular en JSON, un formato estructurado que otro sistema puede leer.
 - **Derecho de bloqueo:** el administrador puede bloquear temporalmente el tratamiento de los datos de un estudiante sin borrar su historial. Bloquear y desbloquear quedan en la bitácora.
-- **Minimización:** la bitácora identifica a los estudiantes solo por RUT y las exportaciones no incluyen datos de terceros.
-- **Responsabilidad proactiva:** cada acceso, cambio de nota y exportación de datos personales queda en una bitácora inmutable.
+- **Minimización:** la bitácora identifica a los estudiantes solo por RUT, registra que un nombre o correo cambió sin guardar su valor, y las exportaciones no incluyen datos de terceros.
+- **Responsabilidad proactiva:** cada acceso, cada creación o modificación de estudiantes y docentes, cada inscripción, cada cambio de nota y cada exportación queda en una bitácora inmutable.
 - **Respuesta ante incidentes:** plan documentado con roles, fases, criterios de notificación y registro de incidentes.
 
 Pendiente de la institución: definir los plazos de conservación e instalar el certificado del servidor en producción.
@@ -193,7 +220,7 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 | RF-12 (Login) | `FormLogin`, `VerificarContrasena()`, límite de 3 intentos, `PoliticaBloqueo` |
 | RNF-03 (Seguridad) | `Seguridad` (PBKDF2-SHA256 con sal) + restricción de formato en BD + queries parametrizadas |
 | RNF-03 (Contraseñas) | `PoliticaContrasena`, `FormCambiarContrasena` |
-| Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, `AccionAuditoria.DetalleNota()`, tabla `Auditoria` |
+| Auditoría | `Bitacora`, `AuditoriaRepositorio`, `FormAuditoria`, `AccionAuditoria.DetalleNota()`, `CambiosAuditoria` (qué campos cambiaron), tabla `Auditoria` |
 | Ley 21.719 (información) | `AvisoPrivacidad`, `FormAvisoPrivacidad`, `docs/RegistroTratamiento.md` |
 | Ley 21.719 (acceso y portabilidad) | `ServicioDatosTitular`, botón "Exportar datos del titular" en `FormEstudiantes` |
 | Ley 21.719 (bloqueo) | `Estudiante.PuedeTratarse()`, `ServicioInformes`, casilla "Tratamiento bloqueado" en `FormEstudiantes`, `09_BloqueoTratamiento.sql` |
@@ -215,6 +242,21 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 - Una nota se elimina dejando su celda vacía; la eliminación queda en la bitácora con la nota que tenía.
 - Estudiantes y docentes no se eliminan, se desactivan (borrado lógico): así se conserva el historial académico y la trazabilidad.
 
+### Contexto
+
+Este sistema nació como la Tarea 3 del ramo PRO205 Taller de Programación (AIEP). La **v1.0** corresponde a la versión entregada en la evaluación.
+
+Desde la **v1.1 hasta la v2.0**, el proyecto continuó como trabajo personal de portafolio, con foco en **seguridad desde el diseño**:
+
+- Contraseñas con PBKDF2 y bloqueo de cuenta.
+- Bitácora de auditoría inmutable.
+- Mínimo privilegio en la base de datos.
+- Protección de datos personales según la Ley 21.719.
+- Integración continua con análisis de seguridad.
+- Modelo de amenazas STRIDE.
+
+No se incluyen el enunciado, la pauta de evaluación ni datos de la institución: todos los datos del sistema son ficticios.
+
 ### Historial de versiones
 
 | Versión | Cambios |
@@ -230,7 +272,7 @@ Pendiente de la institución: definir los plazos de conservación e instalar el 
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 | v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
 | v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; análisis CodeQL; protección de secretos; reporte privado de vulnerabilidades; badge en el README. |
-| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`); varias pantallas abiertas a la vez (se cierran todas al cerrar sesión); pantallas que se adaptan al tamaño de la ventana; botón Recargar y tecla F5; edición y eliminación de evaluaciones; eliminación de notas con registro en la bitácora; 3 pruebas nuevas. |
+| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`); varias pantallas abiertas a la vez (se cierran todas al cerrar sesión); pantallas que se adaptan al tamaño de la ventana; botón Recargar y tecla F5; edición y eliminación de evaluaciones; eliminación de notas con registro en la bitácora; auditoría de cambios de estudiantes, docentes, asignaturas, inscripciones y evaluaciones en la misma transacción, con minimización de datos personales; capturas de pantalla en el README; 6 pruebas nuevas. |
 
 ### Licencias de terceros
 

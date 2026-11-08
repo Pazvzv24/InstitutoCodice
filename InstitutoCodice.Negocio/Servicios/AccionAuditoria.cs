@@ -24,8 +24,16 @@ namespace InstitutoCodice.Negocio.Servicios
         public const string UsuarioDesactivado = "UsuarioDesactivado";
         public const string UsuarioReactivado = "UsuarioReactivado";
         public const string EstudianteDesactivado = "EstudianteDesactivado";
+        public const string EstudianteCreado = "EstudianteCreado";
+        public const string EstudianteModificado = "EstudianteModificado";
+        public const string EstudianteReactivado = "EstudianteReactivado";
+        public const string DocenteModificado = "DocenteModificado";
 
         // Académico
+        public const string AsignaturaCreada = "AsignaturaCreada";
+        public const string AsignaturaModificada = "AsignaturaModificada";
+        public const string InscripcionCreada = "InscripcionCreada";
+        public const string InscripcionEliminada = "InscripcionEliminada";
         public const string EvaluacionCreada = "EvaluacionCreada";
         public const string EvaluacionModificada = "EvaluacionModificada";
         public const string EvaluacionEliminada = "EvaluacionEliminada";
@@ -46,7 +54,9 @@ namespace InstitutoCodice.Negocio.Servicios
         {
             LoginExitoso, LoginFallido, LoginBloqueado, CuentaBloqueada, CierreSesion,
             CambioContrasena, ContrasenaAsignada,
-            UsuarioCreado, UsuarioDesactivado, UsuarioReactivado, EstudianteDesactivado,
+            UsuarioCreado, UsuarioDesactivado, UsuarioReactivado, DocenteModificado,
+            EstudianteCreado, EstudianteModificado, EstudianteDesactivado, EstudianteReactivado,
+            AsignaturaCreada, AsignaturaModificada, InscripcionCreada, InscripcionEliminada,
             EvaluacionCreada, EvaluacionModificada, EvaluacionEliminada,
             NotaRegistrada, NotaModificada, NotaEliminada,
             InformeExportado, DatosTitularExportados, TratamientoBloqueado, TratamientoDesbloqueado

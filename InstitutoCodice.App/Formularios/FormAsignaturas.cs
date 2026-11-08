@@ -133,12 +133,12 @@ namespace InstitutoCodice.App.Formularios
             {
                 if (asignatura.Id == 0)
                 {
-                    repositorio.Agregar(asignatura);
+                    repositorio.Agregar(asignatura, Sesion.UsuarioActual); // se audita en la misma transacción
                     Mensajes.Info("Asignatura creada correctamente.");
                 }
                 else
                 {
-                    repositorio.Actualizar(asignatura);
+                    repositorio.Actualizar(asignatura, Sesion.UsuarioActual); // se audita en la misma transacción
                     Mensajes.Info("Asignatura actualizada.");
                 }
 
