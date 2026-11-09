@@ -38,6 +38,20 @@ Proyecto académico de **AIEP**, carrera **Técnico en Programación y Análisis
 
 ---
 
+### Descarga (sin Visual Studio)
+
+1. Descargar `InstitutoCodice-v2.0-win-x64.zip` desde [Releases](https://github.com/Pazvzv24/InstitutoCodice/releases/latest).
+2. Opcional, recomendado: verificar que el archivo no fue alterado comparando su huella SHA-256 con la publicada en la release:
+   ```powershell
+   Get-FileHash .\InstitutoCodice-v2.0-win-x64.zip -Algorithm SHA256
+   ```
+3. Descomprimir y ejecutar `InstitutoCodice.App.exe`. No requiere instalar .NET (va incluido).
+4. Requiere **SQL Server Express o LocalDB** en el equipo. En la primera ejecución la app crea la base con los datos de demostración. El servidor se cambia en `appsettings.json`, junto al `.exe` (ver [Elegir el servidor SQL](#instalación-rápida)).
+5. Ingresar con `admin` / `Admin123`.
+
+> El ejecutable no está firmado digitalmente (proyecto académico), por lo que Windows SmartScreen puede mostrar "Windows protegió su PC". Para continuar: **Más información → Ejecutar de todas formas**. Por eso conviene verificar la huella SHA-256 del paso 2.
+
+
 ### Requisitos
 
 - Visual Studio 2022 (v17.8+)
@@ -274,7 +288,7 @@ No se incluyen el enunciado, la pauta de evaluación ni datos de la institución
 | v1.8 | Calidad de código: inyección de dependencias en todos los formularios; bitácora con RUT del estudiante; pruebas de control de acceso e inscripción duplicada; corrección de advertencias de nulos; 5 pruebas nuevas. |
 | v1.9 | Ley 21.719: registro de actividades de tratamiento; aviso de privacidad; exportación de datos del titular en JSON; bloqueo del tratamiento; verificación opcional del certificado de SQL Server; plan de respuesta ante incidentes; corrección de advertencias de nulos; 7 pruebas nuevas. |
 | v1.10 | Integración continua con GitHub Actions: compilación, pruebas y revisión de paquetes vulnerables en cada push y cada semana; Dependabot para actualizaciones de seguridad; análisis CodeQL; protección de secretos; reporte privado de vulnerabilidades; badge en el README. |
-| v2.0 *(en preparación)* | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`); varias pantallas abiertas a la vez (se cierran todas al cerrar sesión); pantallas que se adaptan al tamaño de la ventana; botón Recargar y tecla F5; edición y eliminación de evaluaciones; eliminación de notas con registro en la bitácora; auditoría de cambios de estudiantes, docentes, asignaturas, inscripciones, evaluaciones y asistencia en la misma transacción, con minimización de datos personales; capturas de pantalla en el README; 8 pruebas nuevas. |
+| v2.0 | Presentación final: modelo de amenazas STRIDE; política de seguridad (`SECURITY.md`); varias pantallas abiertas a la vez (se cierran todas al cerrar sesión); pantallas que se adaptan al tamaño de la ventana; botón Recargar y tecla F5; edición y eliminación de evaluaciones; eliminación de notas con registro en la bitácora; auditoría de cambios de estudiantes, docentes, asignaturas, inscripciones, evaluaciones y asistencia en la misma transacción, con minimización de datos personales; capturas de pantalla y GIF de demostración en el README; release con ejecutable para Windows (autocontenido, sin instalar .NET); 8 pruebas nuevas. |
 
 ### Licencias de terceros
 
