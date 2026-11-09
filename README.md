@@ -9,6 +9,8 @@ Proyecto académico de **AIEP**, carrera **Técnico en Programación y Análisis
 
 ### Capturas
 
+![Demostración: inicio de sesión, gestión, asistencia, notas, informes, exportación y bitácora de auditoría](docs/img/demo.gif)
+
 | Inicio de sesión | Menú principal (administrador) |
 | :---: | :---: |
 | ![Pantalla de inicio de sesión con enlace al aviso de privacidad](docs/img/login.png) | ![Menú principal con las opciones de gestión y docencia](docs/img/menu-principal.png) |

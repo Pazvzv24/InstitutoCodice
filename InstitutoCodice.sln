@@ -55,6 +55,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{F24F9284-E32
 		docs\img\aviso-privacidad.png = docs\img\aviso-privacidad.png
 		docs\img\bitacora.png = docs\img\bitacora.png
 		docs\img\calificaciones.png = docs\img\calificaciones.png
+		docs\img\demo.gif = docs\img\demo.gif
 		docs\img\docentes.png = docs\img\docentes.png
 		docs\img\estudiantes.png = docs\img\estudiantes.png
 		docs\img\exportacion-excel.png = docs\img\exportacion-excel.png
